@@ -1,0 +1,193 @@
+/* Importação de fontes: */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Formatação do menu -------------------------------------------------------------------------------------------- */
+/* header-container do cabeçalho: */
+.header-container {
+    display: flex;                      /* Torna o header-container um flex container */
+    align-items: center;                /* Alinha os itens verticalmente ao centro */
+    height: 128px;                      /* Altura do container */
+    min-height: 100px;
+    background-color: #f0f0f0;        /* Cor de fundo */
+    font-size: max(12px, 1rem);         /* A fonte será 16px ou 1.2rem, o que for maior */
+    font-family: 'Roboto', sans-serif;
+}
+/* Elementos estruturais: */
+.elemento-esquerda {
+    width: 120px;                       /* Largura dos elementos laterais */
+    height: 100%;                       /* Altura dos elementos laterais */
+    min-width: 20px;
+    min-height: 20px;
+    display: flex;                      /* Usado para alinhar o conteúdo dentro deste elemento */
+    justify-content: center;            /* Centraliza o texto horizontalmente */
+    align-items: center;                /* Centraliza o texto verticalmente */
+    flex-shrink: 0;                     /* Evita que o logo encolha */
+}
+
+.elemento-direita {
+    width: 110px;                       /* Largura dos elementos laterais */
+    height: 100%;
+    display: flex;                      /* Usado para alinhar o conteúdo dentro deste elemento */
+    justify-content: center;            /* Centraliza o texto horizontalmente */
+    align-items: center;                /* Centraliza o texto verticalmente */
+}
+
+.elemento-centro-pai {
+    display: flex;
+    flex-direction: column;             /* Organiza os elementos filhos em coluna */
+    justify-content: center;            /* Centraliza verticalmente os elementos filhos */
+    flex-grow: 1;                       /* Permite que este item ocupe o espaço restante */
+    height: 100%;                       /* Para ocupar a altura total do pai */
+    align-items: center;                /* Centraliza o conteúdo horizontalmente */
+    margin: 0 10px;                     /* Espaçamento para não colar nos outros elementos */
+    padding: 10px;}
+
+.elemento-centro-topo{
+    width: 100%;                        /* Largura dos elementos laterais */
+    height: 50%;
+    display: flex;                      /* Ativa o flexbox */
+    justify-content: space-between;     /* Distribui com espaço entre eles */
+    justify-content: space-around;      /* Alternativa: espaçamento igual nas bordas */
+    list-style-type: none;              /* Remove bolinhas da lista */
+    padding: 0;
+    margin: 0;
+}
+.elemento-centro-baixo {
+    display: flex;                      /* Alinha os links da lista lado a lado */
+    align-items: stretch;               /* 2. Força todos os filhos a terem a mesma altura */
+    gap: 10px;                          /* Espaçamento entre os elementos */
+    padding: 0px;
+    margin: 0;
+    height: 50%;
+    min-height: 20px;
+    /* justify-content: center;         /* Centraliza verticalmente os elementos filhos */
+    width: 100%;
+    /* padding: 10px; */
+    border-radius: 0.5vh;
+}
+/* Seleciona elementos comuns dentro do contêiner */
+    .elemento-centro-baixo input,
+    .elemento-centro-baixo button,
+    .elemento-centro-baixo select {
+        flex: 1;                        /* Faz os elementos preencherem o espaço */
+        padding: 10px;                  /* Define altura interna */
+        border: 1px solid #ccc;
+        box-sizing: border-box;         /* Garante que padding não aumente o tamanho */
+}
+.elemento-centro-baixo form {
+    display: flex;                      /* Alinha os itens em linha horizontalmente */
+    gap: 0px;                           /* Adiciona um espaço fixo entre os elementos */
+    width: 100%;                        /* Garante que a DIV ocupe a largura total */
+    align-items: center;                /* Centraliza todos verticalmente */
+}
+.elemento-centro-baixo form input {
+    flex-grow: 1;                       /* Faz o input ocupar TODO o espaço restante */
+    min-width: 0;                       /* Essencial para que o input não "empurre" os botões para fora */
+}
+.elemento-centro-baixo form button {
+    flex-grow: 0;
+    flex-shrink: 0;                     /* Impede que o botão seja "espremido" */
+    white-space: nowrap;                /* Impede a quebra de linha do texto */
+}
+
+.logo {
+    height: 100%;
+    /* Ajuste o tamanho do logo */
+}
+
+/* --------------------------------------------------------------------------------------------------------------------- */
+.navbar {
+    display: flex;                                  /* Ativa o Flexbox para alinhar os itens */
+    width: 100%;
+    justify-content: space-between;                 /* Distribui o espaço entre os itens */
+    justify-content: space-around;                  /* Alternativa: espaçamento igual nas bordas */
+    padding: 0;                                     /* Espaçamento interno */
+    margin: 0;
+    background-color: #f0f0f0;                    /* Cor de fundo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);     /* Sombra sutil */
+    list-style: none;                               /* Remove as bolinhas */
+}
+.navbar li {
+    position: relative;                             /* FUNDAMENTAL: para o submenu saber onde ancorar */
+    display: flex;                                  /* Torna o LI um container flex */
+    align-items: center;                            /* Centraliza o conteúdo verticalmente */
+    justify-content: center;                        /* Centraliza o conteúdo horizontalmente */
+    height: 100%;                                   /* Defina uma altura fixa ou use padding nos links */
+    text-align: center;
+    background-color: #05013a;
+    flex: 1;                                        /* Opcional: faz todos os itens terem a mesma largura */
+}
+
+.navbar li ul{
+    display: none;        /* Esconde por padrão */
+    position: absolute;   /* Remove do fluxo do flexbox */
+    top: 100%;            /* Alinha exatamente abaixo do li pai */
+    left: 0;              /* Alinha à esquerda do li pai */
+    background-color: #05013a;
+    min-width: 100%;      /* Faz o submenu ter no mínimo a largura do item pai */
+    z-index: 1000;        /* Garante que fique acima de outros elementos */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.navbar li ul li {
+    display: block;       /* Submenu deve ser empilhado verticalmente, não flex */
+    width: 100%;
+    height: auto;         /* Reseta a altura do flex pai */
+}
+
+.navbar li ul li a {
+    padding: 10px 20px;
+    display: block;
+    color: white;
+    text-decoration: none;
+    white-space: nowrap;  /* Evita que o texto quebre em várias linhas */
+}
+
+/* Exibir ao passar o mouse */
+.navbar li:hover > ul {
+    display: block; /* Mostra o submenu ao passar o mouse */
+}
+/*Adicionando a Setinha com CSS */
+.navbar li:has(ul) > a::after {
+    content: ' ▼';         /* O caractere da seta */
+    font-size: 0.7em;      /* Seta levemente menor que o texto */
+    margin-left: 8px;      /* Espaço entre o texto e a seta */
+    vertical-align: middle;
+    display: inline-block;
+    transition: transform 0.3s; /* Preparação para animar */
+}
+
+/* Opcional: Gira a seta quando abrir o menu */
+.navbar li:hover:has(ul) > a::after {
+    transform: rotate(180deg);
+}
+
+/* -----------------------------------------------------------------------*/
+
+.nav-button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 1.5vh;                    /* Espaçamento entre os links */
+}
+
+.nav-button img {
+    height: 2vh;
+    min-height: 10px;                   /* Ajuste o tamanho do ícone do carrinho */
+    vertical-align: middle;             /* Alinha a imagem com o texto */
+}
+
+.navbar a {
+    text-decoration: none;            /* Remove o sublinhado dos links */
+    color: #00e8fd;                 /* Cor do texto dos links */
+}
+
+.navbar a:hover {
+    color: #ff0000;                 /* Muda a cor do link ao passar o mouse */
+}
+
+/* --------------------------------------------------------------------------------------------------------------- */

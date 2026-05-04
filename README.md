@@ -24,6 +24,13 @@ FLUSH PRIVILEGES;
 Agora, basta executar o arquivo src/main/java/com/gwj/AppConfig.java (botão rum).
 Atenção: A porta padrão do projeto é 8080. S der erro na inicialização, basta trovar por uma porta livre.
 
+Alterar a porta no projeto/
+Abra o arquivo src/main/resources/application.properties e adicione esta linha com a porta 8089 ou outra porta que não esteja em uso:
+```
+propertiesserver.port=8089
+```
+Observação: Se você alterar a porta, os comandos a seguir devem ser alterados pela porta nova, por exemplo, ao invés de 8080, digita 8089.
+
 Se não houver mensagens de erro, basta testar no navegador:\
 Thymeleaf:
 ```
@@ -58,3 +65,13 @@ acrescentar parâmetros no corpo da requisição (devem ser iguais aos nomes de 
 http://localhost:8080/delete-json?entity=Cliente
 ```
 (acrescentar parâmetros no corpo da requisição com o key=id e Value= [número id do registro].
+
+Outras requisições:
+```
+http://localhost:8089
+http://localhost:8089/listar?entity=Cliente
+http://localhost:8089/listar?entity=Cliente&id=23
+http://localhost:8089/listar?entity=Cliente&nome=Tiago
+http://localhost:8089/listar?entity=Endereco
+http://localhost:8089/sobre-nos
+```

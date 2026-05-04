@@ -1,0 +1,42 @@
+<!-- Fragmento apenas para o Link do CSS -->
+<th:block th:fragment="header-css">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+</th:block>
+
+<!-- Fragmento apenas para o conteúdo HTML -->
+<header th:fragment="header">
+    <div class="header-container">
+        <div class="elemento-esquerda">
+            <!-- <img src="img/vecteezy_shield-and-crown_36642633.svg" alt="Logo da Empresa" class="logo"> -->
+            <!-- O Spring entende que o caminho começa em src/main/resources/static/ -->
+            <img th:src="@{/img/vecteezy_shield-and-crown_36642633.svg}" alt="Logo da Empresa" class="logo">
+        </div>
+        <div class="elemento-centro-pai">
+            <div class="elemento-centro-topo">
+                <ul class="navbar">
+                    <li><a href="#">&#127968 Principal</a></li>
+                    <li><a href="#">&#128222 Telefone</a></li>
+                    <li><a href="#">&#129489 Minha conta</a>
+                        <ul class="dropdown-menu dropdown-menu-dark show" data-bs-popper="static">
+                            <li><a href="#" class="dropdown-item">Cadastre-se</a></li>
+                            <li><a href="#" class="dropdown-item">Acessar</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">&#9829   Lista de desejos</a></li>
+                    <li><a href="#">&#128722 Carrinho de compras</a></li>
+                    <li><a href="#">&#10004 Finalizar pedidos</a></li>
+                </ul>
+            </div>
+            <div class="elemento-centro-baixo">
+                <form action="#" method="post">
+                    <button class="menu-button-left" title="Navegue pelos nossos departamentos">Departamentos</button>
+                    <input type="text" name="search" value="" placeholder="Busca">
+                    <button type="submit"><i>&#128269</i></button>
+                    <button class="menu-button-right"><i>1 - R$26.90</i></button>
+                </form>
+            </div>
+        </div>
+        <div class="elemento-direita">
+        </div>
+    </div>
+</header>

@@ -1,0 +1,352 @@
+/************************************************************************************************************/
+/* Identidade Visual */
+:root {
+    --primary-color: #f38d09; /* Laranja forte */
+    --secondary-color: #333; /* Cinza escuro para texto */
+    --background-color: #f4f4f4; /* Cinza claro para fundo */    
+    --background-color2: yellow;
+    --background-color-3: #9b5a06; /* Cinza claro para fundo */
+    --light-grey: #ccc;
+    --light-color-1: #fff;
+    --focus-color-1: red;
+    --dark-grey: #666;
+    --navy-blue: #000080;
+    /* Dimensões */
+    --altura-da-imagem: 350px;
+    --largura-maxima: 1200px;
+    --tamanho-da-fonte: 0.4rem;
+    --largura-do-section-container: 1rem;
+    --altura-do-section-container: 1rem;
+    /* caminho */
+    /* font-size: 0.8rem;*/
+
+  }
+  /* reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  @font-face {
+    /* font-family: "Cal Sans", sans-serif; */
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    src: url("/view/fonts/CalSans-Regular.ttf"); /* Caminho para a fonte TTF */
+  }
+  
+  body {
+    /* font-size: var(--tamanho-da-fonte); */
+    font-size: clamp(12px, 0.4rem, 1.8vw); /* 12px é o mínimo, 04rem a escala, 1.8vw o máximo */
+    margin: 0;
+    padding: 0;
+    color: #333;
+    /* background: url('/view/image/briks-tile-seamless.jpg') ; */
+    /* background: url('/view/image/seamless/Stucco4.jpg') ; */
+    background: url('/img/style/seamless/Stucco4.jpg') ;
+
+  }
+/************************************************************************************************************/
+/* Formatação de toda a página */
+/* Estilos padrão para telas pequenas (Mobile-First) */
+.section-container {
+    display: flex;
+    flex-direction: column; /* Organiza os elementos em coluna por padrão */
+}
+
+.header, .sidebar, .main-content, .footer-container {
+    width: 100%; /* Todos os elementos ocupam a largura total em telas pequenas */    
+}
+
+.sidebar {
+    /* Pode ser ocultado ou transformado em um menu "hambúrguer" */
+    background: lightskyblue;
+}
+.main-content{
+    text-align: center;
+    color: white;
+    /* align-items: center; /* Alinha os itens filhos verticalmente */
+}
+.h1-estilo-1 {
+    font-family: "Cal Sans", sans-serif; /* Aplica a sua fonte ao h1 */    
+    margin-top: 0.5em;
+    background: url('/img/style/seamless/lapis.jpg') ;
+    background-clip: text; /* Para outros navegadores */
+    color: transparent; /* Torna a cor do texto transparente para que o background-clip apareça */    
+    
+}
+
+/* Media query para telas maiores (ex: a partir de 768px) */
+@media (min-width: 768px) {
+  :root {
+  --tamanho-da-fonte: 0.8rem;  
+  --largura-do-section-container: 1.8rem;
+  --altura-do-section-container: 1.5rem;
+  }
+  body {
+    /* font-size: var(--tamanho-da-fonte); */
+    font-size: clamp(16px, 0.7rem, 2.2vw); /* 12px é o mínimo, 04rem a escala, 1.8vw o máximo */
+  }
+  
+}
+@media (min-width: 1500px) {
+  :root {
+    --tamanho-da-fonte: 1.1rem;
+    --largura-do-section-container: 2.2rem;
+    --altura-do-section-container: 1.7rem;
+  }
+  body {
+      /* font-size: var(--tamanho-da-fonte); */
+      font-size: clamp(20px, 1.1rem, 2.8vw); /* 12px é o mínimo, 04rem a escala, 1.8vw o máximo */
+    }
+    
+}
+
+
+/*Formatação da barra de menu */
+
+    .barra-de-navegacao {
+        position: relative;   /* O menu se sobrepões aos outros elementos */
+        z-index: 9;           /* Um valor maior que o do elemento de baixo */
+        display: flex;        /* Torna o section-container um flex section-container */        
+        align-items: center;  /* Alinha os itens verticalmente ao centro */
+        justify-content: center;
+        /* justify-content: space-between; /* Distribui o espaço entre os itens */
+        box-sizing: border-box;
+        /* height: 10em;          /* Altura do section-container */
+        /* min-height: 6em;     /* Altura mínima */
+        width: 100%;
+        /*height: 100%; */
+        background-image: url('/img/style/seamless/scandinavian-roof-tile-seamless.jpg'); /* Caminho para tua imagem defundo */  
+    } 
+    .logo  {      
+      height: 8rem;
+      width: auto;
+    }   
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+
+    }
+    .elemento-centro-pai {
+        display: flex;
+        width: 100%;
+        max-width: var(--largura-maxima);
+        height: 100%;; /* Para ocupar a altura total do pai */
+        flex-direction: column; /* Organiza os elementos filhos em coluna */
+        flex-grow: 1; /* Permite que este item ocupe o espaço restante */
+      }    
+      .elemento-centro-topo, .elemento-centro-baixo {
+        display: flex; /* Alinha os links da lista lado a lado */
+
+        height: 50%;
+        width: auto;
+        margin: 0.5em;
+      }      
+      .elemento-centro-topo{
+        justify-content: space-between; 
+        flex-wrap: wrap; /* Faz transbordar para a próxima linha */
+      }
+ 
+/****************************************************************************************************************************************/
+
+  
+
+/* Rodapé   ----------------------------------------------------------------------------------------------------------------------------- */
+.footer-container {
+    background: var(--secondary-color);
+    color: var(--light-color-1);
+    padding: 2rem 20px 1rem;
+  }
+  
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: var(--largura-maxima);
+    margin: 0 auto;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-section {
+    flex: 1 1 200px;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-section h4 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+  }
+  
+  .footer-section ul {
+    list-style: none;
+  }
+  
+  .footer-section a {
+    text-decoration: none;
+    color: var(--light-color-1);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer-section a:hover {
+    text-decoration: underline;
+  }
+  
+  .footer-bottom {
+    text-align: center;
+    border-top: 1px solid var(--dark-grey);
+    padding-top: 1rem;
+  }
+  /* ------------------------------------------------------------------------------------------------------------------------------------ */
+
+  /* Formatação de tabelas */
+  .table-cart {
+    border: 1px solid black;
+    border-collapse: collapse;    
+  }
+  .table-cart th {
+    color: white;
+    padding: 8px;
+    background-color: var(--background-color-3);
+  }
+  .table-cart th, .table-cart td{
+    border: 1px solid black;
+    padding: 0 15px 0 30px;
+  }
+
+  .content-wrapper {
+    display: flex;
+    min-height: 80vh; /* Altura mínima para o footer não subir */
+}
+/* ------------------------------------------------------------------------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------------------------------------------------------------------------ */
+/* Para alcançar esse comportamento responsivo (com e sem a barra lateral), a melhor abordagem é usar abordagem é usar Flexbox no main-layout.html.
+/*O segredo está em usar uma classe condicional no contêiner ou simplesmente deixar o Flexbox gerenciar o espaço.
+
+/* Sidebar com largura fixa */
+/* Esconde por padrão */
+#sidebar {
+    display: none;
+}
+
+/* Mostra apenas se houver algum elemento (div, ul, etc.) dentro dele */
+#sidebar:has(*) {
+    display: block; /* Ou flex, dependendo do seu layout */
+    width: 250px;
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+}
+
+/* O conteúdo principal ocupa todo o resto */
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+/* ------------------------------------------------------------------------------------------------------------------------------------ */
+
+/* Container da Tabela */
+.data-table {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-top: 20px;
+    overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+    max-width: 100%;
+}
+
+.data-table h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Estrutura da Tabela */
+.data-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+    min-width: 800px; /* Garante que a tabela não "esprema" as colunas */
+}
+
+/* Cabeçalho */
+.data-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 12px 15px;
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Linhas e Células */
+.data-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    vertical-align: middle;
+}
+
+/* Efeito Zebra e Hover */
+.data-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f1f4f9;
+    transition: 0.2s;
+}
+
+/* Estilo para as Ações (Links e Botões) */
+.data-table a {
+    text-decoration: none;
+    color: #007bff;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.data-table a:hover {
+    text-decoration: underline;
+}
+
+.data-table button {
+    background: none;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.data-table button:hover {
+    background-color: #dc3545;
+    color: white;
+}
+/* ------------------------------------------------------------------------------------------------------------------------------------ */
+
+/* Menu dropdown da tabela da lista------------------------------------------------------------------------------------------------------------------------ */
+.form-select-sm {
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.form-select-sm:focus {
+    border-color: #007bff;
+    outline: none;
+}
+/* ------------------------------------------------------------------------------------------------------------------------------------ */

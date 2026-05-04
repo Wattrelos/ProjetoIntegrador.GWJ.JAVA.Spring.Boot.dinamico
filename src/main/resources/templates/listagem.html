@@ -1,0 +1,23 @@
+<div class="data-table" layout:fragment="content">
+    <h3 th:text="'Listagem de ' + ${entidadeNome}">Listagem</h3>
+    
+    <table>
+        <thead>
+            <!-- Se você tiver herança/coleções complexas, aqui 
+                você pode definir colunas fixas ou dinâmicas -->
+            <tr>
+                <th>Dados da Entidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${lista}">
+                <!-- O toString() do seu objeto pode ser customizado para mostrar os dados -->
+                <td th:text="${item}">Dados</td>
+                <td>
+                    Editar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

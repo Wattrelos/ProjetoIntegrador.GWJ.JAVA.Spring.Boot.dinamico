@@ -1,0 +1,242 @@
+
+.menu-container {
+    display: flex;    
+    position: relative;   /* Permite posicionar o menu dropdown abaixo do botão */
+    display: inline-block; /* Mantém o botão e menu juntos */
+    font-family: Arial, Helvetica, sans-serif;
+    /* font-size: medium; */
+
+}
+.menu-container ul {
+  border-radius: 1em;
+}
+
+.menu-button {
+    color: black;
+    background: gold;
+    border-radius: 1em 0 0 1em ;
+    white-space: nowrap; /* Impedir que o texto quebre para uma nova linha. O texto continuará na mesma linha, mesmo que seja mais longo do que o contêiner. */
+}
+
+.dropdown-menu {
+    display: none;  /* Oculta o menu principal inicialmente */
+    position: absolute;  /* Posiciona o menu abaixo do botão */
+    color: var(--secundary-color);
+    background-color: var(--primary-color);
+    min-width: 160px;
+    box-shadow: 0em 0.8em 1.6em 0em rgba(0, 0, 0, 0.2);
+    z-index: 1; /* Garante que o menu apareça por cima de outros elementos da página */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+.dropdown-menu li {
+    position: relative;  /* Permite posicionar submenus filhos */
+    padding: 0.7em 1.5em;
+    cursor: pointer;
+    white-space: nowrap; /* Evita quebra de linha dentro dos itens */
+}
+.dropdown-menu li:hover {    
+    background: gold;
+    border-radius: 1em;
+}
+
+/* Efeito ao passar o mouse sobre um item do menu principal */
+.menu-container:hover .dropdown-menu {
+    display: block;  /* Mostra o menu principal ao passar o mouse sobre o container */    
+}
+
+/* Oculta o submenu inicialmente */
+.submenu {
+    background-color: rgb(240, 240, 155);
+    display: none;
+    position: absolute;
+    left: 100%;  /* Posiciona o submenu à direita do item pai */
+    top: 0;      /* Alinha o topo do submenu com o topo do item pai */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 2;  /* Garante que o submenu apareça por cima do menu principal */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Mostra o submenu ao passar o mouse sobre um item do menu pai */
+.dropdown-menu li:hover>.submenu {
+    display: block;
+}
+
+/* Caixa de busca ----------------------*/
+.search-bar {
+  display: flex;
+  flex-grow: 1;
+  width:fit-content;
+}
+
+
+.search-bar input {
+  width: 100%;
+  padding: 0.4 1.5em;
+}
+/*
+.search-bar button {
+  cursor: pointer;  
+}
+*/
+.search-bar button:hover, .menu-button:hover{
+  color: black;
+  background: gold;
+}
+/* --------------------------------------------------------------------------------------------------------------------- */
+
+/* Estilo para ícones de atalho para redes sociais -------------------------------------------------------------------------------------- */
+.ico-menu {
+  display: flex;         /* Ativa o flexbox */
+  align-items: center;        /* Alinha os itens verticalmente */
+  white-space: nowrap;
+  padding: 0.5em;
+  background: var(--primary-color);
+  color: var(--light-color-1);
+  border-radius: 1em;
+}
+
+.ico-menu li {
+  display: inline-block;        /* Fica um ao lado do outro */
+  list-style: none;        /* Remove os marcadores de lista */
+  margin: 0 0.5em;        /* Adiciona espaçamento entre os itens */
+}
+
+.ico-menu li a {
+  text-decoration: none;        /* Remove sublinhado dos links */
+  color: #333;        /* Cor do texto */
+  display: flex;        /* Ativa flexbox nos links para alinhar ícone e texto */
+  align-items: center;        /* Alinha ícone e texto verticalmente */
+}
+
+.ico-menu li img {
+  width: 1em;        /* Tamanho do ícone */
+  height: 1em;
+  margin-right: 0.2em;        /* Espaço entre o ícone e o texto */
+}
+/* ------------------------------------------------------------------------------------------------------------------------------------ */
+
+
+/* Ações do usuário */
+/* --------------------------------------------------------------------------------------------------------------------- */
+  .user-actions {
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+    gap: 1.5rem;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    border-radius: 1em ;
+}
+
+.user-actions a {
+    text-decoration: none;    
+    color: var(--light-color-1);
+    transition: color 0.3s;
+    position: relative;
+}
+
+.user-actions a:hover {
+    color: var(--focus-color-1);
+} 
+
+/* --------------------------------------------------------------------------------------------------------------------- */
+
+
+/* identidade visual dos botões */
+.user-actions, .ico-menu, .search-bar button {
+  background: var(--primary-color);
+  color: var(--light-color-1);   
+  padding: 0.5em 1em;
+  height: 100%;
+}
+
+/* Formatação do formulário de login ----------------------------------------------------------------------------------- */
+.dropdown {
+  position: relative;
+  display: inline-block; /* Ou inline, dependendo do layout */
+}
+
+.dropdown-content {
+  display: none; /* Oculta o conteúdo inicialmente */
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1; /* Garante que o dropdown apareça por cima de outros elementos */
+  padding: 10px;
+  border-radius: 5px;
+  /* Para um estilo mais moderno, pode adicionar transições */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Adiciona um efeito de opacidade ao aparecer */
+.dropdown:hover .dropdown-content {
+  display: block;
+  opacity: 1;
+}
+
+/* Estilos para os campos de input e botão dentro do dropdown */
+.dropdown-content input[type="text"],
+.dropdown-content input[type="email"],
+.dropdown-content input[type="password"],
+.dropdown-content input[type="submit"] {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.dropdown-content input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+/* Modal *********************************************************************************************************************** */
+.modal {
+  display: none; /* Esconde a modal por padrão */
+  position: fixed; /* Posição fixa na tela */
+  z-index: 1; /* Coloca a modal na frente de outros elementos */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Permite scroll se o conteúdo for muito grande */
+  background-color: rgba(0, 0, 0, 0.4); /* Fundo semi-transparente */
+}
+
+/* Conteúdo da modal */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* Centraliza verticalmente e horizontalmente */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Ajuste a largura conforme a necessidade */
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+/* Botão de fechar */
+.fechar {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.fechar:hover,
+.fechar:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------------------------------------------------- */
