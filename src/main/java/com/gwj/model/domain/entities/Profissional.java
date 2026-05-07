@@ -3,6 +3,8 @@ package com.gwj.model.domain.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.ManyToMany;
+
 public class Profissional extends Usuario{
     // Atributos primitivos:
 	protected String nome;
@@ -11,6 +13,7 @@ public class Profissional extends Usuario{
 	protected String cpf;
 	protected String observacao;
     // Atributos complexos:
+    @ManyToMany
 	private List<Endereco> listaEndereco = new ArrayList<>(); // Declaração da lista de Endereço.
 
     // Métodos

@@ -29,7 +29,10 @@
                         </td>
                         <td>
                             <!-- Link formatado corretamente -->
-                            Ver</a>
+                            <!--<a th:href="@{/detalhe/(id=${item.id})}" th:text="'Ver'"></a> -->
+                            <a th:href="@{/detalhe/{entity}(entity=${entidadeNome}, id=${item.id})}" th:text="'Ver'"></a>
+                            
+                        </td>
                         </td>
                     </tr>
                 </tbody>

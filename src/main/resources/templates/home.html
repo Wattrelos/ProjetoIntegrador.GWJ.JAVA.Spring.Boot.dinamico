@@ -1,74 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://thymeleaf.org" 
     xmlns:layout="http://ultraq.net.nz"
-    layout:decorate="~{layouts/main-layout}"> <!-- Referência ao layout -->
+    layout:decorate="~{layouts/main-layout}">
 <head>
-    <title>Página Inicial</title>
+    <title>Desenvolvimento de Sistemas</title>
+    <!-- Se quiser um CSS específico só para esta página -->
+    <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
 </head>
 <body>
-    <aside layout:fragment="aside-content">
-        <div th:replace="~{fragments/aside :: aside}"></div>
-    </aside>
+
+    <!-- Note que NÃO incluímos o bloco 'aside-content' aqui.
+        Isso fará com que o aside suma e o main ocupe 100% da largura. -->
 
     <section layout:fragment="content">
-        <div class="main-content-header">
-            <h2>Dashboard Geral</h2>
-            <p>Bem-vindo de volta! Aqui está o resumo do sistema.</p>
-        </div>
-
-        <!-- Seção de Cards de Estatísticas -->
-        <div class="dashboard-cards" style="display: flex; gap: 20px; margin-bottom: 30px;">
-            <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; flex: 1;">
-                <h3>Usuários Ativos</h3>
-                <p th:text="${totalUsuarios}">150</p>
-            </div>
-            <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; flex: 1;">
-                <h3>Vendas Mensais</h3>
-                <p>R$ 12.500,00</p>
-            </div>
-        </div>
-
-        <!-- Tabela Dinâmica -->
-            <div class="data-table">
-                <h3>Lista de Clientes Recentes</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>E-mail</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <!-- O 'th:each' percorre a lista vinda do Controller -->
-                    <tr th:each="cliente : ${clientes}">
-                        <td th:text="${cliente.id}"></td>
-                        <td th:text="${cliente.nome}"></td>
-                        <td th:text="${cliente.email}"></td>
-                        <td th:text="${#temporals.format(cliente.dataCadastro, 'dd/MM/yyyy HH:mm')}">04/05/2026</td>
-                        <td>
-                            <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}">Editar</a>
-                            <button type="button">Excluir</button>
-                        </td>
-                    </tr>
-                    <!-- Mensagem caso a lista esteja vazia -->
-                    <tr th:if="${#lists.isEmpty(clientes)}">
-                        <td colspan="4" style="text-align: center; padding: 30px;">Nenhum cliente cadastrado.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Botão de Ação -->
-        <div style="margin-top: 20px;">
-            <a th:href="@{/clientes/novo}" 
-                style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
-                Cadastrar Novo Cliente
-            </a>
-        </div>
+        <h1>Desenvolvimento de Sistemas</h1>
+        <h2>Página inicial da Locadora</h2>
+        <li th:each="nome : ${entidades}">
+            <a th:href="@{/listar/{id}(id=${nome})}" th:text="'Abrir lista de ' + ${nome}"></a>
+        </li>
     </section>
-
 
 </body>
 </html>

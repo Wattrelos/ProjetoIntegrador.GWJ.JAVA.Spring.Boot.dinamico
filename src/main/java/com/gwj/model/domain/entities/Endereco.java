@@ -8,7 +8,6 @@ import com.gwj.model.domain.IEntity;
 public class Endereco implements IEntity{
 	
     protected Long          id  = 0L; // Inicializa variável de índice
-	protected Long          clienteId;
 	protected String        nome;
 	protected String        logradouro;
 	protected int           numero;
@@ -27,12 +26,6 @@ public class Endereco implements IEntity{
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getClienteId() {
-		return clienteId;
-	}
-	public void setClienteId(Long clienteId) {
-		this.clienteId = clienteId;
 	}
 	public String getNome() {
 		return nome;

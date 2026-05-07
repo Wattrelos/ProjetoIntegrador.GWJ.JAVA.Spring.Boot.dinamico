@@ -1,6 +1,9 @@
 package com.gwj.model.domain.entities;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+
+import com.gwj.model.domain.IEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,31 +16,22 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "tbl_cliente")
-public class Product {
+@Table(name = "tab_produto")
+public class Produto  implements IEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
     @Column(nullable = false)
-    // Campo obrigatório. Não pode ser nulo no banco de dados.
     private String nome;
 
-    private String sobrenome;
+    private String descricao;
 
-    @Column(unique = true, nullable = false)
-    private String mail;
+    private BigDecimal preco;
+    private Integer estoque;
+    private String marca;
+    private String categoria;
 
-    private String telefone;
-
-    @Column(unique = true)
-    // Campo único (não pode repetir, mas pode ser nulo)
-    private String cpf;
-
-    private String endereco;
-    private String cidade;
-    private String estado;
-    private String cep;
     // Campos simples (mapeados automaticamente como colunas)
     private LocalDateTime dataCadastro;
     // Campo para armazenar data e hora do cadastro

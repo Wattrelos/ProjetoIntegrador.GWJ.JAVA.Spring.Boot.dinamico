@@ -2,6 +2,8 @@ package com.gwj.model.domain.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.ManyToMany;
+
 public class Cliente extends Usuario { // A classe Cliente é uma especialização de Usuario, herdando atributos e métodos
 	
 	// Atributos primitivos:
@@ -12,6 +14,7 @@ public class Cliente extends Usuario { // A classe Cliente é uma especializaç�
 	protected String observacao;
 
 	// Atributos complexos:
+	@ManyToMany
 	private List<Endereco> listaEndereco = new ArrayList<>(); // Declaração da lista de Endereço. Note que inicializei a lista com new ArrayList<>() para evitar que o método tente remover algo de uma lista nula.
 
 	// Métodos:

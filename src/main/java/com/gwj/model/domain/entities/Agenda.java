@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gwj.model.domain.IEntity;
 
@@ -20,6 +22,7 @@ public class Agenda implements IEntity{
     // Atributos complexos:
     protected Profissional proficional;
     protected Cliente cliente;
+	@ManyToMany
     private   List<Servico> listaServico = new ArrayList<>(); // Declaração da lista de Serviços.
 	
 	
