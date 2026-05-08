@@ -3,9 +3,11 @@
     xmlns:layout="http://ultraq.net.nz"
     layout:decorate="~{layouts/main-layout}">
 <head>
-    <title>Sobre Nós - GWJ</title>
+    <title>Editar </title>
     <!-- Se quiser um CSS específico só para esta página -->
     <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
+    <!-- Importamos o script que interceptará o submit e enviará como PUT -->
+    <script th:src="@{/js/update.js}" defer></script>
 </head>
 <body>
 
@@ -14,42 +16,38 @@
 
     <section layout:fragment="content">
         <div class="container mt-4">
-            <h2 th:text="${'Detalhes de: ' + entidadeNome}">Detalhes</h2>
+            <h2 th:text="${'Editar ' + entidadeNome}">Detalhes</h2>
             <hr>
 
             <!-- Iteramos sobre a lista 'detalhe' (que é sua List<IEntity>) -->
             <div th:each="obj : ${detalhe}">
-                <form class="row g-3">
+                <form class="row g-3 update-form">
                     
+                    <!-- Campos ocultos essenciais para o funcionamento do Update -->
+                    <input type="hidden" name="entity" th:value="${entidadeNome}">
+                    <input type="hidden" name="id" th:value="${obj.id}">
+
                     <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
-                    <div th:each="coluna : ${colunas}" class="col-md-6">
+                    <!-- O th:if garante que o ID não apareça como um campo de texto editável -->
+                    <div th:each="coluna : ${colunas}" th:if="${coluna != 'id'}" class="col-md-6">
                         <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
                         
-                        <!-- Lógica condicional para Coleções -->
-                        <div th:if="${obj[coluna] instanceof T(java.util.Collection)}">
-                            <ul class="list-group">
-                                <li class="list-group-item" th:each="subItem : ${obj[coluna]}" th:text="${subItem}"></li>
-                            </ul>
-                        </div>
-
-                        <!-- Lógica para valores simples -->
-                        <input th:unless="${obj[coluna] instanceof T(java.util.Collection)}"
-                            type="text"
+                        <!-- A "mágica" do Thymeleaf: obj['nomeDaVariavel'] acessa o getter automaticamente -->
+                        <input type="text"
                             class="form-control"
                             th:id="${coluna}"
+                            th:name="${coluna}"
                             th:value="${obj[coluna]}"
-                            readonly>
+                            >
                     </div>
 
                     <div class="col-12 mt-4">
-                        <a th:href="@{/listar/{entity}(entity=${entidadeNome})}" class="btn btn-secondary">Voltar</a>
-                        <a th:href="@{/editar/{entity}(entity=${entidadeNome}, id=${obj.id})}" class="btn btn-primary">Editar</a>
+                        <button type="submit" class="btn btn-primary">Atualizar</button>
                     </div>
                 </form>
             </div>
         </div>
     </section>
-
 
 </body>
 </html>

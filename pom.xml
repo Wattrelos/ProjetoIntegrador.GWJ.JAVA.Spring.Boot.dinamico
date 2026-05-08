@@ -86,7 +86,9 @@
 					<packages>
 						<package>com.gwj.model.domain.entities</package>
 					</packages>
-					<presenter>mermaid</presenter>
+					<!-- Define o formato de saída como Mermaid -->
+					<!-- mermaid/PlantUML -->
+					<presenter>PlantUML</presenter>
 				</configuration>
 				<executions>
 					<execution>

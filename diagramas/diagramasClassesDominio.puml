@@ -1,0 +1,60 @@
+' Diagrama focado exclusivamente na camada de Domínio.
+' Este diagrama destaca a hierarquia de herança (como Cliente estendendo Usuario) e as associações (1:N e N:N) que o DataAccessObject processa dinamicamente através de Reflection e das anotações do Jakarta Persistence.
+' O que este diagrama representa:
+' * Herança (Joined Table): A seta vazia de Cliente para Usuario indica que no banco de dados os dados são divididos, mas no Java, um objeto Cliente possui todos os campos de ambas as tabelas.
+' * Interface IEntity: Garante que todas as suas classes de domínio possuam o contrato básico (id) necessário para o funcionamento do DataAccessObject genérico.
+' * Composição (1:N): A relação com Endereco mostra como o sistema lida com chaves estrangeiras (cliente_id na tabela de endereços).
+' * Agregação (N:N): A relação com Servico representa as tabelas de ligação (ex: table_cliente_servico) que o DAO gerencia automaticamente.
+' Este modelo é a base que permite que todo o restante do código (Controller, Factory, Mapper) funcione de forma tão enxuta e dinâmica!
+
+@startuml
+package com.gwj.model.domain {
+    interface IEntity {
+        +getId(): Long
+        +setId(id: Long)
+    }
+
+    package entities {
+        abstract class Usuario {
+            -id: Long
+            -nome: String
+            -email: String
+            -senha: String
+        }
+
+        class Cliente {
+            -cpf: String
+            -telefone: String
+            -listaEndereco: List<Endereco>
+            -servicosContratados: List<Servico>
+        }
+
+        class Endereco {
+            -id: Long
+            -logradouro: String
+            -numero: String
+            -bairro: String
+            -cidade: String
+            -clienteId: Long
+        }
+
+        class Servico {
+            -id: Long
+            -nome: String
+            -descricao: String
+            -valor: BigDecimal
+        }
+        
+        note right of Cliente : Herda atributos de Usuario\ne possui coleções dinâmicas
+    }
+}
+
+' Relacionamentos de Herança e Interface
+IEntity <|.. Usuario
+Usuario <|-- Cliente
+
+' Relacionamentos de Associação
+Cliente "1" *-- "0..*" Endereco : @OneToMany (listaEndereco)
+Cliente "0..*" o-- "0..*" Servico : @ManyToMany (servicosContratados)
+
+@enduml

@@ -25,6 +25,7 @@
                 <tbody>
                     <tr th:each="item : ${lista}">
                         <td th:each="col : ${colunas}">
+                            <!-- Delegamos toda a lógica de exibição ao fragmento para evitar duplicidade -->
                             <div th:replace="~{fragments/recursiveField :: recursiveField(${item[col]})}"></div>
                         </td>
                         <td>

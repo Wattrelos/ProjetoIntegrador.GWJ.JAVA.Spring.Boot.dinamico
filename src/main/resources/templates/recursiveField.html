@@ -8,7 +8,7 @@
         <th:block th:if="${valor.class.name.startsWith(@environment.getProperty('app.entity.package'))}">
             <span>
                 <a th:href="@{/listar/{entidade}(entidade=${valor.getClass().getSimpleName()}, id=${valor.id})}"
-                th:text="${valor}"
+                th:text="${valor.getClass().getSimpleName() + ' [ID: ' + valor.id + ']'}"
                 title="Clique para ver detalhes">
                 </a>
             </span>
@@ -19,8 +19,11 @@
             <select class="form-select-sm" onchange="if(this.value) window.location.href=this.value">
                 <option value="">-- Ver lista --</option>
                 <option th:each="subItem : ${valor}"
-                        th:value="${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))} ? @{/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
-                        th:text="${subItem}">
+                        th:with="isEntity=${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))}"
+                        th:value="${isEntity} ? @{/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
+                        th:text="${isEntity} 
+                                    ? ${subItem.getClass().getSimpleName() + ' [ID: ' + subItem.id + ']'}" 
+                                    : ${subItem}">
                 </option>
             </select>
         </th:block>

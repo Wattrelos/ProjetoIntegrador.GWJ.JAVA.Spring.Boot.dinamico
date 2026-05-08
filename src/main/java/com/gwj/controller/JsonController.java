@@ -1,6 +1,7 @@
 package com.gwj.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping; // Para o @PutMapping
 import org.springframework.web.bind.annotation.DeleteMapping; // Para o @DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,17 +21,17 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class JsonController {
-        // Instancia uma única vez para este controller
-    private final DataAccessObject dataAccessObject = new DataAccessObject();
+    // Instancia uma única vez para este controller para economizar recursos
+    private final DataAccessObject dao = new DataAccessObject();
 
     @PostMapping("/create-json") // Operações de escrita devem ser POST
     public ResponseEntity<?> create(@RequestParam(value = "entity", required = false) String entityName, HttpServletRequest request) {
 
-        if (entityName != null && !entityName.trim().isEmpty()) {
+        if (entityName != null && !entityName.isBlank()) {
             IEntity entidade = SimpleObjectFactory.create(entityName);
             
             // Persiste no banco e recupera a PK
-            Long primaryKey = dataAccessObject.create(EntityMapper.fillEntity(entidade, request));
+            Long primaryKey = dao.create(EntityMapper.fillEntity(entidade, request));
 
             // Retorna a chave primária no corpo da resposta
             return ResponseEntity.ok(primaryKey);
@@ -44,11 +45,10 @@ public class JsonController {
     @GetMapping("/read-json")
     public ResponseEntity<?> read(@RequestParam(value = "entity", required = false) String entityName, HttpServletRequest request) {
         
-        if (entityName != null && !entityName.trim().isEmpty()) {
+        if (entityName != null && !entityName.isBlank()) {
             // Lógica de negócio mantida
             IEntity entidade = SimpleObjectFactory.create(entityName);
-            DataAccessObject dataAccessObject = new DataAccessObject();
-            List<IEntity> listaEntity = dataAccessObject.read(EntityMapper.fillEntity(entidade, request));
+            List<IEntity> listaEntity = dao.read(EntityMapper.fillEntity(entidade, request));
 
             // O Spring converte a lista automaticamente para JSON usando o Jackson interno
             return ResponseEntity.ok(listaEntity);
@@ -59,35 +59,44 @@ public class JsonController {
         }
     }
 
-    @PutMapping("/update-json") // Padrão REST para atualizações
-    public ResponseEntity<?> update(@RequestParam(value = "entity", required = false) String entityName, HttpServletRequest request) {
+    @PostMapping("/update-json") // Alterado para POST para compatibilidade total com formulários
+    public ResponseEntity<?> update(HttpServletRequest request) {
 
-        if (entityName != null && !entityName.trim().isEmpty()) {
+        String idParam = request.getParameter("id"); // O EntityMapper.fillEntity também usará isso
+        String entityName = request.getParameter("entity"); // Corrigido para 'entity'
+        // 2. Tenta converter com segurança
+        Long entityId = null;
+        try {
+            if (idParam != null && !idParam.isBlank()) {
+                entityId = Long.valueOf(idParam.trim());
+            }
+        } catch (NumberFormatException e) {
+            // ID inválido (ex: "abc")
+        }
+        if (entityName != null && !entityName.isBlank() && entityId != null) {
             IEntity entidade = SimpleObjectFactory.create(entityName);
-            DataAccessObject dataAccessObject = new DataAccessObject();
             
             // O EntityMapper continua funcionando com o HttpServletRequest que o Spring injeta
-            Long primaryKey = dataAccessObject.update(EntityMapper.fillEntity(entidade, request));
+            Long primaryKey = dao.update(EntityMapper.fillEntity(entidade, request));
 
-            System.out.println("Update: Retornou de dataAccessObject.update");
-            System.out.println("Update: Long = " + primaryKey);
+            System.out.println("Update: Retornou de dataAccessObject.update"); // Mensagem de debug para o console
+            System.out.println("Update: Long = " + primaryKey); // Mensagem de debug para o console
 
             return ResponseEntity.ok(primaryKey);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("<h1>Nenhuma chave primária recebida!</h1>");
+                                .body("<h1>Erro ao tentar atualizar! id = " + idParam+ " entityName = " + entityName + "</h1>");
         }
     }
     
     @DeleteMapping("/delete-json") // Padrão REST para exclusões
     public ResponseEntity<?> delete(@RequestParam(value = "entity", required = false) String entityName, HttpServletRequest request) {
 
-        if (entityName != null && !entityName.trim().isEmpty()) {
+        if (entityName != null && !entityName.isBlank()) {
             IEntity entidade = SimpleObjectFactory.create(entityName);
-            DataAccessObject dataAccessObject = new DataAccessObject();
             
             // O EntityMapper extrai os IDs ou dados necessários do request
-            Long primaryKey = dataAccessObject.delete(EntityMapper.fillEntity(entidade, request));
+            Long primaryKey = dao.delete(EntityMapper.fillEntity(entidade, request));
 
             System.out.println("Delete: Retornou de dataAccessObject.delete");
             System.out.println("Delete: Chave primária Long = " + primaryKey + " da entidade excluída.");

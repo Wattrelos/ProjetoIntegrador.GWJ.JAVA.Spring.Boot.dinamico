@@ -1,0 +1,91 @@
+' Este diagrama ilustra a separação de responsabilidades entre os controladores (que lidam com as requisições HTTP) e a camada de modelo (responsável pela persistência dinâmica via Reflection e lógica de negócio).
+' Destaques da Arquitetura:
+' * Desacoplamento: O JsonController não conhece detalhes de SQL; ele utiliza o DataAccessObject e o EntityMapper para abstrair a complexidade.
+' * Genericidade: Note como quase todos os componentes dependem da interface IEntity. Isso permite que você adicione novas tabelas ao banco apenas criando a classe Java correspondente, sem mexer no código do Controller ou do DAO.
+' * Configuração Centralizada: O AppConfig serve como a "fonte da verdade" para caminhos de pacotes e prefixos de tabela, mantendo o sistema flexível.
+
+@startuml
+
+skinparam monochrome true
+skinparam classAttributeIconSize 0
+
+package com.gwj.controller {
+    class HomeController {
+        +listarEntidades(model: Model): String
+    }
+
+    class JsonController {
+        -dao: DataAccessObject
+        +create(entityName: String, request: HttpServletRequest): ResponseEntity
+        +read(entityName: String, request: HttpServletRequest): ResponseEntity
+        +update(request: HttpServletRequest): ResponseEntity
+        +delete(entityName: String, request: HttpServletRequest): ResponseEntity
+    }
+}
+
+package com.gwj.model.dataAccessObject {
+    class DataAccessObject {
+        -tablePrefix: String
+        +create(entity: IEntity): Long
+        +read(entity: IEntity): List<IEntity>
+        +update(entity: IEntity): Long
+        +delete(entity: IEntity): Long
+        -getEntityHierarchy(startClass: Class): List<Class>
+        -fillEntityRecursively(instance: IEntity, currentClazz: Class, rs: ResultSet, conn: Connection)
+        -saveAssociations(conn: Connection, instance: IEntity)
+    }
+
+    class ConnectionDB {
+        {static} -instance: ConnectionDB
+        +getConnection(): Connection
+        {static} +getInstance(): ConnectionDB
+    }
+}
+
+package com.gwj.model.dataTransferObject {
+    class EntityMapper {
+        {static} +fillEntity(entity: IEntity, request: HttpServletRequest): IEntity
+    }
+}
+
+package com.gwj.model.domain {
+    interface IEntity {
+        +getId(): Long
+        +setId(id: Long)
+    }
+}
+
+package com.gwj.model.domain.factory {
+    class SimpleObjectFactory {
+        {static} +create(name: String): IEntity
+    }
+
+    class SchemaValidator {
+        {static} +validateAllEntities()
+        -validateNamingConvention(clazz: Class)
+    }
+}
+
+class com.gwj.AppConfig {
+    {static} +DB_URL: String
+    {static} +ENTITIES_PATH: String
+    {static} +TABLE_PREFIX: String
+}
+
+' Relacionamentos
+JsonController --> DataAccessObject : usa
+JsonController ..> SimpleObjectFactory : usa
+JsonController ..> EntityMapper : usa
+JsonController ..> IEntity : manipula
+
+HomeController ..> com.gwj.AppConfig : consulta path
+
+DataAccessObject --> ConnectionDB : obtém conexão
+DataAccessObject ..> com.gwj.AppConfig : consulta prefixo
+DataAccessObject ..> IEntity : persiste
+
+SchemaValidator ..> IEntity : valida contrato
+EntityMapper ..> IEntity : popula dados
+SimpleObjectFactory ..> IEntity : instancia
+
+@enduml

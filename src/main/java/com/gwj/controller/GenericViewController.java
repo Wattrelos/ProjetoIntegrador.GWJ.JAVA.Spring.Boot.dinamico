@@ -84,4 +84,41 @@ public class GenericViewController {
         return "error"; // Ou redirecionamento para lista
     }
 
+    @GetMapping("/editar/{entity}")
+    public String editar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
+        // 1. Pega o ID do request (parâmetro da URL ou form)
+        String idParam = request.getParameter("id");
+        
+        // 2. Tenta converter com segurança
+        Long entityId = null;
+        try {
+            if (idParam != null && !idParam.isBlank()) {
+                entityId = Long.valueOf(idParam.trim());
+            }
+        } catch (NumberFormatException e) {
+            // ID inválido (ex: "abc")
+        }
+
+        if (entityName != null && !entityName.isBlank() && entityId != null) {
+            IEntity entidadeBase = SimpleObjectFactory.create(entityName);
+            
+            // Preenche a entidade com os dados do request
+            IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); 
+            
+            List<IEntity> resultados = dao.read(filtro);
+
+            // Reflexão para os cabeçalhos
+            List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+                                        .map(Field::getName)
+                                        .toList();
+
+            model.addAttribute("detalhe", resultados);
+            model.addAttribute("colunas", colunas);
+            model.addAttribute("entidadeNome", entityName);
+            
+            return "edit";
+        }
+        
+        return "error"; // Ou redirecionamento para lista
+    }
 }
