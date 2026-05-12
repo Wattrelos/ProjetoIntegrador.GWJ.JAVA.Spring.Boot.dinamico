@@ -75,3 +75,8 @@ http://localhost:8089/listar?entity=Cliente&nome=Tiago
 http://localhost:8089/listar?entity=Endereco
 http://localhost:8089/sobre-nos
 ```
+
+Melhorias:
+1. Limpeza do Formulário: No arquivo create.js, usei form.reset() após a resposta positiva do servidor. Isso limpa todos os campos (exceto os hidden), permitindo que o usuário continue cadastrando.
+2. Lógica do ID: No HTML, o campo id agora é explicitamente um hidden com valor 0. Como observado, o DAO ignora o valor de entrada para gerar um novo ID no banco.
+3 .Foco Automático: Adicionei uma linha no JS para colocar o cursor de volta no primeiro campo após o cadastro, melhorando a experiência de uso para cadastros em massa.

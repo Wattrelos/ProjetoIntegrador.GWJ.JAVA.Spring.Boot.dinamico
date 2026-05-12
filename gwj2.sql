@@ -92,10 +92,10 @@ CREATE TABLE IF NOT EXISTS `tab_agenda` (
     `nome` VARCHAR(100),
     `data` DATETIME NOT NULL,
     `cliente_id` BIGINT,
-    `proficional_id` BIGINT, -- Mantido typo 'proficional' conforme Agenda.java
+    `profissional_id` BIGINT,
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_agenda_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `tab_cliente` (`id`),
-    CONSTRAINT `fk_agenda_profissional` FOREIGN KEY (`proficional_id`) REFERENCES `tab_profissional` (`id`)
+    CONSTRAINT `fk_agenda_profissional` FOREIGN KEY (`profissional_id`) REFERENCES `tab_profissional` (`id`)
 ) ENGINE=InnoDB;
 
 -- 10. Tabela de Ligação: Agenda x Servico (ManyToMany)
@@ -129,7 +129,7 @@ INSERT INTO `tab_produto` (nome, descricao, preco, estoque, marca, categoria) VA
 ('Óleo Vikings', 'Hidratação profunda para fios rebeldes', 32.00, 15, 'Vikings', 'Cuidado Facial'),
 ('Shampoo Ice', 'Sensação refrescante e limpeza profunda', 28.50, 10, 'QOD Barber Shop', 'Limpeza');
 
-INSERT INTO `tab_agenda` (data, cliente_id, proficional_id, nome) VALUES 
+INSERT INTO `tab_agenda` (data, cliente_id, profissional_id, nome) VALUES 
 ('2023-10-27 14:00:00', 3, 2, 'Corte Semanal');
 
 -- 12. Tabela de Ligação: Cliente x Endereco (ManyToMany)

@@ -20,7 +20,7 @@ public class Agenda implements IEntity{
     protected LocalDateTime data;
 	
     // Atributos complexos:
-    protected Profissional proficional;
+    protected Profissional profissional;
     protected Cliente cliente;
 	@ManyToMany
     private   List<Servico> listaServico = new ArrayList<>(); // Declaração da lista de Serviços.
@@ -45,11 +45,11 @@ public class Agenda implements IEntity{
 	public void setData(LocalDateTime data) {
 		this.data = data;
 	}
-	public Profissional getProficional() {
-		return proficional;
+	public Profissional getProfissional() {
+		return profissional;
 	}
-	public void setProficional(Profissional proficional) {
-		this.proficional = proficional;
+	public void setProfissional(Profissional profissional) {
+		this.profissional = profissional;
 	}
 	public Cliente getCliente() {
 		return cliente;

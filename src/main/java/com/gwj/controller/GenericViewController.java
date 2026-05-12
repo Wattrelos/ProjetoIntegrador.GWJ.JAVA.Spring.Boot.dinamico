@@ -27,6 +27,27 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class GenericViewController {
     private final DataAccessObject dao = new DataAccessObject();
+    @GetMapping("/create/{entity}")
+    public String create(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
+
+
+        if (entityName != null && !entityName.isBlank()) {
+            IEntity entidadeBase = SimpleObjectFactory.create(entityName); // Instanciar um objeto vazio (o corpo será utilizado para montar o formulário).
+
+            // Reflexão para os cabeçalhos
+            List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+                                        .map(Field::getName)
+                                        .toList();
+
+            model.addAttribute("title", "Formulario de cadastro");
+            model.addAttribute("colunas", colunas);
+            model.addAttribute("entidadeNome", entityName);
+            
+            return "create";
+        }
+        
+        return "error"; // Ou redirecionamento para lista
+    }
 
     @GetMapping("/listar/{entity}")
     public String listar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {

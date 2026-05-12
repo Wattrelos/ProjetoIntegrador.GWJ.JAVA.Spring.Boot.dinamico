@@ -15,6 +15,11 @@
     <section layout:fragment="content">
         <div class="data-table">
             <h3 th:text="'Listagem de ' + ${entidadeNome}"></h3>
+            
+            <div class="mb-3">
+                <a th:href="@{/create/{entity}(entity=${entidadeNome})}" class="btn btn-success">Criar <span th:text="${entidadeNome}"></span></a>
+            </div>
+
             <table>
                 <thead>
                     <tr>

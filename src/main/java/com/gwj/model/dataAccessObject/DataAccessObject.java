@@ -107,6 +107,7 @@ public class DataAccessObject {
                         // Se o retorno for uma Entidade, ajusta o nome da coluna e pega o ID
                         if (value instanceof IEntity) {
                             colName += "_id";
+                            
                             value = ((IEntity) value).getId();
                         }
 
@@ -529,6 +530,12 @@ public class DataAccessObject {
                         // Chama o conversor passando o nome e o tipo do parâmetro
                         String columnName = convertPascalCaseToSnakeCase(method.getName().substring(3));
                         
+                        // Trata se o valor for uma entidade para buscar pelo _id
+                        if (value instanceof IEntity) {
+                            columnName += "_id";
+                            value = ((IEntity) value).getId();
+                        }
+
                         if (where.length() == 0) {
                             where.append(" WHERE ");
                         } else {
@@ -562,7 +569,8 @@ public class DataAccessObject {
                     
                     // 1. Tenta identificar se é 1:N (Chave Estrangeira na Filha)
                     // Ex: Se o Pai é Usuario, procura setUsuarioId na Locacao
-                    String fkSetterName = "set" + instance.getClass().getSimpleName() + "Id";
+                    // String fkSetterName = "set" + instance.getClass().getSimpleName() + "Id";
+                    String fkSetterName = "set" + instance.getClass().getSimpleName();
                     Method fkSetter = getMethodInHierarchy(childClass, fkSetterName, Long.class);
 
                     if (fkSetter != null) {
@@ -836,6 +844,7 @@ public class DataAccessObject {
         String tableLink = tablePrefix + convertPascalCaseToSnakeCase(parentClass.getSimpleName()) + "_" + convertPascalCaseToSnakeCase(childClass.getSimpleName());
         String fkChild = convertPascalCaseToSnakeCase(childClass.getSimpleName()) + "_id";
         String fkParent = convertPascalCaseToSnakeCase(parentClass.getSimpleName()) + "_id";
+        
         
         return "SELECT c.* FROM `" + tableChild + "` c " +
             "INNER JOIN `" + tableLink + "` l ON c.id = l." + fkChild + " " +
