@@ -28,13 +28,19 @@ public class JsonController {
     public ResponseEntity<?> create(@RequestParam(value = "entity", required = false) String entityName, HttpServletRequest request) {
 
         if (entityName != null && !entityName.isBlank()) {
+            System.out.println("console.log('" + entityName + "')");
             IEntity entidade = SimpleObjectFactory.create(entityName);
-            
-            // Persiste no banco e recupera a PK
-            Long primaryKey = dao.create(EntityMapper.fillEntity(entidade, request));
 
-            // Retorna a chave primária no corpo da resposta
-            return ResponseEntity.ok(primaryKey);
+            try {
+                // Agora o DAO retorna a entidade populada ou lança erro
+                IEntity entidadeSalva = dao.create(EntityMapper.fillEntity(entidade, request));
+                
+                // Retorna a entidade completa (ID incluso) como JSON
+                return ResponseEntity.ok(entidadeSalva);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                    .body("Erro ao salvar: " + e.getMessage());
+            }
 
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -35,7 +35,7 @@ public class DataAccessObject {
     *  f. Para fechar com chave de ouro e garantir que seu sistema seja robusto, aqui está como aplicar o Controle de Transação. Isso evita que o "Pai" seja gravado se o "Filho" der erro:
     */
     
-    public Long create(IEntity entity) {
+    public IEntity create(IEntity entity) {
         List<Class<?>> hierarchy = getEntityHierarchy(entity.getClass());
         Long lastId = null;
         Connection conn = null; // Declaramos fora para acessar no catch/finally
@@ -57,6 +57,7 @@ public class DataAccessObject {
             // 3. Sucesso: Confirma tudo
             conn.commit();
             System.out.println("Transação concluída com sucesso!");
+            return entity;
 
         } catch (Exception e) {
             // 4. Erro: Faz rollback
@@ -66,7 +67,8 @@ public class DataAccessObject {
                     System.err.println("Rollback executado devido a: " + e.getMessage());
                 } catch (SQLException ex) { ex.printStackTrace(); }
             }
-            e.printStackTrace();
+            // Lança a exceção para o Controller saber que houve um erro real
+            throw new RuntimeException("Erro ao persistir entidade: " + e.getMessage(), e);
         } finally {
             // 5. Fechamento manual (obrigatório já que não usamos try-with-resources para a Connection)
             if (conn != null) {
@@ -76,10 +78,9 @@ public class DataAccessObject {
                 } catch (SQLException e) { e.printStackTrace(); }
             }
         }
-        return lastId;
     }
 
-    private Long insertForClass(Connection conn, IEntity entity, Class<?> clazz, Long parentId) {
+    private Long insertForClass(Connection conn, IEntity entity, Class<?> clazz, Long parentId) throws Exception {
         ArrayList<String> columns = new ArrayList<>();
         ArrayList<Object> values = new ArrayList<>();
         ArrayList<String> placeholders = new ArrayList<>();
@@ -102,6 +103,10 @@ public class DataAccessObject {
                         if (method.getName().equalsIgnoreCase("getId")) continue;
 
                         Object value = method.invoke(entity);
+                        
+                        // Pula valores nulos para permitir que o banco use o DEFAULT (ex: data_cadastro)
+                        if (value == null) continue;
+
                         String colName = convertPascalCaseToSnakeCase(method.getName().substring(3));
 
                         // Se o retorno for uma Entidade, ajusta o nome da coluna e pega o ID
@@ -130,8 +135,6 @@ public class DataAccessObject {
             try (ResultSet rs = pstmt.getGeneratedKeys()) {
                 if (rs.next()) return rs.getLong(1);
             }
-        } catch (Exception e) {
-            System.err.println("Erro na tabela " + clazz.getSimpleName() + ": " + e.getMessage());
         }
         // NOTA: Não fechamos 'conn' aqui para que o Singleton continue disponível
         return parentId; // Retorna o ID atual para a próxima iteração

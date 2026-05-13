@@ -8,6 +8,7 @@ import com.gwj.model.dataTransferObject.EntityMapper;
 import com.gwj.model.domain.IEntity;
 import com.gwj.model.domain.factory.SimpleObjectFactory;
 
+import java.util.Collection;
 import java.util.List; // Para o List
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class GenericViewController {
 
             // Reflexão para os cabeçalhos
             List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+                                        .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
                                         .map(Field::getName)
                                         .toList();
 
@@ -92,6 +94,7 @@ public class GenericViewController {
 
             // Reflexão para os cabeçalhos
             List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+                                        .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
                                         .map(Field::getName)
                                         .toList();
 

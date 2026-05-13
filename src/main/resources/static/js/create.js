@@ -1,40 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('.create-form');
+    // Captura os formulários de cadastro
+    const forms = document.querySelectorAll('.create-form');
 
-    if (form) {
+    forms.forEach(form => {
         form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+            event.preventDefault(); // Impede o reload da página
 
             const formData = new FormData(form);
 
             try {
-                // Enviamos para o endpoint de criação mencionado no seu README
+                // Envia para o endpoint de criação
                 const response = await fetch('/create-json', { 
                     method: 'POST',
                     body: new URLSearchParams(formData) 
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText || 'Erro ao processar cadastro.');
+                const responseText = await response.text();
+
+                if (!response.ok || !responseText) {
+                    // Se não for OK ou o corpo vier vazio, lançamos o erro com o que tivermos de texto
+                    throw new Error(responseText || 'O servidor não retornou um ID. Verifique se houve erro no console do Java.');
                 }
 
-                const novoId = await response.json();
+                // Como o servidor retorna apenas o número do ID, tratamos como texto
+                const idGerado = responseText;
+                alert(`Sucesso! Novo registro criado com ID: ${idGerado}`);
                 
-                // Feedback visual
-                alert(`Sucesso! Novo registro criado com ID: ${novoId}`);
-                
-                // Limpa o formulário para permitir o próximo cadastro sem sair da página
-                form.reset();
-                
-                // Foca no primeiro campo de input para agilizar a digitação do próximo
-                const firstInput = form.querySelector('input:not([type="hidden"])');
-                if (firstInput) firstInput.focus();
-
+                form.reset(); // Limpa o formulário após o sucesso
             } catch (error) {
-                console.error('Erro no cadastro:', error);
-                alert('Falha ao cadastrar: ' + error.message);
+                console.error('Erro ao cadastrar:', error);
+                alert('Falha ao cadastrar objeto: ' + error.message);
             }
         });
-    }
+    });
 });

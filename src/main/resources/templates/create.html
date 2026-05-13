@@ -3,7 +3,7 @@
     xmlns:layout="http://ultraq.net.nz"
     layout:decorate="~{layouts/main-layout}">
 <head>
-    <title>Editar </title>
+    <title>Cadastrar </title>
     <!-- Se quiser um CSS específico só para esta página -->
     <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
     <!-- Importamos o script que interceptará o submit e enviará como PUT -->
@@ -16,18 +16,18 @@
 
     <section layout:fragment="content">
         <div class="container mt-4">
-            <h2 th:text="${title + entidadeNome}"></h2>
+            <h2 th:text="${title + ': ' + entidadeNome}"></h2>
             <hr>
 
             <!-- Iteramos sobre a lista 'colunas' (que é sua List<IEntity>) -->
             
-                <form class="row g-3 update-form">
+                <form class="row g-3 create-form">
                     
                     <!-- Campos ocultos essenciais para o funcionamento do Update -->
                     <input type="hidden" name="entity" th:value="${entidadeNome}">
                     <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
                     <!-- O th:if garante que o ID não apareça como um campo de texto editável -->
-                    <div th:each="coluna : ${colunas}" th:if="${coluna != 'id'}" class="col-md-6">
+                    <div th:each="coluna : ${colunas}" th:if="${!#strings.equalsIgnoreCase(coluna, 'id')}" class="col-md-6">
                         <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
                         
                         <!-- A "mágica" do Thymeleaf: obj['nomeDaVariavel'] acessa o getter automaticamente -->

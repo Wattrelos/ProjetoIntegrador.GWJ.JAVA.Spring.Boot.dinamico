@@ -79,4 +79,10 @@ http://localhost:8089/sobre-nos
 Melhorias:
 1. Limpeza do Formulário: No arquivo create.js, usei form.reset() após a resposta positiva do servidor. Isso limpa todos os campos (exceto os hidden), permitindo que o usuário continue cadastrando.
 2. Lógica do ID: No HTML, o campo id agora é explicitamente um hidden com valor 0. Como observado, o DAO ignora o valor de entrada para gerar um novo ID no banco.
-3 .Foco Automático: Adicionei uma linha no JS para colocar o cursor de volta no primeiro campo após o cadastro, melhorando a experiência de uso para cadastros em massa.
+3. Foco Automático: Adicionei uma linha no JS para colocar o cursor de volta no primeiro campo após o cadastro, melhorando a experiência de uso para cadastros em massa.
+
+Fase 2.
+1. Filtragem por Tipo: O método Collection.class.isAssignableFrom(field.getType()) verifica se o tipo do atributo é uma List, Set ou qualquer outra coleção. Ao usar o filter com a negação (!), garantimos que essas colunas sejam removidas da lista antes de chegar ao Thymeleaf.
+2. Impacto nos formulários: Agora, no create.html e edit.html, o loop th:each="coluna : ${colunas}" não encontrará mais atributos como enderecos ou telefones, evitando a criação de inputs inválidos.
+Preservação da Listagem: Note que não alteramos o método listar. Isso é importante porque na listagem (e nos detalhes), você já possui lógica no recursiveField.html para exibir essas coleções de forma elegante (como um dropdown), o que é desejável para visualização.
+3. Dica de especialista: Caso você precise cadastrar essas coleções no futuro, o ideal seria criar uma tela de "Gestão de Itens" separada ou usar um componente de sub-formulário dinâmico com JavaScript, mas para um CRUD enxuto, ignorá-las no formulário principal é a prática padrão.
