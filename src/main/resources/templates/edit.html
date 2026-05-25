@@ -8,6 +8,8 @@
     <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
     <!-- Importamos o script que interceptará o submit e enviará como PUT -->
     <script th:src="@{/js/update.js}" defer></script>
+    <!-- Importa o script de máscaras universais -->
+    <script th:src="@{/js/masks.js}" defer></script>
 </head>
 <body>
 
@@ -28,8 +30,8 @@
                     <input type="hidden" name="id" th:value="${obj.id}">
 
                     <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
-                    <!-- O th:if garante que o ID não apareça como um campo de texto editável -->
-                    <div th:each="coluna : ${colunas}" th:if="${coluna != 'id'}" class="col-md-6">
+                    <!-- O th:if filtra campos de controle interno que não devem ser alterados pelo usuário -->
+                    <div th:each="coluna : ${colunas}" th:if="${!#lists.contains({'id', 'token', 'ip', 'dataCadastro'}, coluna)}" class="col-md-6">
                         <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
                         
                         <!-- A "mágica" do Thymeleaf: obj['nomeDaVariavel'] acessa o getter automaticamente -->

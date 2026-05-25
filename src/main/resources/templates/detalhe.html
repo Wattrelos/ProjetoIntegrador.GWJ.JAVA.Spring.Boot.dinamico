@@ -19,10 +19,12 @@
 
             <!-- Iteramos sobre a lista 'detalhe' (que é sua List<IEntity>) -->
             <div th:each="obj : ${detalhe}">
-                <form class="row g-3">
+                <!-- Trocamos a tag form por div, pois não haverá submissão de dados aqui -->
+                <div class="row g-3 mb-5 p-4 bg-white rounded shadow-sm">
                     
                     <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
-                    <div th:each="coluna : ${colunas}" class="col-md-6">
+                    <!-- O th:if filtra campos de controle interno para visualização mais limpa -->
+                    <div th:each="coluna : ${colunas}" th:if="${!#lists.contains({'id', 'token', 'ip', 'dataCadastro'}, coluna)}" class="col-md-6">
                         <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
                         
                         <!-- Lógica condicional para Coleções -->
@@ -33,19 +35,18 @@
                         </div>
 
                         <!-- Lógica para valores simples -->
-                        <input th:unless="${obj[coluna] instanceof T(java.util.Collection)}"
-                            type="text"
-                            class="form-control"
+                        <div th:unless="${obj[coluna] instanceof T(java.util.Collection)}"
+                            class="form-control bg-light text-muted border-0"
                             th:id="${coluna}"
-                            th:value="${obj[coluna]}"
-                            readonly>
+                            th:text="${obj[coluna] != null ? obj[coluna] : '—'}">
+                        </div>
                     </div>
 
                     <div class="col-12 mt-4">
                         <a th:href="@{/listar/{entity}(entity=${entidadeNome})}" class="btn btn-secondary">Voltar</a>
                         <a th:href="@{/editar/{entity}(entity=${entidadeNome}, id=${obj.id})}" class="btn btn-primary">Editar</a>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </section>

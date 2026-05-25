@@ -63,5 +63,10 @@ public class Servico implements IEntity{
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
 	}
+	@Override
+	public String toString() {
+		return "Servico [nome=" + nome + ", descricao=" + descricao + ", preco=" + preco + ", duracao=" + duracao
+				+ ", tipo=" + tipo + ", ativo=" + ativo + "]";
+	}
 
 }

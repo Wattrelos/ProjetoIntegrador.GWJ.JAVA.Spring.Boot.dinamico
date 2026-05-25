@@ -9,13 +9,14 @@ public class Endereco implements IEntity{
 	
     protected Long          id  = 0L; // Inicializa variável de índice
 	protected String        nome;
+	protected String        cep;
 	protected String        logradouro;
 	protected int           numero;
 	protected String        complemento;
 	protected String        bairro;
 	protected String        cidade;
 	protected String        estado;
-	protected String        cep;
+	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // Avisa ao módulo json utilizar este formato.
 	protected LocalDateTime dataCadastro;
 	protected String        observacao;
@@ -32,6 +33,12 @@ public class Endereco implements IEntity{
 	}
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+	public String getCep() {
+		return cep;
+	}
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
 	public String getLogradouro() {
 		return logradouro;
@@ -69,12 +76,7 @@ public class Endereco implements IEntity{
 	public void setEstado(String estado) {
 		this.estado = estado;
 	}
-	public String getCep() {
-		return cep;
-	}
-	public void setCep(String cep) {
-		this.cep = cep;
-	}
+
 	public LocalDateTime getDataCadastro() {
 		return dataCadastro;
 	}

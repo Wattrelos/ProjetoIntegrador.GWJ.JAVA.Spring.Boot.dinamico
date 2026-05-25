@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.lang.reflect.Field;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,19 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class GenericViewController {
     private final DataAccessObject dao = new DataAccessObject();
+
+    // Método auxiliar recursivo para buscar atributos da classe atual e de suas superclasses
+    private List<Field> getAllFields(Class<?> type) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> current = type;
+        while (current != null && IEntity.class.isAssignableFrom(current) && current != Object.class) {
+            // Insere no início (posição 0) para que os campos da classe pai fiquem no topo do formulário
+            fields.addAll(0, Arrays.asList(current.getDeclaredFields())); 
+            current = current.getSuperclass();
+        }
+        return fields;
+    }
+
     @GetMapping("/create/{entity}")
     public String create(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
 
@@ -36,7 +50,7 @@ public class GenericViewController {
             IEntity entidadeBase = SimpleObjectFactory.create(entityName); // Instanciar um objeto vazio (o corpo será utilizado para montar o formulário).
 
             // Reflexão para os cabeçalhos
-            List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+            List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
                                         .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
                                         .map(Field::getName)
                                         .toList();
@@ -58,8 +72,7 @@ public class GenericViewController {
         List<IEntity> resultados = dao.read(filtro); // Traz todos os registros ou os encontrados no critério de busca.
 
         // Extrai os nomes dos atributos da classe para usar como cabeçalho
-        Field[] campos = entidadeBase.getClass().getDeclaredFields();
-        List<String> colunas = Arrays.stream(campos)
+        List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
                                     .map(Field::getName)
                                     .collect(Collectors.toList());
 
@@ -93,7 +106,7 @@ public class GenericViewController {
             List<IEntity> resultados = dao.read(filtro);
 
             // Reflexão para os cabeçalhos
-            List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+            List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
                                         .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
                                         .map(Field::getName)
                                         .toList();
@@ -132,7 +145,7 @@ public class GenericViewController {
             List<IEntity> resultados = dao.read(filtro);
 
             // Reflexão para os cabeçalhos
-            List<String> colunas = Arrays.stream(entidadeBase.getClass().getDeclaredFields())
+            List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
                                         .map(Field::getName)
                                         .toList();
 
