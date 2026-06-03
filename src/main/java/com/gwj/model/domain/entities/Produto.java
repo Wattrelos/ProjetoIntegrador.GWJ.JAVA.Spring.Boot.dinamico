@@ -40,5 +40,68 @@ public class Produto  implements IEntity{
     public void prePersist(){
         this.dataCadastro = LocalDateTime.now();
     }
+
+    public Produto() {
+    }
+
+    public Produto(Long id, String nome, String descricao, BigDecimal preco, Integer estoque, String marca,
+            String categoria) {
+        this.Id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.estoque = estoque;
+        this.marca = marca;
+        this.categoria = categoria;
+    }
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+    public String getNome() {
+        return nome;
+    }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+    public String getDescricao() {
+        return descricao;
+    }public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+    public BigDecimal getPreco() {
+        return preco;
+    }
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
+    }
+    public Integer getEstoque() {
+        return estoque;
+    }
+    public void setEstoque(Integer estoque) {
+        this.estoque = estoque;
+    }
+    public String getMarca() {
+        return marca;
+    }
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+    public String getCategoria() {
+        return categoria;
+    }
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
     
 }
