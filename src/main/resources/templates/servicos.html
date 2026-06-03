@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{parts/header :: head}"></head>
+<body>
+    
+    <!-- Substitui o antigo PHP include para inserir o header completo -->
+    <div th:insert="~{parts/header}"></div>
+
+<main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
+    <div class="alignwide">
+        <h1 style="margin-bottom: var(--wp--preset--spacing--20); text-align: center;">Agende seu Horário</h1>
+        <p style="text-align: center; color: #555; margin-bottom: var(--wp--preset--spacing--40);">Escolha o serviço, o profissional e o melhor horário para você.</p>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: flex-start;">
+            
+            <!-- Coluna Esquerda: Escolha de Serviço e Data -->
+            <div style="flex: 1 1 400px; display: flex; flex-direction: column; gap: 2rem;">
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-weight: bold; font-size: var(--wp--preset--font-size--small);">1. Qual serviço deseja?</label>
+                    <select style="padding: 1rem; border-radius: 4px; border: 1px solid currentColor; background: transparent; font-family: inherit; font-size: var(--wp--preset--font-size--small);">
+                        <option>Corte Clássico Masculino - R$ 45,00</option>
+                        <option>Barboterapia Premium - R$ 35,00</option>
+                        <option>Combo (Cabelo + Barba) - R$ 70,00</option>
+                        <option>Corte Infantil - R$ 35,00</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-weight: bold; font-size: var(--wp--preset--font-size--small);">2. Profissional de preferência</label>
+                    <select style="padding: 1rem; border-radius: 4px; border: 1px solid currentColor; background: transparent; font-family: inherit; font-size: var(--wp--preset--font-size--small);">
+                        <option>Qualquer profissional livre</option>
+                        <option>Tiago (Especialista em Fade)</option>
+                        <option>Lucas (Especialista em Barba)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-weight: bold; font-size: var(--wp--preset--font-size--small);">3. Escolha a Data</label>
+                    <!-- Um campo de data que o navegador renderizará como um mini-calendário -->
+                    <input type="date" value="2024-10-24" style="padding: 1rem; border-radius: 4px; border: 1px solid currentColor; background: transparent; font-family: inherit; font-size: var(--wp--preset--font-size--small);">
+                </div>
+
+            </div>
+
+            <!-- Coluna Direita: Grade de Horários -->
+            <div class="has-theme-2-background-color" style="flex: 1 1 400px; padding: 2.5rem; border-radius: 8px;">
+                <h3 style="margin-top: 0; font-size: var(--wp--preset--font-size--medium); margin-bottom: 0.5rem;">4. Horários Disponíveis</h3>
+                <p style="color: #555; font-size: var(--wp--preset--font-size--small); margin-bottom: 2rem;">Quinta-feira, 24 de Outubro</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 1rem;">
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px;">09:00</button>
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px; opacity: 0.4; cursor: not-allowed;" disabled>09:30</button>
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px;">10:00</button>
+                    <!-- Simulação de horário selecionado (usando a cor theme-3 dourada diretamente) -->
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px; background-color: var(--wp--preset--color--theme-3);">10:30</button>
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px; opacity: 0.4; cursor: not-allowed;" disabled>11:00</button>
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px;">11:30</button>
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px;">13:00</button>
+                    <button type="button" class="wp-element-button" style="padding: 0.8rem; text-align: center; border-radius: 4px;">13:30</button>
+                </div>
+
+                <a th:href="@{/checkout}" class="wp-element-button" style="display: block; text-align: center; text-decoration: none; padding: 1.2rem; border-radius: 4px; margin-top: 3rem; width: 100%; font-size: var(--wp--preset--font-size--small);">Confirmar e Pagar</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+    <!-- Substitui o antigo PHP include para inserir o footer completo -->
+    <div th:insert="~{parts/footer}"></div>
+</body>
+</html>

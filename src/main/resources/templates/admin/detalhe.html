@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+    xmlns:layout="http://ultraq.net.nz"
+    layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Sobre Nós - GWJ</title>
+    <!-- Se quiser um CSS específico só para esta página -->
+    <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
+</head>
+<body>
+
+    <!-- Note que NÃO incluímos o bloco 'aside-content' aqui.
+        Isso fará com que o aside suma e o main ocupe 100% da largura. -->
+
+    <section layout:fragment="content">
+        <div class="container mt-4">
+            <h2 th:text="${'Detalhes de: ' + entidadeNome}">Detalhes</h2>
+            <hr>
+
+            <!-- Iteramos sobre a lista 'detalhe' (que é sua List<IEntity>) -->
+            <div th:each="obj : ${detalhe}">
+                <!-- Trocamos a tag form por div, pois não haverá submissão de dados aqui -->
+                <div class="row g-3 mb-5 p-4 bg-white rounded shadow-sm">
+                    
+                    <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
+                    <!-- O th:if filtra campos de controle interno para visualização mais limpa -->
+                    <div th:each="coluna : ${colunas}" th:if="${!#lists.contains({'id', 'token', 'ip', 'dataCadastro'}, coluna)}" class="col-md-6">
+                        <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
+                        
+                        <!-- Lógica condicional para Coleções -->
+                        <div th:if="${obj[coluna] instanceof T(java.util.Collection)}">
+                            <ul class="list-group">
+                                <li class="list-group-item" th:each="subItem : ${obj[coluna]}" th:text="${subItem}"></li>
+                            </ul>
+                        </div>
+
+                        <!-- Lógica para valores simples -->
+                        <div th:unless="${obj[coluna] instanceof T(java.util.Collection)}"
+                            class="form-control bg-light text-muted border-0"
+                            th:id="${coluna}"
+                            th:text="${obj[coluna] != null ? obj[coluna] : '—'}">
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <a th:href="@{/admin/listar/{entity}(entity=${entidadeNome})}" class="btn btn-secondary">Voltar</a>
+                        <a th:href="@{/editar/{entity}(entity=${entidadeNome}, id=${obj.id})}" class="btn btn-primary">Editar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</body>
+</html>

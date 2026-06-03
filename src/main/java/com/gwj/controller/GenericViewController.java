@@ -42,7 +42,7 @@ public class GenericViewController {
         return fields;
     }
 
-    @GetMapping("/create/{entity}")
+    @GetMapping("/admin/create/{entity}")
     public String create(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
 
 
@@ -59,13 +59,13 @@ public class GenericViewController {
             model.addAttribute("colunas", colunas);
             model.addAttribute("entidadeNome", entityName);
             
-            return "create";
+            return "admin/create";
         }
         
         return "error"; // Ou redirecionamento para lista
     }
 
-    @GetMapping("/listar/{entity}")
+    @GetMapping("/admin/listar/{entity}")
     public String listar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         IEntity entidadeBase = SimpleObjectFactory.create(entityName);
         IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); // request para preencher os atributos das classes com valores, que serão utilizado para formar o WHERE. Se requeste não tiver valores, traz todos os registros.
@@ -79,10 +79,10 @@ public class GenericViewController {
         model.addAttribute("lista", resultados);
         model.addAttribute("colunas", colunas);
         model.addAttribute("entidadeNome", entityName);
-        return "listagem-dinamica";
+        return "admin/listagem-dinamica";
     }
 
-    @GetMapping("/detalhe/{entity}")
+    @GetMapping("admin/detalhe/{entity}")
     public String detalhe(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         // 1. Pega o ID do request (parâmetro da URL ou form)
         String idParam = request.getParameter("id");
@@ -115,13 +115,13 @@ public class GenericViewController {
             model.addAttribute("colunas", colunas);
             model.addAttribute("entidadeNome", entityName);
             
-            return "detalhe";
+            return "admin/detalhe";
         }
         
         return "error"; // Ou redirecionamento para lista
     }
 
-    @GetMapping("/editar/{entity}")
+    @GetMapping("admin/editar/{entity}")
     public String editar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         // 1. Pega o ID do request (parâmetro da URL ou form)
         String idParam = request.getParameter("id");
@@ -153,7 +153,7 @@ public class GenericViewController {
             model.addAttribute("colunas", colunas);
             model.addAttribute("entidadeNome", entityName);
             
-            return "edit";
+            return "admin/edit";
         }
         
         return "error"; // Ou redirecionamento para lista

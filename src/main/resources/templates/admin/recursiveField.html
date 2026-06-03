@@ -1,0 +1,35 @@
+<div th:fragment="recursiveField(valor)">
+    <!-- 1. Trata Nulo -->
+    <span th:if="${valor == null}" class="text-muted">—</span>
+
+    <th:block th:if="${valor != null}">
+        
+        <!-- CASO A: É uma Entidade Única (Link Direto) -->
+        <th:block th:if="${valor.class.name.startsWith(@environment.getProperty('app.entity.package'))}">
+            <span>
+                <a th:href="@{/admin/listar/{entidade}(entidade=${valor.getClass().getSimpleName()}, id=${valor.id})}"
+                th:text="${valor.getClass().getSimpleName() + ' [ID: ' + valor.id + ']'}"
+                title="Clique para ver detalhes">
+                </a>
+            </span>
+        </th:block>
+
+        <!-- CASO B: É uma Coleção (Dropdown com Links) -->
+        <th:block th:if="${valor instanceof T(java.util.Collection)}">
+            <select class="form-select-sm" onchange="if(this.value) window.location.href=this.value">
+                <option value="">-- Ver lista --</option>
+                <option th:each="subItem : ${valor}"
+                        th:with="isEntity=${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))}"
+                        th:value="${isEntity} ? @{/admin/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
+                        th:text="${isEntity} ? ${subItem.getClass().getSimpleName() + ' [ID: ' + subItem.id + ']'} : ${subItem}">
+                </option>
+            </select>
+        </th:block>
+
+        <!-- CASO C: Tipos Simples (Texto comum) -->
+        <th:block th:if="${!valor.class.name.startsWith(@environment.getProperty('app.entity.package')) and !(valor instanceof T(java.util.Collection))}">
+            <span th:text="${valor}"></span>
+        </th:block>
+
+    </th:block>
+</div>

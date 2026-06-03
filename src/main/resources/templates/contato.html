@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Contato - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
+            <div class="alignwide">
+                <h1 style="margin-bottom: var(--wp--preset--spacing--20); text-align: center;">Fale Conosco</h1>
+                <p style="text-align: center; color: #555; margin-bottom: var(--wp--preset--spacing--40);">Tire suas dúvidas, faça sugestões ou agende um horário especial.</p>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 4rem; justify-content: center;">
+                    <!-- Formulário Mockado -->
+                    <div style="flex: 1 1 400px; background-color: var(--wp--preset--color--theme-2); padding: 2.5rem; border-radius: 8px;">
+                        <form style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            <label style="display: flex; flex-direction: column; gap: 0.5rem; font-size: var(--wp--preset--font-size--small);">Nome:
+                                <input type="text" placeholder="Seu nome" style="padding: 0.8rem; border-radius: 4px; border: 1px solid currentColor; background: transparent; font-family: inherit;">
+                            </label>
+                            <label style="display: flex; flex-direction: column; gap: 0.5rem; font-size: var(--wp--preset--font-size--small);">E-mail:
+                                <input type="email" placeholder="seu@email.com" style="padding: 0.8rem; border-radius: 4px; border: 1px solid currentColor; background: transparent; font-family: inherit;">
+                            </label>
+                            <label style="display: flex; flex-direction: column; gap: 0.5rem; font-size: var(--wp--preset--font-size--small);">Mensagem:
+                                <textarea rows="4" placeholder="Como podemos ajudar?" style="padding: 0.8rem; border-radius: 4px; border: 1px solid currentColor; background: transparent; font-family: inherit; resize: vertical;"></textarea>
+                            </label>
+                            <button type="button" class="wp-element-button" style="background-color: var(--wp--preset--color--theme-5); color: var(--wp--preset--color--theme-1); padding: 1rem; border-radius: 4px; cursor: pointer; border: none; font-size: var(--wp--preset--font-size--small);">Enviar Mensagem</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Informações Estáticas -->
+                    <div style="flex: 1 1 300px; display: flex; flex-direction: column; justify-content: center;">
+                        <h3 style="margin-top: 0; font-size: var(--wp--preset--font-size--medium);">Nossa Localização</h3>
+                        <p style="color: #555; margin-bottom: 2rem;">Rua dos Barbeiros, 123 - Centro<br>São Paulo - SP, 00000-000</p>
+                        
+                        <h3 style="font-size: var(--wp--preset--font-size--medium);">Telefone / WhatsApp</h3>
+                        <p style="color: #555; margin-bottom: 2rem;">(11) 99999-9999</p>
+
+                        <h3 style="font-size: var(--wp--preset--font-size--medium);">Horário de Funcionamento</h3>
+                        <p style="color: #555;">Seg a Sex: 09:00 às 20:00<br>Sáb: 09:00 às 18:00</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>

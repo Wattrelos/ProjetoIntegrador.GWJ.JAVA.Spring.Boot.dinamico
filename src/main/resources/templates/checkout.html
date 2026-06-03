@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{layouts/main-layout}">
+<head>
+    <title>Checkout - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
+            <div class="alignwide">
+                <h1 style="margin-bottom: var(--wp--preset--spacing--40); text-align: center;">Finalizar Reserva</h1>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: flex-start;">
+                    
+                    <!-- Coluna 1: Formulário de Dados e Pagamento -->
+                    <div style="flex: 1 1 500px;">
+                        <h2 style="font-size: var(--wp--preset--font-size--medium); margin-bottom: 1.5rem;">Seus Dados</h2>
+                        <form style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                                <label style="flex: 1; min-width: 200px;">Nome: <input type="text" placeholder="João" style="width: 100%; margin-top: 0.5rem;"></label>
+                                <label style="flex: 1; min-width: 200px;">Sobrenome: <input type="text" placeholder="Silva" style="width: 100%; margin-top: 0.5rem;"></label>
+                            </div>
+                            
+                            <label>E-mail: <input type="email" placeholder="joao@email.com" style="width: 100%; margin-top: 0.5rem;"></label>
+                            <label>Telefone / WhatsApp: <input type="tel" placeholder="(11) 99999-9999" style="width: 100%; margin-top: 0.5rem;"></label>
+
+                            <h2 style="font-size: var(--wp--preset--font-size--medium); margin-top: 2rem; margin-bottom: 1rem;">Método de Pagamento</h2>
+                            
+                            <div class="has-theme-2-background-color" style="padding: 2rem; border-radius: 8px;">
+                                <label style="display: block; margin-bottom: 1rem; font-weight: bold; cursor: pointer;">
+                                    <input type="radio" name="pagamento" checked> Cartão de Crédito
+                                </label>
+                                <input type="text" placeholder="Número do Cartão (0000 0000 0000 0000)" style="width: 100%; margin-bottom: 1rem;">
+                                <div style="display: flex; gap: 1rem;">
+                                    <input type="text" placeholder="Validade (MM/AA)" style="flex: 1;">
+                                    <input type="text" placeholder="CVC" style="flex: 1;">
+                                </div>
+                                
+                                <hr style="margin: 2rem 0; border: 0; border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);">
+                                
+                                <label style="display: block; font-weight: bold; cursor: pointer;">
+                                    <input type="radio" name="pagamento"> Pagar na Barbearia (Dinheiro ou Pix)
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Coluna 2: Resumo do Pedido -->
+                    <div class="has-theme-2-background-color" style="flex: 1 1 350px; padding: 2.5rem; border-radius: 8px; position: sticky; top: 2rem;">
+                        <h3 style="margin-top: 0; margin-bottom: 2rem; font-size: var(--wp--preset--font-size--medium);">Resumo do Pedido</h3>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: color-mix(in srgb, currentColor 70%, transparent);"><span>Corte Clássico Masculino</span><span>R$ 45,00</span></div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; color: color-mix(in srgb, currentColor 70%, transparent);"><span>Barboterapia Premium</span><span>R$ 35,00</span></div>
+                        
+                        <div style="border-top: 2px solid var(--wp--preset--color--theme-3); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: var(--wp--preset--font-size--medium); font-weight: bold;">
+                            <span>Total</span><span class="has-theme-3-color">R$ 80,00</span>
+                        </div>
+
+                        <a th:href="@{/order-confirmation}" class="wp-element-button" style="display: block; text-align: center; text-decoration: none; padding: 1.2rem; border-radius: 4px; margin-top: 2.5rem; width: 100%; font-size: var(--wp--preset--font-size--small);">Confirmar Reserva</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>
