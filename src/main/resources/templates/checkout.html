@@ -8,40 +8,40 @@
 <body>
 
     <section layout:fragment="content">
-        <main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
+        <main class="wp-block-group alignfull page-main-bg">
             <div class="alignwide">
-                <h1 style="margin-bottom: var(--wp--preset--spacing--40); text-align: center;">Finalizar Reserva</h1>
+                <h1 class="text-center mb-40">Finalizar Reserva</h1>
                 
-                <div style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: flex-start;">
+                <div class="layout-grid">
                     
                     <!-- Coluna 1: Formulário de Dados e Pagamento -->
-                    <div style="flex: 1 1 500px;">
-                        <h2 style="font-size: var(--wp--preset--font-size--medium); margin-bottom: 1.5rem;">Seus Dados</h2>
-                        <form style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="card-panel">
+                        <h2 class="panel-title">Seus Dados</h2>
+                        <form class="flex-col gap-1-5">
                             
-                            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                                <label style="flex: 1; min-width: 200px;">Nome: <input type="text" placeholder="João" style="width: 100%; margin-top: 0.5rem;"></label>
-                                <label style="flex: 1; min-width: 200px;">Sobrenome: <input type="text" placeholder="Silva" style="width: 100%; margin-top: 0.5rem;"></label>
+                            <div class="custom-form-row">
+                                <label>Nome: <input type="text" placeholder="João" class="custom-input mt-2"></label>
+                                <label>Sobrenome: <input type="text" placeholder="Silva" class="custom-input mt-2"></label>
                             </div>
                             
-                            <label>E-mail: <input type="email" placeholder="joao@email.com" style="width: 100%; margin-top: 0.5rem;"></label>
-                            <label>Telefone / WhatsApp: <input type="tel" placeholder="(11) 99999-9999" style="width: 100%; margin-top: 0.5rem;"></label>
+                            <label>E-mail: <input type="email" placeholder="joao@email.com" class="custom-input mt-2"></label>
+                            <label>Telefone / WhatsApp: <input type="tel" placeholder="(11) 99999-9999" class="custom-input mt-2"></label>
 
-                            <h2 style="font-size: var(--wp--preset--font-size--medium); margin-top: 2rem; margin-bottom: 1rem;">Método de Pagamento</h2>
+                            <h2 class="panel-title mt-5">Método de Pagamento</h2>
                             
-                            <div class="has-theme-2-background-color" style="padding: 2rem; border-radius: 8px;">
-                                <label style="display: block; margin-bottom: 1rem; font-weight: bold; cursor: pointer;">
+                            <div class="payment-panel">
+                                <label class="payment-method-label">
                                     <input type="radio" name="pagamento" checked> Cartão de Crédito
                                 </label>
-                                <input type="text" placeholder="Número do Cartão (0000 0000 0000 0000)" style="width: 100%; margin-bottom: 1rem;">
-                                <div style="display: flex; gap: 1rem;">
-                                    <input type="text" placeholder="Validade (MM/AA)" style="flex: 1;">
-                                    <input type="text" placeholder="CVC" style="flex: 1;">
+                                <input type="text" placeholder="Número do Cartão (0000 0000 0000 0000)" class="custom-input mb-4">
+                                <div class="custom-form-row">
+                                    <input type="text" placeholder="Validade (MM/AA)" class="custom-input">
+                                    <input type="text" placeholder="CVC" class="custom-input">
                                 </div>
                                 
-                                <hr style="margin: 2rem 0; border: 0; border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);">
+                                <hr class="divider">
                                 
-                                <label style="display: block; font-weight: bold; cursor: pointer;">
+                                <label class="payment-method-label" style="margin-bottom: 0;">
                                     <input type="radio" name="pagamento"> Pagar na Barbearia (Dinheiro ou Pix)
                                 </label>
                             </div>
@@ -49,17 +49,17 @@
                     </div>
 
                     <!-- Coluna 2: Resumo do Pedido -->
-                    <div class="has-theme-2-background-color" style="flex: 1 1 350px; padding: 2.5rem; border-radius: 8px; position: sticky; top: 2rem;">
-                        <h3 style="margin-top: 0; margin-bottom: 2rem; font-size: var(--wp--preset--font-size--medium);">Resumo do Pedido</h3>
+                    <div class="card-panel is-sticky">
+                        <h3 class="panel-title mb-5">Resumo do Pedido</h3>
                         
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: color-mix(in srgb, currentColor 70%, transparent);"><span>Corte Clássico Masculino</span><span>R$ 45,00</span></div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; color: color-mix(in srgb, currentColor 70%, transparent);"><span>Barboterapia Premium</span><span>R$ 35,00</span></div>
+                        <div class="summary-item"><span>Corte Clássico Masculino</span><span>R$ 45,00</span></div>
+                        <div class="summary-item mb-5"><span>Barboterapia Premium</span><span>R$ 35,00</span></div>
                         
-                        <div style="border-top: 2px solid var(--wp--preset--color--theme-3); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: var(--wp--preset--font-size--medium); font-weight: bold;">
+                        <div class="summary-total">
                             <span>Total</span><span class="has-theme-3-color">R$ 80,00</span>
                         </div>
 
-                        <a th:href="@{/order-confirmation}" class="wp-element-button" style="display: block; text-align: center; text-decoration: none; padding: 1.2rem; border-radius: 4px; margin-top: 2.5rem; width: 100%; font-size: var(--wp--preset--font-size--small);">Confirmar Reserva</a>
+                        <a th:href="@{/order-confirmation}" class="wp-element-button btn-block">Confirmar Reserva</a>
                     </div>
                 </div>
             </div>

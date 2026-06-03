@@ -1,126 +1,55 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Fragmento do HEAD (usado para importar CSS) -->
+<head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tgo's Barbearia - Mockup</title>
-    <link rel="icon" href="/img/logo.png" type="image/png">
-    <style>
-        /* === IMPORTAÇÃO DE FONTES LOCAIS (OFFLINE) === */
-        @font-face {
-            font-family: 'Fraunces';
-            src: url('../assets/fonts/fraunces/Fraunces-VariableFont.woff2') format('woff2');
-            font-weight: 100 800;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Inter';
-            src: url('../assets/fonts/inter/InterVariable.woff2') format('woff2');
-            font-weight: 100 800;
-            font-style: normal;
-        }
-
-        :root {
-            /* === IDENTIDADE VISUAL (CORES) === */
-            --wp--preset--color--theme-1: #ffffff; /* Fundo Principal */
-            --wp--preset--color--theme-2: #f6f4f2; /* Fundo Secundário (ex: Resumo do Carrinho) */
-            
-            /* DOURADO GLOBAL: Mude este valor hexadecimal para alterar a cor de destaque do site! */
-            /* Exemplo: #2563eb (Azul Moderno) ou #dc2626 (Vermelho Vibrante) */
-            --wp--preset--color--theme-3: #b9864b; 
-            
-            --wp--preset--color--theme-4: #110f0f;
-            --wp--preset--color--theme-5: #000000; /* Cor do Texto e Botões base */
-            
-            /* === TIPOGRAFIA E TAMANHOS === */
-            --wp--preset--font-family--fraunces: "Fraunces", serif;
-            --wp--preset--font-family--inter: "Inter", sans-serif;
-            
-            /* Aumente ou diminua os valores abaixo para redimensionar as fontes de todo o site */
-            --wp--preset--font-size--small: 16px;   /* Ex: Mude para 18px para leitura mais fácil */
-            --wp--preset--font-size--medium: 20px;
-            --wp--preset--font-size--large: 32px;
-            --wp--preset--font-size--x-large: 64px; /* Ex: Mude para 48px se achar os títulos enormes */
-
-            /* Espaçamentos Globais FSE */
-            --wp--preset--spacing--20: 1rem;
-            --wp--preset--spacing--30: 1.5rem;
-            --wp--preset--spacing--40: 2rem;
-            --wp--preset--spacing--50: 3rem;
-            --wp--preset--spacing--60: 4rem;
-        }
-        
-        /* Regras Base de Aplicação (Não precisa alterar) */
-        body { background-color: var(--wp--preset--color--theme-1); color: var(--wp--preset--color--theme-5); font-family: var(--wp--preset--font-family--inter); margin: 0; }
-        h1, h2, h3, h4, h5, h6, .wp-block-site-title { font-family: var(--wp--preset--font-family--fraunces); font-weight: 200; }
-        .alignwide { max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 20px;}
-        .wp-block-group { box-sizing: border-box; }
-        a { color: var(--wp--preset--color--theme-5); text-decoration: none; }
-        a:hover { color: var(--wp--preset--color--theme-3); }
-
-        /* === FORMATAÇÃO E CLASSES MOCKADAS DO WOOCOMMERCE === */
-        .wp-element-button {
-            background-color: var(--wp--preset--color--theme-5);
-            color: var(--wp--preset--color--theme-1) !important;
-            border: none;
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-        }
-        .wp-element-button:hover {
-            background-color: var(--wp--preset--color--theme-3);
-        }
-        .has-theme-3-color { color: var(--wp--preset--color--theme-3); }
-        .has-theme-2-background-color { background-color: var(--wp--preset--color--theme-2); }
-
-        /* === BOTÃO FLUTUANTE DO WHATSAPP === */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #25d366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 1000;
-            text-decoration: none;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-            background-color: #128c7e;
-            color: white;
-        }
-    </style>
-    <link rel="stylesheet" href="../style.css">
+    <title>Tgo's Barbearia</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<!-- wp:group {"metadata":{"name":"Header Container","patternCategory":"header","patternSubcategory":"","remotePatternId":17484},"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20)"><!-- wp:group {"tagName":"header","metadata":{"name":"Contents"},"align":"wide","style":{"spacing":{"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
-<header class="wp-block-group alignwide" style="margin-top:0;margin-bottom:0; display: flex; align-items: center; justify-content: space-between;">
-    
-    <!-- Identidade Visual (Logo + Nome) -->
-    <a href="home" style="display: flex; align-items: center; gap: 15px; text-decoration: none; color: inherit;">
-        <img src="/img/logo.png" alt="Logo Tgo's Barbearia" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
-        <span style="font-family: var(--wp--preset--font-family--fraunces); font-size: var(--wp--preset--font-size--medium); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Tgo's Barbearia</span>
-    </a>
+    <!-- Fragmento do HEADER (Cabeçalho da Página) -->
+    <header class="modern-header" th:fragment="header">
+        <div class="header-container alignwide">
+            <div class="header-logo">
+                <a th:href="@{/}">Tgo's <span>Barbearia</span></a>
+            </div>
+            
+            <!-- Botão do Menu Hambúrguer -->
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
 
-<div class="wp-block-group">
-    <nav class="wp-block-navigation order-1 md:order-0">
-        <ul class="wp-block-navigation__container" style="display: flex; gap: 20px; list-style: none; padding: 0; margin: 0;">
-            <li><a class="wp-block-navigation-item__content" href="home">Início</a></li>
-            <li><a class="wp-block-navigation-item__content" href="sobre">Sobre</a></li>
-            <li><a class="wp-block-navigation-item__content" href="servicos" style="color: var(--wp--preset--color--theme-3); font-weight: bold;">Agendar</a></li>
-            <li><a class="wp-block-navigation-item__content" href="shop">Loja</a></li>
-            <li><a class="wp-block-navigation-item__content" href="contato">Contato</a></li>
-            <li><a class="wp-block-navigation-item__content" href="cart">Carrinho</a></li>
-        </ul>
-    </nav>
-</div>
-<!-- /wp:group --></header>
-<!-- /wp:group --></div>
-<!-- /wp:group -->
+            <nav class="header-nav" id="headerNav">
+                <ul>
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/servicos}">Serviços</a></li>
+                    <li><a th:href="@{/sobre-nos}">Sobre Nós</a></li>
+                    <li><a th:href="@{/contato}">Contato</a></li>
+                    <li><a th:href="@{/loja}">Loja</a></li>
+                    <li><a th:href="@{/carrinho}">Carrinho</a></li>
+                    <!-- O botão CTA inserido na lista apenas para a visualização mobile -->
+                    <li class="mobile-cta"><a th:href="@{/servicos}" class="wp-element-button">Agendar Agora</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a th:href="@{/servicos}" class="wp-element-button">Agendar</a>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const hamburger = document.getElementById("hamburgerMenu");
+                const nav = document.getElementById("headerNav");
+                if(hamburger && nav) {
+                    hamburger.addEventListener("click", function() {
+                        hamburger.classList.toggle("active");
+                        nav.classList.toggle("active");
+                    });
+                }
+            });
+        </script>
+    </header>
+</body>
+</html>

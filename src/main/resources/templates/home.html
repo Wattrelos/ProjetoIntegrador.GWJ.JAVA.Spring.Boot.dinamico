@@ -4,50 +4,50 @@
 <body>
     
     <!-- Substitui o antigo PHP include para inserir o header completo -->
-    <div th:insert="~{parts/header}"></div>
+    <div th:replace="~{parts/header :: header}"></div>
 
     <!-- wp:group {"tagName":"main","metadata":{"name":"Main"},"align":"full","layout":{"type":"constrained"}} -->
     <main class="wp-block-group alignfull" style="margin-top: 0;">
 
         <!-- Seção Hero com Efeito Parallax -->
-        <div style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1600&q=80'); background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover; height: 60vh; min-height: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--wp--preset--color--theme-1); text-align: center; padding: 0 20px; margin-bottom: var(--wp--preset--spacing--50);">
-            <h1 style="font-family: var(--wp--preset--font-family--fraunces); font-size: var(--wp--preset--font-size--x-large); margin-top: 0; margin-bottom: 1rem; color: inherit;">Bem-vindo à Tgo's Barbearia</h1>
-            <p style="font-family: var(--wp--preset--font-family--inter); font-size: var(--wp--preset--font-size--medium); max-width: 600px; margin-bottom: 2.5rem; color: inherit; line-height: 1.6;">Tradição, estilo e o melhor atendimento para você. Agende seu horário e viva essa experiência.</p>
+        <div class="hero-section">
+            <h1 class="hero-title">Bem-vindo à Tgo's Barbearia</h1>
+            <p class="hero-description">Tradição, estilo e o melhor atendimento para você. Agende seu horário e viva essa experiência.</p>
             
             <!-- Ajustado para o modelo de rotas do Spring usando th:href -->
-            <a th:href="@{/servicos}" class="wp-element-button" style="text-decoration: none; padding: 1rem 2.5rem; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Agendar Agora</a>
+            <a th:href="@{/servicos}" class="wp-element-button hero-btn">Agendar Agora</a>
         </div>
 
     <!-- Dados mockados estáticos -->
     <div class="alignwide" id="servicos">
-        <h2 style="text-align: center; margin-bottom: 2rem;">Nossos Serviços</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <h2 class="section-title">Nossos Serviços</h2>
+        <div class="services-grid">
             
             <!-- Serviço 1 -->
             <div class="servico-card">
-                <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&q=80" alt="Corte Clássico" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px;">
-                <h3 style="margin-top: 1rem; font-size: var(--wp--preset--font-size--medium);">Corte Clássico Masculino</h3>
-                <p style="font-size: var(--wp--preset--font-size--small); color: #555;">O tradicional corte na tesoura e máquina, com acabamento impecável na navalha.</p>
-                <strong style="color: var(--wp--preset--color--theme-3);">R$ 45,00</strong>
-                <a th:href="@{/servicos}" class="wp-element-button" style="margin-top: 1.5rem; display: block; text-align: center; text-decoration: none; padding: 0.8rem; border-radius: 4px;">Agendar</a>
+                <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&q=80" alt="Corte Clássico">
+                <h3 class="servico-title">Corte Clássico Masculino</h3>
+                <p class="servico-desc">O tradicional corte na tesoura e máquina, com acabamento impecável na navalha.</p>
+                <strong class="servico-price">R$ 45,00</strong>
+                <a th:href="@{/servicos}" class="wp-element-button servico-btn">Agendar</a>
             </div>
 
             <!-- Serviço 2 -->
             <div class="servico-card">
-                <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&q=80" alt="Barboterapia" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px;">
-                <h3 style="margin-top: 1rem; font-size: var(--wp--preset--font-size--medium);">Barboterapia Premium</h3>
-                <p style="font-size: var(--wp--preset--font-size--small); color: #555;">Ritual com toalha quente, óleos essenciais, massagem facial e alinhamento perfeito.</p>
-                <strong style="color: var(--wp--preset--color--theme-3);">R$ 35,00</strong>
-                <a th:href="@{/servicos}" class="wp-element-button" style="margin-top: 1.5rem; display: block; text-align: center; text-decoration: none; padding: 0.8rem; border-radius: 4px;">Agendar</a>
+                <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&q=80" alt="Barboterapia">
+                <h3 class="servico-title">Barboterapia Premium</h3>
+                <p class="servico-desc">Ritual com toalha quente, óleos essenciais, massagem facial e alinhamento perfeito.</p>
+                <strong class="servico-price">R$ 35,00</strong>
+                <a th:href="@{/servicos}" class="wp-element-button servico-btn">Agendar</a>
             </div>
 
             <!-- Serviço 3 -->
             <div class="servico-card">
-                <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=400&q=80" alt="Pacote Completo" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px;">
-                <h3 style="margin-top: 1rem; font-size: var(--wp--preset--font-size--medium);">Combo (Cabelo + Barba)</h3>
-                <p style="font-size: var(--wp--preset--font-size--small); color: #555;">Nosso serviço completo com lavagem especial, corte clássico e barboterapia.</p>
-                <strong style="color: var(--wp--preset--color--theme-3);">R$ 70,00</strong>
-                <a th:href="@{/servicos}" class="wp-element-button" style="margin-top: 1.5rem; display: block; text-align: center; text-decoration: none; padding: 0.8rem; border-radius: 4px;">Agendar</a>
+                <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=400&q=80" alt="Pacote Completo">
+                <h3 class="servico-title">Combo (Cabelo + Barba)</h3>
+                <p class="servico-desc">Nosso serviço completo com lavagem especial, corte clássico e barboterapia.</p>
+                <strong class="servico-price">R$ 70,00</strong>
+                <a th:href="@{/servicos}" class="wp-element-button servico-btn">Agendar</a>
             </div>
 
         </div>
@@ -59,6 +59,6 @@
     <!-- /wp:spacer -->
 
     <!-- Substitui o antigo PHP include para inserir o footer completo -->
-    <div th:insert="~{parts/footer}"></div>
+    <div th:replace="~{parts/footer :: footer}"></div>
 </body>
 </html>

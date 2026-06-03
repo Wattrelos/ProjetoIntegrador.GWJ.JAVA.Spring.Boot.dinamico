@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+    xmlns:layout="http://ultraq.net.nz"
+    layout:decorate="~{layouts/main-layout}">
+<head>
+    <title>Nosso mini shopping</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+
+        <main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50)">
+            <div class="alignwide">
+
+                <!-- Cabeçalho da Loja -->
+                <div class="store-header">
+                    <h1 class="store-title">Loja da Barbearia</h1>
+                    <p class="store-description">Os melhores produtos para o cuidado da sua barba e cabelo, escolhidos e recomendados pelos nossos especialistas.</p>
+                </div>
+
+                <!-- Grid de Produtos -->
+                <div class="product-grid">
+                    
+                    <!-- Produto Loop Dinâmico -->
+                    <div th:each="prod : ${produtos}" th:replace="~{parts/product-card :: card(${prod})}"></div>
+                    
+                    <!-- Fallback caso não haja produtos -->
+                    <div th:if="${#lists.isEmpty(produtos)}" style="grid-column: 1 / -1; text-align: center; color: #555; padding: 2rem;">
+                        Nenhum produto cadastrado no momento.
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>

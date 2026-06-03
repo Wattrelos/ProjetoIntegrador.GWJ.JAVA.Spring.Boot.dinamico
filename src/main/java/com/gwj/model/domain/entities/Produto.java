@@ -40,4 +40,5 @@ public class Produto  implements IEntity{
     public void prePersist(){
         this.dataCadastro = LocalDateTime.now();
     }
+    
 }

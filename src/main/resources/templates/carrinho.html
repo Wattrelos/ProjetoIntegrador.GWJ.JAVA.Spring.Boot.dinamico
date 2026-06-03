@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{layouts/main-layout}">
+<head>
+    <title>Carrinho - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull page-main-bg">
+            <div class="alignwide">
+                <h1 class="mb-40">Seu Carrinho</h1>
+                
+                <!-- Tabela de Produtos Mockados -->
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th class="py-1-0">Serviço</th>
+                                <th>Preço</th>
+                                <th>Quantidade</th>
+                                <th class="text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="product-cell">
+                                    <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=100&q=80" alt="Corte Clássico" class="product-img-sm">
+                                    <span class="product-title-sm">Corte Clássico Masculino</span>
+                                </td>
+                                <td>R$ 45,00</td>
+                                <td>
+                                    <input type="number" value="1" min="1" class="qty-input">
+                                </td>
+                                <td class="text-right"><strong>R$ 45,00</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="product-cell">
+                                    <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=100&q=80" alt="Barboterapia" class="product-img-sm">
+                                    <span class="product-title-sm">Barboterapia Premium</span>
+                                </td>
+                                <td>R$ 35,00</td>
+                                <td>
+                                    <input type="number" value="1" min="1" class="qty-input">
+                                </td>
+                                <td class="text-right"><strong>R$ 35,00</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Resumo da Compra / Checkout -->
+                <div class="cart-summary-wrapper">
+                    <div class="cart-summary-panel">
+                        <h3 class="summary-header">Resumo da Reserva</h3>
+                        <div class="summary-row">
+                            <span>Total:</span>
+                            <strong style="color: var(--wp--preset--color--theme-3);">R$ 80,00</strong>
+                        </div>
+                        <a th:href="@{/checkout}" class="wp-element-button btn-checkout">
+                            Prosseguir para Pagamento
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>
