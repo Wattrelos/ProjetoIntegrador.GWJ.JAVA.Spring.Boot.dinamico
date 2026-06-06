@@ -95,3 +95,4 @@ Fase 3 (Painel Administrativo & Tratamento de Erros):
    - **Erro 404 (`NoResourceFoundException`)**: Arquivos estáticos ausentes (CSS, JS, requisições automáticas do Chrome DevTools), limpando o console de logs massivos de erro.
    - **Erro 500 (`Exception` Genérica)**: Captura de erros internos do servidor. O stacktrace é impresso apenas no console para o desenvolvedor, enquanto o usuário vê uma tela elegante informando o problema.
 4. **Segurança por Obscuridade:** A rota de acesso principal ao painel administrativo foi mascarada de `/admin/` para `/MRYnZpAsC9sp/` como medida de proteção contra bots e varreduras automatizadas.
+5. **Honeypot (Armadilha):** Implementada uma rota falsa em `/admin` e `/admin/**` que devolve um erro 403 (Forbidden / Acesso Negado) instantâneo, consumindo zero processamento de views e despistando invasores.

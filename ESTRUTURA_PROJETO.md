@@ -19,6 +19,7 @@ Aqui estão as regras de negócio, os padrões de projeto e o controle de fluxo 
   - Contém os controladores do Spring MVC.
   - **Destaque:** `GenericViewController.java` (Orquestra as requisições HTTP de forma dinâmica utilizando Reflexão e Factory).
   - **Destaque:** `GlobalExceptionHandler.java` (Anotado com `@ControllerAdvice` atua como interceptor para tratamento centralizado de erros 404, 500 e recursos estáticos ausentes).
+  - **Destaque:** `HoneypotController.java` (Armadilha de segurança que bloqueia tentativas de acesso à antiga rota `/admin` devolvendo 403 Forbidden).
 
 - **`model/`** (Onde a maior parte da lógica e padrões GoF se concentram):
   - **`domain/entities/`**: Classes de domínio do projeto com herança (ex: `Usuario.java`, `Cliente.java`, `Endereco.java`).
