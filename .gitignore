@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+### Ignorar arquivos de configurações:
+src/main/java/com/gwj/controller/AdminUserSeeder.java
