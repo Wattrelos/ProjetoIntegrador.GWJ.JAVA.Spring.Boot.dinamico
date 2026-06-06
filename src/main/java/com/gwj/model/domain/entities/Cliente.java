@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Entity;
 
+@Entity
 public class Cliente extends Usuario { // A classe Cliente é uma especialização de Usuario, herdando atributos e métodos
 	
 	// Atributos primitivos:
@@ -16,6 +18,14 @@ public class Cliente extends Usuario { // A classe Cliente é uma especializaç�
 	// Atributos complexos:
 	@ManyToMany
 	private List<Endereco> listaEndereco = new ArrayList<>(); // Declaração da lista de Endereço. Note que inicializei a lista com new ArrayList<>() para evitar que o método tente remover algo de uma lista nula.
+
+	public Cliente() {
+		super();
+		// Atribui o perfil padrão de Cliente (ID 4, conforme banco de dados)
+		Perfil perfilPadrao = new Perfil();
+		perfilPadrao.setId(4L);
+		this.setPerfil(perfilPadrao);
+	}
 
 	// Métodos:
 

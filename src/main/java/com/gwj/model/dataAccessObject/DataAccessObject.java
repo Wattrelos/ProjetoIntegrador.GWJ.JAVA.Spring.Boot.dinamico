@@ -19,6 +19,8 @@ import com.gwj.model.domain.IEntity;
 
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
 
 public class DataAccessObject {
     private String tablePrefix = AppConfig.TABLE_PREFIX;
@@ -107,12 +109,11 @@ public class DataAccessObject {
                         // Pula valores nulos para permitir que o banco use o DEFAULT (ex: data_cadastro)
                         if (value == null) continue;
 
-                        String colName = convertPascalCaseToSnakeCase(method.getName().substring(3));
+                        boolean isEntity = value instanceof IEntity;
+                        String colName = getColumnName(clazz, method, isEntity);
 
                         // Se o retorno for uma Entidade, ajusta o nome da coluna e pega o ID
-                        if (value instanceof IEntity) {
-                            colName += "_id";
-                            
+                        if (isEntity) {
                             value = ((IEntity) value).getId();
                         }
 
@@ -125,6 +126,9 @@ public class DataAccessObject {
         }
 
         String sql = buildInsertSql(clazz, columns);
+        
+        System.out.println("Executing INSERT: " + sql);
+        System.out.println("With values: " + values);
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
@@ -201,6 +205,9 @@ public class DataAccessObject {
                         
                         String sqlM2M = "INSERT IGNORE INTO `" + tableLink + "` (`" + fkParent + "`, `" + fkChild + "`) VALUES (?, ?)";
                         
+                        System.out.println("Executing M2M INSERT: " + sqlM2M);
+                        System.out.println("With values: [" + instance.getId() + ", " + child.getId() + "]");
+                        
                         try (PreparedStatement pstmt = conn.prepareStatement(sqlM2M)) {
                             pstmt.setLong(1, instance.getId());
                             pstmt.setLong(2, child.getId());
@@ -273,7 +280,7 @@ public class DataAccessObject {
         String where = buildWhereClause(entity);
         String tableName = tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName());
         String sql = "SELECT * FROM `" + tableName + "` " + where;
-       // System.out.println("DataAccessObject: sql = " + sql);
+        System.out.println("DataAccessObject [READ]: Executando SQL -> " + sql);
 
         // 2. Abre a conexão no try-with-resources para garantir o fechamento automático
         try (Connection conn = ConnectionDB.getInstance().getConnection();
@@ -318,7 +325,8 @@ public class DataAccessObject {
                 // SE FOR UMA LISTA, PULE! (Trataremos fora deste loop)
                 if (Collection.class.isAssignableFrom(paramType)) continue;
 
-                String columnName = convertPascalCaseToSnakeCase(method.getName().substring(3));
+                boolean isEntity = IEntity.class.isAssignableFrom(paramType);
+                String columnName = getColumnName(currentClazz, method, isEntity);
                 Object value = null;
                 try {
                     value = rs.getObject(columnName);
@@ -512,13 +520,52 @@ public class DataAccessObject {
         return snakeCase;
     }
 
+    private String getColumnName(Class<?> clazz, Method method, boolean isEntityValue) {
+        String methodName = method.getName();
+        String propName = methodName.startsWith("is") ? methodName.substring(2) : methodName.substring(3);
+        String fieldName = propName.substring(0, 1).toLowerCase() + propName.substring(1);
+
+        Field field = getFieldInHierarchy(clazz, fieldName);
+        if (field != null) {
+            if (field.isAnnotationPresent(JoinColumn.class)) {
+                String name = field.getAnnotation(JoinColumn.class).name();
+                if (name != null && !name.isEmpty()) return name;
+            }
+            if (field.isAnnotationPresent(Column.class)) {
+                String name = field.getAnnotation(Column.class).name();
+                if (name != null && !name.isEmpty()) return name;
+            }
+        }
+
+        // Fallback padrão
+        String colName = convertPascalCaseToSnakeCase(propName);
+        if (isEntityValue) {
+            colName += "_id";
+        }
+        return colName;
+    }
+
+    private Field getFieldInHierarchy(Class<?> clazz, String fieldName) {
+        Class<?> current = clazz;
+        while (current != null && current != Object.class) {
+            try {
+                return current.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                current = current.getSuperclass();
+            }
+        }
+        return null;
+    }
 
     // Método buildWhereClause (início): -----------------------------------------------------------------------------------------------------------------------------------------------------------   
     private String buildWhereClause(IEntity entity) {
         StringBuilder where = new StringBuilder();
         Class<?> clazz = entity.getClass();
-        // Usamos getMethods para pegar getters da classe atual e das herdadas (ex: nome, sobrenome)
-        Method[] methods = clazz.getMethods();
+        
+        // Usando getDeclaredMethods() em vez de getMethods() 
+        // Isso evita incluir colunas da classe pai (ex: perfil_id de Usuario) 
+        // na query da classe filha (ex: tab_cliente), o que causa o erro Unknown column.
+        Method[] methods = clazz.getDeclaredMethods();
 
         for (Method method : methods) {
             if (isGetter(method)) { // Verifica se é um método get.
@@ -531,11 +578,11 @@ public class DataAccessObject {
                         // Remove 'get' ou 'is', converte para snake_case
                         // String fieldName = method.getName().startsWith("get") ? 3 : 2;
                         // Chama o conversor passando o nome e o tipo do parâmetro
-                        String columnName = convertPascalCaseToSnakeCase(method.getName().substring(3));
+                        boolean isEntity = value instanceof IEntity;
+                        String columnName = getColumnName(clazz, method, isEntity);
                         
                         // Trata se o valor for uma entidade para buscar pelo _id
-                        if (value instanceof IEntity) {
-                            columnName += "_id";
+                        if (isEntity) {
                             value = ((IEntity) value).getId();
                         }
 
@@ -551,6 +598,7 @@ public class DataAccessObject {
                         } else {
                             where.append("`").append(columnName).append("` = ").append(value);
                         }
+                        System.out.println("DataAccessObject [WHERE]: Adicionado filtro -> " + columnName + " = " + value);
                     }
                 } catch (Exception e) {
                     // Log de erro silencioso para métodos que falharem
@@ -744,11 +792,11 @@ public class DataAccessObject {
                     // FILTRO REFINADO:
                     // Se for null, ignoramos (presume-se que não foi alterado no formulário)
                     if (value != null) {
-                        String colName = convertPascalCaseToSnakeCase(method.getName().substring(3));
+                        boolean isEntity = value instanceof IEntity;
+                        String colName = getColumnName(clazz, method, isEntity);
                         
                         // Se o valor for uma Entidade, ajusta para salvar apenas o ID
-                        if (value instanceof IEntity) {
-                            colName += "_id";
+                        if (isEntity) {
                             value = ((IEntity) value).getId();
                         }
 
@@ -765,6 +813,9 @@ public class DataAccessObject {
 
         String sql = "UPDATE `" + tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName()) +
                     "` SET " + String.join(", ", setClauses) + " WHERE id = ?";
+
+        System.out.println("Executing UPDATE: " + sql);
+        System.out.println("With values: " + values);
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             int i = 1;
@@ -798,6 +849,8 @@ public class DataAccessObject {
                 String tableName = tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName());
                 String sql = "DELETE FROM `" + tableName + "` WHERE id = ?"; // Use crases por segurança
 
+                System.out.println("Executing DELETE: " + sql + " | ID: " + entity.getId());
+                
                 try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setLong(1, entity.getId());
                     int affected = pstmt.executeUpdate();

@@ -6,6 +6,8 @@
     <title>Sobre Nós - GWJ</title>
     <!-- Se quiser um CSS específico só para esta página -->
     <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
+    <!-- Script responsável por gerenciar a exclusão via modal e API DELETE -->
+    <script th:src="@{/js/delete.js}" defer></script>
 </head>
 <body>
 
@@ -13,11 +15,18 @@
         Isso fará com que o aside suma e o main ocupe 100% da largura. -->
 
     <section layout:fragment="content">
-        <div class="data-table">
+        <div class="data-table" th:with="permissao=${
+            entidadeNome == 'Cliente' ? 'GERENCIAR_CLIENTES' : 
+            (entidadeNome == 'Servico' ? 'GERENCIAR_SERVICOS' : 
+            (entidadeNome == 'Agenda' ? 'AGENDAR_HORARIO' : 'ADMIN_ONLY'))}">
             <h3 th:text="'Listagem de ' + ${entidadeNome}"></h3>
             
-            <div class="mb-3">
-                <a th:href="@{/admin/create/{entity}(entity=${entidadeNome})}" class="btn btn-success">Criar <span th:text="${entidadeNome}"></span></a>
+            <!-- Exibe o botão Criar apenas se o usuário estiver logado E tiver a permissão correta (ou for Admin) -->
+            <div class="mb-3" th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil?.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
+                
+                <a th:href="@{/MRYnZpAsC9sp/create/{entity}(entity=${entidadeNome})}" class="btn btn-success">
+                    Criar <span th:text="${entidadeNome}"></span>
+                </a>
             </div>
 
             <table>
@@ -34,15 +43,37 @@
                             <div th:replace="~{admin/recursiveField :: recursiveField(${item[col]})}"></div>
                         </td>
                         <td>
-                            <!-- Link formatado corretamente -->
-                            <!--<a th:href="@{/detalhe/(id=${item.id})}" th:text="'Ver'"></a> -->
-                            <a th:href="@{/detalhe/{entity}(entity=${entidadeNome}, id=${item.id})}" th:text="'Ver'"></a>
+                            <!-- Corrigido para /MRYnZpAsC9sp/detalhe e adicionado classes do Bootstrap -->
+                            <a th:href="@{/MRYnZpAsC9sp/detalhe/{entity}(entity=${entidadeNome}, id=${item.id})}" class="btn btn-sm btn-info text-white" th:text="'Ver'"></a>
                             
-                        </td>
+                            <!-- Botões Editar e Excluir visíveis apenas com as devidas permissões -->
+                            <th:block th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
+                                <a th:href="@{/MRYnZpAsC9sp/editar/{entity}(entity=${entidadeNome}, id=${item.id})}" class="btn btn-sm btn-warning text-dark">Editar</a>
+                                <button type="button" class="btn btn-sm btn-danger text-white btn-delete" th:attr="data-id=${item.id}, data-entity=${entidadeNome}">Excluir</button>
+                            </th:block>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            
+            <!-- Modal de Confirmação de Exclusão (Bootstrap) -->
+            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                        <div class="modal-body">
+                            Tem certeza de que deseja excluir este registro permanentemente? Esta ação não poderá ser desfeita.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Sim, Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 

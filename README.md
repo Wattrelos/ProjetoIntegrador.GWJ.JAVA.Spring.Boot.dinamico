@@ -86,3 +86,12 @@ Fase 2.
 2. Impacto nos formulários: Agora, no create.html e edit.html, o loop th:each="coluna : ${colunas}" não encontrará mais atributos como enderecos ou telefones, evitando a criação de inputs inválidos.
 Preservação da Listagem: Note que não alteramos o método listar. Isso é importante porque na listagem (e nos detalhes), você já possui lógica no recursiveField.html para exibir essas coleções de forma elegante (como um dropdown), o que é desejável para visualização.
 3. Dica de especialista: Caso você precise cadastrar essas coleções no futuro, o ideal seria criar uma tela de "Gestão de Itens" separada ou usar um componente de sub-formulário dinâmico com JavaScript, mas para um CRUD enxuto, ignorá-las no formulário principal é a prática padrão.
+
+Fase 3 (Painel Administrativo & Tratamento de Erros):
+1. **Painel Administrativo Funcional:** O painel administrativo foi integrado com sucesso utilizando o padrão *Template/Decorator* do Thymeleaf (layouts e fragments). Isso permite menus dinâmicos e reaproveitamento de cabeçalhos genéricos.
+2. **Tratamento Global de Exceções (`GlobalExceptionHandler`)**: Utilização de `@ControllerAdvice` para interceptar e capturar erros em toda a aplicação (Padrão Interceptor).
+3. **Páginas de Erro Amigáveis**: Redirecionamento dinâmico para uma view `error.html` customizada, tratando:
+   - **Erro 404 (`NoHandlerFoundException`)**: Páginas e rotas que não existem.
+   - **Erro 404 (`NoResourceFoundException`)**: Arquivos estáticos ausentes (CSS, JS, requisições automáticas do Chrome DevTools), limpando o console de logs massivos de erro.
+   - **Erro 500 (`Exception` Genérica)**: Captura de erros internos do servidor. O stacktrace é impresso apenas no console para o desenvolvedor, enquanto o usuário vê uma tela elegante informando o problema.
+4. **Segurança por Obscuridade:** A rota de acesso principal ao painel administrativo foi mascarada de `/admin/` para `/MRYnZpAsC9sp/` como medida de proteção contra bots e varreduras automatizadas.

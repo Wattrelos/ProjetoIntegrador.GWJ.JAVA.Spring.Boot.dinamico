@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Página de Erro - GWJ</title>
+</head>
+<body>
+    <section layout:fragment="content" class="container mt-5">
+        <div class="alert alert-danger text-center shadow p-5 rounded">
+            <h1 class="display-1 fw-bold" th:text="${status ?: 'Erro'}">500</h1>
+            <h2 th:text="${error ?: 'Erro Inesperado'}">Internal Server Error</h2>
+            <hr>
+            <p class="lead" th:text="${message ?: 'Ocorreu um problema ao processar sua requisição.'}">
+                Mensagem de erro detalhada vai aqui.
+            </p>
+            <p class="text-muted">Caminho: <span th:text="${path ?: 'Desconhecido'}">/</span></p>
+            
+            <a th:href="@{/home}" class="btn btn-primary mt-3">Voltar para a Home</a>
+            <a th:href="@{/MRYnZpAsC9sp}" class="btn btn-secondary mt-3">Ir para o Painel</a>
+        </div>
+    </section>
+</body>
+</html>

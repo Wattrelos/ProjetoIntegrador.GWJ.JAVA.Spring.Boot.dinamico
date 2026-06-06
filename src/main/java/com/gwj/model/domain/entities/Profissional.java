@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Entity;
 
+@Entity
 public class Profissional extends Usuario{
     // Atributos primitivos:
 	protected String nome;
@@ -15,6 +17,14 @@ public class Profissional extends Usuario{
     // Atributos complexos:
     @ManyToMany
 	private List<Endereco> listaEndereco = new ArrayList<>(); // Declaração da lista de Endereço.
+
+	public Profissional() {
+		super();
+		// Atribui o perfil padrão de Barbeiro/Profissional (ID 3, conforme banco de dados)
+		Perfil perfilPadrao = new Perfil();
+		perfilPadrao.setId(3L);
+		this.setPerfil(perfilPadrao);
+	}
 
     // Métodos
     public String getNome() {

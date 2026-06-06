@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gwj.model.dataAccessObject.DataAccessObject;
 import com.gwj.model.dataTransferObject.EntityMapper;
 import com.gwj.model.domain.IEntity;
+import com.gwj.model.domain.entities.Usuario;
 import com.gwj.model.domain.factory.SimpleObjectFactory;
 
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,15 @@ public class JsonController {
             IEntity entidade = SimpleObjectFactory.create(entityName);
 
             try {
+                IEntity entidadePreenchida = EntityMapper.fillEntity(entidade, request);
+                
+                // Intercepta e criptografa a senha caso a entidade em questão seja um Usuario (ou Cliente/Profissional)
+                if (entidadePreenchida instanceof Usuario) {
+                    ((Usuario) entidadePreenchida).criptografarSenha();
+                }
+
                 // Agora o DAO retorna a entidade populada ou lança erro
-                IEntity entidadeSalva = dao.create(EntityMapper.fillEntity(entidade, request));
+                IEntity entidadeSalva = dao.create(entidadePreenchida);
                 
                 // Retorna a entidade completa (ID incluso) como JSON
                 return ResponseEntity.ok(entidadeSalva);
@@ -82,8 +90,15 @@ public class JsonController {
         if (entityName != null && !entityName.isBlank() && entityId != null) {
             IEntity entidade = SimpleObjectFactory.create(entityName);
             
+            IEntity entidadePreenchida = EntityMapper.fillEntity(entidade, request);
+            
+            // Intercepta e criptografa a senha antes da atualização
+            if (entidadePreenchida instanceof Usuario) {
+                ((Usuario) entidadePreenchida).criptografarSenha();
+            }
+
             // O EntityMapper continua funcionando com o HttpServletRequest que o Spring injeta
-            Long primaryKey = dao.update(EntityMapper.fillEntity(entidade, request));
+            Long primaryKey = dao.update(entidadePreenchida);
 
             System.out.println("Update: Retornou de dataAccessObject.update"); // Mensagem de debug para o console
             System.out.println("Update: Long = " + primaryKey); // Mensagem de debug para o console

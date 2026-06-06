@@ -7,7 +7,7 @@
         <!-- CASO A: É uma Entidade Única (Link Direto) -->
         <th:block th:if="${valor.class.name.startsWith(@environment.getProperty('app.entity.package'))}">
             <span>
-                <a th:href="@{/admin/listar/{entidade}(entidade=${valor.getClass().getSimpleName()}, id=${valor.id})}"
+                <a th:href="@{/MRYnZpAsC9sp/listar/{entidade}(entidade=${valor.getClass().getSimpleName()}, id=${valor.id})}"
                 th:text="${valor.getClass().getSimpleName() + ' [ID: ' + valor.id + ']'}"
                 title="Clique para ver detalhes">
                 </a>
@@ -20,7 +20,7 @@
                 <option value="">-- Ver lista --</option>
                 <option th:each="subItem : ${valor}"
                         th:with="isEntity=${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))}"
-                        th:value="${isEntity} ? @{/admin/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
+                        th:value="${isEntity} ? @{/MRYnZpAsC9sp/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
                         th:text="${isEntity} ? ${subItem.getClass().getSimpleName() + ' [ID: ' + subItem.id + ']'} : ${subItem}">
                 </option>
             </select>

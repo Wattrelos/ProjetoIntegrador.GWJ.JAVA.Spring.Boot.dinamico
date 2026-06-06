@@ -18,6 +18,7 @@ Aqui estão as regras de negócio, os padrões de projeto e o controle de fluxo 
 - **`controller/`**
   - Contém os controladores do Spring MVC.
   - **Destaque:** `GenericViewController.java` (Orquestra as requisições HTTP de forma dinâmica utilizando Reflexão e Factory).
+  - **Destaque:** `GlobalExceptionHandler.java` (Anotado com `@ControllerAdvice` atua como interceptor para tratamento centralizado de erros 404, 500 e recursos estáticos ausentes).
 
 - **`model/`** (Onde a maior parte da lógica e padrões GoF se concentram):
   - **`domain/entities/`**: Classes de domínio do projeto com herança (ex: `Usuario.java`, `Cliente.java`, `Endereco.java`).
@@ -57,3 +58,4 @@ Aqui se encontram as views, estilos, scripts e configurações do Spring.
 *   **Factory**: Construção dinâmica de instâncias de classes de domínio.
 *   **DAO**: Abstração e encapsulamento do acesso ao banco de dados utilizando *Java Reflection* para persistência genérica e recursiva (suportando herança).
 *   **Decorator / Template View**: Arquitetura de layouts e fragmentos com Thymeleaf.
+*   **Interceptor**: Captura e tratamento centralizado de exceções e requisições HTTP mal sucedidas.

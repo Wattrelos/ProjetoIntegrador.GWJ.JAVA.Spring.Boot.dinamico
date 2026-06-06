@@ -42,7 +42,7 @@ public class GenericViewController {
         return fields;
     }
 
-    @GetMapping("/admin/create/{entity}")
+    @GetMapping("/MRYnZpAsC9sp/create/{entity}")
     public String create(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
 
 
@@ -65,7 +65,7 @@ public class GenericViewController {
         return "error"; // Ou redirecionamento para lista
     }
 
-    @GetMapping("/admin/listar/{entity}")
+    @GetMapping("/MRYnZpAsC9sp/listar/{entity}")
     public String listar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         IEntity entidadeBase = SimpleObjectFactory.create(entityName);
         IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); // request para preencher os atributos das classes com valores, que serão utilizado para formar o WHERE. Se requeste não tiver valores, traz todos os registros.

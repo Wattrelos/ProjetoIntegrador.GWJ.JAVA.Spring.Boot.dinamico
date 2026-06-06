@@ -6,10 +6,12 @@ import java.util.List;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gwj.model.domain.IEntity;
 
+@Entity
 public class Agenda implements IEntity{
 
     // Atributos simples;

@@ -16,8 +16,8 @@ import com.gwj.AppConfig;
 @Controller
 public class AdminDashboardController {
 
-    // Mapeia a rota "/admin" e "/admin/" para o dashboard administrativo
-    @GetMapping({"/admin", "/admin/"})
+    // Mapeia a rota "/MRYnZpAsC9sp" e "/MRYnZpAsC9sp/" para o dashboard administrativo
+    @GetMapping({"/MRYnZpAsC9sp", "/MRYnZpAsC9sp/"})
     public String listarEntidades(Model model) throws IOException {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         
