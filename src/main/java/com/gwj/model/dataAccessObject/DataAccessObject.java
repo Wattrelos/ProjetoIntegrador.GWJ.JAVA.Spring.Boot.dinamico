@@ -21,6 +21,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.JoinTable;
 
 public class DataAccessObject {
     private String tablePrefix = AppConfig.TABLE_PREFIX;
@@ -203,6 +207,13 @@ public class DataAccessObject {
                         String fkParent = convertPascalCaseToSnakeCase(instance.getClass().getSimpleName()) + "_id";
                         String fkChild = convertPascalCaseToSnakeCase(childClass.getSimpleName()) + "_id";
                         
+                        if (field.isAnnotationPresent(JoinTable.class)) {
+                            JoinTable joinTable = field.getAnnotation(JoinTable.class);
+                            if (!joinTable.name().isEmpty()) tableLink = joinTable.name();
+                            if (joinTable.joinColumns().length > 0) fkParent = joinTable.joinColumns()[0].name();
+                            if (joinTable.inverseJoinColumns().length > 0) fkChild = joinTable.inverseJoinColumns()[0].name();
+                        }
+
                         String sqlM2M = "INSERT IGNORE INTO `" + tableLink + "` (`" + fkParent + "`, `" + fkChild + "`) VALUES (?, ?)";
                         
                         System.out.println("Executing M2M INSERT: " + sqlM2M);
@@ -278,8 +289,12 @@ public class DataAccessObject {
         
         // 1. Monta o WHERE dinâmico
         String where = buildWhereClause(entity);
-        String tableName = tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName());
-        String sql = "SELECT * FROM `" + tableName + "` " + where;
+        String tableName = getTableName(clazz);
+        String sql = new QueryBuilder()
+                .select("*")
+                .from("`" + tableName + "`")
+                .where(where)
+                .build();
         System.out.println("DataAccessObject [READ]: Executando SQL -> " + sql);
 
         // 2. Abre a conexão no try-with-resources para garantir o fechamento automático
@@ -327,6 +342,10 @@ public class DataAccessObject {
 
                 boolean isEntity = IEntity.class.isAssignableFrom(paramType);
                 String columnName = getColumnName(currentClazz, method, isEntity);
+                
+                String propName = method.getName().startsWith("is") ? method.getName().substring(2) : method.getName().substring(3);
+                String fieldName = propName.substring(0, 1).toLowerCase() + propName.substring(1);
+                Field targetField = getFieldInHierarchy(currentClazz, fieldName);
                 Object value = null;
                 try {
                     value = rs.getObject(columnName);
@@ -354,8 +373,8 @@ public class DataAccessObject {
                             convertedValue = childInstance;
                             
                         } else {
-                            // 3. Tipos comuns (String, Long, BigDecimal, etc.)
-                            convertedValue = convertToTargetType(value, paramType);
+                            // 3. Tipos comuns (String, Long, BigDecimal, etc.)                            
+                            convertedValue = convertToTargetType(value, paramType, targetField);
                         }
 
                         method.invoke(instance, convertedValue);
@@ -405,8 +424,12 @@ public class DataAccessObject {
                 return; 
             }
 
-            String parentTable = tablePrefix + convertPascalCaseToSnakeCase(superClass.getSimpleName());
-            String sqlParent = "SELECT * FROM `" + parentTable + "` WHERE id = ?";
+        String parentTable = getTableName(superClass);
+            String sqlParent = new QueryBuilder()
+                    .select("*")
+                    .from("`" + parentTable + "`")
+                    .where("id = ?")
+                    .build();
             
             try (PreparedStatement stmtP = conn.prepareStatement(sqlParent)) {
                 stmtP.setLong(1, currentId); // Usa o ID garantido
@@ -438,13 +461,17 @@ public class DataAccessObject {
                 String sql;
                 if (isManyToMany) {
                     // N:N - Usa tabela de ligação (ex: aluno_curso)
-                    sql = buildM2mSelectSql(currentClazz, childClass);
+                    sql = buildM2mSelectSql(currentClazz, childClass, field);
                 } else {
                     // 1:N - Busca direto na tabela filha usando a FK
                     // Ex: SELECT * FROM veiculo WHERE proprietario_id = ?
                     String fkColumn = convertPascalCaseToSnakeCase(currentClazz.getSimpleName()) + "_id";
-                    String childTable = tablePrefix + convertPascalCaseToSnakeCase(childClass.getSimpleName());
-                    sql = "SELECT * FROM `" + childTable + "` WHERE `" + fkColumn + "` = ?";
+                String childTable = getTableName(childClass);
+                    sql = new QueryBuilder()
+                            .select("*")
+                            .from("`" + childTable + "`")
+                            .where("`" + fkColumn + "` = ?")
+                            .build();
                 }
 
                 try (PreparedStatement stmtAssoc = conn.prepareStatement(sql)) {
@@ -469,8 +496,12 @@ public class DataAccessObject {
 //  -----------------------------------------------------------------------------------------------------------------------------------------------------------
     private void readEntityComplete(IEntity entity, Connection conn) throws Exception {
     Class<?> clazz = entity.getClass();
-    String tableName = tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName());
-    String sql = "SELECT * FROM `" + tableName + "` WHERE id = ?";
+    String tableName = getTableName(clazz);
+    String sql = new QueryBuilder()
+            .select("*")
+            .from("`" + tableName + "`")
+            .where("id = ?")
+            .build();
 
     // IMPORTANTE: Não use ConnectionDB.getInstance() aqui, use a 'conn' recebida!
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -520,6 +551,14 @@ public class DataAccessObject {
         return snakeCase;
     }
 
+    private String getTableName(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(Table.class)) {
+            String name = clazz.getAnnotation(Table.class).name();
+            if (name != null && !name.isEmpty()) return name;
+        }
+        return tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName());
+    }
+
     private String getColumnName(Class<?> clazz, Method method, boolean isEntityValue) {
         String methodName = method.getName();
         String propName = methodName.startsWith("is") ? methodName.substring(2) : methodName.substring(3);
@@ -559,7 +598,7 @@ public class DataAccessObject {
 
     // Método buildWhereClause (início): -----------------------------------------------------------------------------------------------------------------------------------------------------------   
     private String buildWhereClause(IEntity entity) {
-        StringBuilder where = new StringBuilder();
+        List<String> conditions = new ArrayList<>();
         Class<?> clazz = entity.getClass();
         
         // Usando getDeclaredMethods() em vez de getMethods() 
@@ -574,10 +613,6 @@ public class DataAccessObject {
 
                     // Só adiciona ao WHERE se o valor não for nulo/vazio/zero
                     if (isValidValue(value)) {
-                        // System.out.println("DataAccessObject: isValidValue = " + value);
-                        // Remove 'get' ou 'is', converte para snake_case
-                        // String fieldName = method.getName().startsWith("get") ? 3 : 2;
-                        // Chama o conversor passando o nome e o tipo do parâmetro
                         boolean isEntity = value instanceof IEntity;
                         String columnName = getColumnName(clazz, method, isEntity);
                         
@@ -586,17 +621,11 @@ public class DataAccessObject {
                             value = ((IEntity) value).getId();
                         }
 
-                        if (where.length() == 0) {
-                            where.append(" WHERE ");
-                        } else {
-                            where.append(" AND ");
-                        }
-
                         // Trata aspas para Strings e formatação para números
                         if (value instanceof String) {
-                            where.append("`").append(columnName).append("` LIKE '%").append(value).append("%'");
+                            conditions.add("`" + columnName + "` LIKE '%" + value + "%'");
                         } else {
-                            where.append("`").append(columnName).append("` = ").append(value);
+                            conditions.add("`" + columnName + "` = " + value);
                         }
                         System.out.println("DataAccessObject [WHERE]: Adicionado filtro -> " + columnName + " = " + value);
                     }
@@ -605,7 +634,7 @@ public class DataAccessObject {
                 }
             }
         }
-        return where.toString();
+        return String.join(" AND ", conditions);
     }
     // Método buildWhereClause (fim): -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -639,7 +668,7 @@ public class DataAccessObject {
                         // --- LÓGICA N:N (Tabela de Ligação) ---
                         // Se não encontrou o setter da FK, assume que há uma tabela intermediária
                         try {
-                            String sqlM2M = buildM2mSelectSql(instance.getClass(), childClass);
+                            String sqlM2M = buildM2mSelectSql(instance.getClass(), childClass, field);
                             
                             try (PreparedStatement stmt = conn.prepareStatement(sqlM2M)) {
                                 stmt.setLong(1, instance.getId());
@@ -668,13 +697,20 @@ public class DataAccessObject {
    // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Este método garante que o valor vindo do banco seja compatível com o tipo do método setter. A conversão seja feita antes do invoke.
-    private Object convertToTargetType(Object value, Class<?> targetType) {
+    private Object convertToTargetType(Object value, Class<?> targetType, Field field) {
         
         if (value == null) return null; // Se o valor for nulo, ignora.
         if (targetType.isInstance(value)) return value; // Se o valor for coleção, ignora, pois será tratado em outro local.
-        // Verificação inicial ou dentro do default
+        
         if (targetType.isEnum()) {
-            return Enum.valueOf((Class<Enum>) targetType, value.toString());
+            if (field != null && field.isAnnotationPresent(Enumerated.class)) {
+                EnumType enumType = field.getAnnotation(Enumerated.class).value();
+                if (enumType == EnumType.ORDINAL) {
+                    int ordinal = (value instanceof Number) ? ((Number) value).intValue() : Integer.parseInt(value.toString());
+                    return targetType.getEnumConstants()[ordinal];
+                }
+            }
+            return Enum.valueOf((Class<Enum>) targetType, value.toString().toUpperCase().trim());
         }
         // System.out.println("DataAccessObject.convertToTargetType: Tipo de atributo = " + targetType.getSimpleName());
 
@@ -706,9 +742,6 @@ public class DataAccessObject {
                 default -> 0;
             };
             default -> {
-                if (targetType.isEnum()) {
-                    yield Enum.valueOf((Class<Enum>) targetType, value.toString().toUpperCase().trim());
-                }
                 yield value; // ou null
             }
         };
@@ -811,8 +844,12 @@ public class DataAccessObject {
         // Se não houver nada para atualizar nesta classe específica, pula para a próxima
         if (setClauses.isEmpty()) return;
 
-        String sql = "UPDATE `" + tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName()) +
-                    "` SET " + String.join(", ", setClauses) + " WHERE id = ?";
+        String tableName = getTableName(clazz);
+        String sql = new QueryBuilder()
+                    .update(tableName)
+                    .set(setClauses)
+                    .where("id = ?")
+                    .build();
 
         System.out.println("Executing UPDATE: " + sql);
         System.out.println("With values: " + values);
@@ -846,8 +883,11 @@ public class DataAccessObject {
             conn.setAutoCommit(false); 
 
             for (Class<?> clazz : hierarchy) {
-                String tableName = tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName());
-                String sql = "DELETE FROM `" + tableName + "` WHERE id = ?"; // Use crases por segurança
+                String tableName = getTableName(clazz);
+                String sql = new QueryBuilder()
+                                .deleteFrom(tableName)
+                                .where("id = ?")
+                                .build();
 
                 System.out.println("Executing DELETE: " + sql + " | ID: " + entity.getId());
                 
@@ -890,21 +930,32 @@ public class DataAccessObject {
             : str.substring(0, 1).toUpperCase() + str.substring(1);
     }
     private String buildInsertSql(Class<?> clazz, List<String> columns) {
-        return "INSERT INTO `" + tablePrefix + convertPascalCaseToSnakeCase(clazz.getSimpleName()) 
-            + "` (" + String.join(", ", columns) + ") VALUES (" 
-            + String.join(", ", Collections.nCopies(columns.size(), "?")) + ")";
+        String tableName = getTableName(clazz);
+        return new QueryBuilder()
+                .insertInto(tableName)
+                .columns(columns)
+                .build();
     }
 
-    private String buildM2mSelectSql(Class<?> parentClass, Class<?> childClass) {
-        String tableChild = tablePrefix + convertPascalCaseToSnakeCase(childClass.getSimpleName());
+    private String buildM2mSelectSql(Class<?> parentClass, Class<?> childClass, Field field) {
+        String tableChild = getTableName(childClass);
         String tableLink = tablePrefix + convertPascalCaseToSnakeCase(parentClass.getSimpleName()) + "_" + convertPascalCaseToSnakeCase(childClass.getSimpleName());
         String fkChild = convertPascalCaseToSnakeCase(childClass.getSimpleName()) + "_id";
         String fkParent = convertPascalCaseToSnakeCase(parentClass.getSimpleName()) + "_id";
         
-        
-        return "SELECT c.* FROM `" + tableChild + "` c " +
-            "INNER JOIN `" + tableLink + "` l ON c.id = l." + fkChild + " " +
-            "WHERE l." + fkParent + " = ?";
+        if (field != null && field.isAnnotationPresent(JoinTable.class)) {
+            JoinTable joinTable = field.getAnnotation(JoinTable.class);
+            if (!joinTable.name().isEmpty()) tableLink = joinTable.name();
+            if (joinTable.joinColumns().length > 0) fkParent = joinTable.joinColumns()[0].name();
+            if (joinTable.inverseJoinColumns().length > 0) fkChild = joinTable.inverseJoinColumns()[0].name();
+        }
+
+        return new QueryBuilder()
+                .select("c.*")
+                .from("`" + tableChild + "` c")
+                .innerJoin("`" + tableLink + "` l", "c.id = l." + fkChild)
+                .where("l." + fkParent + " = ?")
+                .build();
     }
     // Valida se o método é um getter padrão Java Bean.
     private boolean isGetter(Method method) {
