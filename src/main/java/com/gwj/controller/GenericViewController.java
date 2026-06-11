@@ -30,13 +30,15 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GenericViewController {
     private final DataAccessObject dao = new DataAccessObject();
 
-    // Método auxiliar recursivo para buscar atributos da classe atual e de suas superclasses
+    // Método auxiliar recursivo para buscar atributos da classe atual e de suas
+    // superclasses
     private List<Field> getAllFields(Class<?> type) {
         List<Field> fields = new ArrayList<>();
         Class<?> current = type;
         while (current != null && IEntity.class.isAssignableFrom(current) && current != Object.class) {
-            // Insere no início (posição 0) para que os campos da classe pai fiquem no topo do formulário
-            fields.addAll(0, Arrays.asList(current.getDeclaredFields())); 
+            // Insere no início (posição 0) para que os campos da classe pai fiquem no topo
+            // do formulário
+            fields.addAll(0, Arrays.asList(current.getDeclaredFields()));
             current = current.getSuperclass();
         }
         return fields;
@@ -45,36 +47,39 @@ public class GenericViewController {
     @GetMapping("/MRYnZpAsC9sp/create/{entity}")
     public String create(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
 
-
         if (entityName != null && !entityName.isBlank()) {
-            IEntity entidadeBase = SimpleObjectFactory.create(entityName); // Instanciar um objeto vazio (o corpo será utilizado para montar o formulário).
+            IEntity entidadeBase = SimpleObjectFactory.create(entityName); // Instanciar um objeto vazio (o corpo será
+                                                                           // utilizado para montar o formulário).
 
             // Reflexão para os cabeçalhos
             List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
-                                        .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
-                                        .map(Field::getName)
-                                        .toList();
+                    .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
+                    .map(Field::getName)
+                    .toList();
 
             model.addAttribute("title", "Formulario de cadastro");
             model.addAttribute("colunas", colunas);
             model.addAttribute("entidadeNome", entityName);
-            
+
             return "admin/create";
         }
-        
+
         return "error"; // Ou redirecionamento para lista
     }
 
     @GetMapping("/MRYnZpAsC9sp/listar/{entity}")
     public String listar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         IEntity entidadeBase = SimpleObjectFactory.create(entityName);
-        IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); // request para preencher os atributos das classes com valores, que serão utilizado para formar o WHERE. Se requeste não tiver valores, traz todos os registros.
+        IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); // request para preencher os atributos das
+                                                                         // classes com valores, que serão utilizado
+                                                                         // para formar o WHERE. Se requeste não tiver
+                                                                         // valores, traz todos os registros.
         List<IEntity> resultados = dao.read(filtro); // Traz todos os registros ou os encontrados no critério de busca.
 
         // Extrai os nomes dos atributos da classe para usar como cabeçalho
         List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
-                                    .map(Field::getName)
-                                    .collect(Collectors.toList());
+                .map(Field::getName)
+                .collect(Collectors.toList());
 
         model.addAttribute("lista", resultados);
         model.addAttribute("colunas", colunas);
@@ -82,11 +87,11 @@ public class GenericViewController {
         return "admin/listagem-dinamica";
     }
 
-    @GetMapping("admin/detalhe/{entity}")
+    @GetMapping("MRYnZpAsC9sp/detalhe/{entity}")
     public String detalhe(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         // 1. Pega o ID do request (parâmetro da URL ou form)
         String idParam = request.getParameter("id");
-        
+
         // 2. Tenta converter com segurança
         Long entityId = null;
         try {
@@ -99,33 +104,33 @@ public class GenericViewController {
 
         if (entityName != null && !entityName.isBlank() && entityId != null) {
             IEntity entidadeBase = SimpleObjectFactory.create(entityName);
-            
+
             // Preenche a entidade com os dados do request
-            IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); 
-            
+            IEntity filtro = EntityMapper.fillEntity(entidadeBase, request);
+
             List<IEntity> resultados = dao.read(filtro);
 
             // Reflexão para os cabeçalhos
             List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
-                                        .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
-                                        .map(Field::getName)
-                                        .toList();
+                    .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
+                    .map(Field::getName)
+                    .toList();
 
             model.addAttribute("detalhe", resultados);
             model.addAttribute("colunas", colunas);
             model.addAttribute("entidadeNome", entityName);
-            
+
             return "admin/detalhe";
         }
-        
+
         return "error"; // Ou redirecionamento para lista
     }
 
-    @GetMapping("admin/editar/{entity}")
+    @GetMapping("MRYnZpAsC9sp/editar/{entity}")
     public String editar(@PathVariable("entity") String entityName, HttpServletRequest request, Model model) {
         // 1. Pega o ID do request (parâmetro da URL ou form)
         String idParam = request.getParameter("id");
-        
+
         // 2. Tenta converter com segurança
         Long entityId = null;
         try {
@@ -138,24 +143,24 @@ public class GenericViewController {
 
         if (entityName != null && !entityName.isBlank() && entityId != null) {
             IEntity entidadeBase = SimpleObjectFactory.create(entityName);
-            
+
             // Preenche a entidade com os dados do request
-            IEntity filtro = EntityMapper.fillEntity(entidadeBase, request); 
-            
+            IEntity filtro = EntityMapper.fillEntity(entidadeBase, request);
+
             List<IEntity> resultados = dao.read(filtro);
 
             // Reflexão para os cabeçalhos
             List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
-                                        .map(Field::getName)
-                                        .toList();
+                    .map(Field::getName)
+                    .toList();
 
             model.addAttribute("detalhe", resultados);
             model.addAttribute("colunas", colunas);
             model.addAttribute("entidadeNome", entityName);
-            
+
             return "admin/edit";
         }
-        
+
         return "error"; // Ou redirecionamento para lista
     }
 }

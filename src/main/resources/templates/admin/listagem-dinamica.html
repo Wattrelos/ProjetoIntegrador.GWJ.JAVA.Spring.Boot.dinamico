@@ -47,7 +47,7 @@
                             <a th:href="@{/MRYnZpAsC9sp/detalhe/{entity}(entity=${entidadeNome}, id=${item.id})}" class="btn btn-sm btn-info text-white" th:text="'Ver'"></a>
                             
                             <!-- Botões Editar e Excluir visíveis apenas com as devidas permissões -->
-                            <th:block th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
+                            <th:block th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil?.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
                                 <a th:href="@{/MRYnZpAsC9sp/editar/{entity}(entity=${entidadeNome}, id=${item.id})}" class="btn btn-sm btn-warning text-dark">Editar</a>
                                 <button type="button" class="btn btn-sm btn-danger text-white btn-delete" th:attr="data-id=${item.id}, data-entity=${entidadeNome}">Excluir</button>
                             </th:block>

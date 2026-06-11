@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "perfis") // Mapeia para a tabela 'perfis' do MySQL
+@Table(name = "tab_perfil") // Mapeia para a tabela 'perfis' do MySQL
 public class Perfil implements IEntity {
 
     // Atributos privados em camelCase
@@ -23,7 +23,7 @@ public class Perfil implements IEntity {
 
     // Relacionamento: Um perfil possui muitas permissões
     @ManyToMany(fetch = FetchType.LAZY)
-    private List<Permissao> permissoes; 
+    private List<Permissao> permissoes;
 
     // Construtor padrão (obrigatório para frameworks)
     public Perfil() {

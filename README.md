@@ -30,6 +30,7 @@ Abra o arquivo src/main/resources/application.properties e adicione esta linha c
 propertiesserver.port=8089
 ```
 Observação: Se você alterar a porta, os comandos a seguir devem ser alterados pela porta nova, por exemplo, ao invés de 8080, digita 8089.
+```
 
 Se não houver mensagens de erro, basta testar no navegador:\
 Thymeleaf:
