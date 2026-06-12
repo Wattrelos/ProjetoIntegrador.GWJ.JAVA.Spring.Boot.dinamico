@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org" 
-    xmlns:layout="http://ultraq.net.nz"
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz"
     layout:decorate="~{admin/layouts/main-layout}">
+
 <head>
     <title>Cadastrar </title>
     <!-- Se quiser um CSS específico só para esta página -->
@@ -11,8 +11,10 @@
     <!-- Importa o script de máscaras universais -->
     <script th:src="@{/js/masks.js}" defer></script>
     <!-- Carrega o script do ViaCEP apenas se o formulário for de Endereço -->
-    <script th:if="${#strings.equalsIgnoreCase(entidadeNome, 'Endereco')}" th:src="@{/js/automatic-address.js}" defer></script>
+    <script th:if="${#strings.equalsIgnoreCase(entidadeNome, 'Endereco')}" th:src="@{/js/automatic-address.js}"
+        defer></script>
 </head>
+
 <body>
 
     <!-- Note que NÃO incluímos o bloco 'aside-content' aqui.
@@ -24,31 +26,54 @@
             <hr>
 
             <!-- Iteramos sobre a lista 'colunas' (que é sua List<IEntity>) -->
-            
-                <form class="row g-3 create-form">
-                    
-                    <!-- Campos ocultos essenciais para o funcionamento do Update -->
-                    <input type="hidden" name="entity" th:value="${entidadeNome}">
-                    <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
-                    <!-- O th:if filtra campos de controle interno que não devem ser preenchidos pelo usuário -->
-                    <div th:each="coluna : ${colunas}" th:if="${!#lists.contains({'id', 'token', 'ip', 'dataCadastro'}, coluna)}" class="col-md-6">
-                        <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
-                        
-                        <!-- A "mágica" do Thymeleaf: obj['nomeDaVariavel'] acessa o getter automaticamente -->
-                        <input type="text"
-                            class="form-control"
-                            th:id="${coluna}"
-                            th:name="${coluna}"
-                            th:value="${''}"
-                            >
-                    </div>
 
-                    <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary">Cadastrar</button>
-                    </div>
-                </form>
+            <form class="row g-3 create-form">
+
+                <!-- Campos ocultos essenciais para o funcionamento do Update -->
+                <input type="hidden" name="entity" th:value="${entidadeNome}">
+                <!-- Iteramos sobre os nomes das colunas extraídas por reflexão -->
+                <!-- O th:if filtra campos de controle interno que não devem ser preenchidos pelo usuário -->
+                <div th:each="coluna : ${colunas}"
+                    th:if="${!#lists.contains({'id', 'token', 'ip', 'dataCadastro'}, coluna)}" class="col-md-6">
+                    <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
+
+                    <!-- A "mágica" do Thymeleaf: obj['nomeDaVariavel'] acessa o getter automaticamente -->
+
+                    <!-- 1. Renderiza Select para Chaves Estrangeiras (ManyToOne) usando as listas injetadas -->
+                    <th:block th:if="${foreignKeys != null and foreignKeys.containsKey(coluna)}">
+                        <select class="form-select" th:id="${coluna}" th:name="${coluna}">
+                            <option value="">-- Selecione --</option>
+                            <option th:each="fkObj : ${foreignKeys[coluna]}" th:value="${fkObj.id}"
+                                th:text="${displayHelper.apply(fkObj)}"
+                                th:selected="${obj[coluna] != null and obj[coluna].id == fkObj.id}">
+                            </option>
+                        </select>
+                    </th:block>
+
+                    <!-- 2. Verifica se é um campo Booleano -->
+                    <th:block
+                        th:if="${(foreignKeys == null or !foreignKeys.containsKey(coluna)) and obj[coluna] instanceof T(java.lang.Boolean)}">
+                        <select class="form-select" th:id="${coluna}" th:name="${coluna}">
+                            <option value="true" th:selected="${obj[coluna] == true}">Sim</option>
+                            <option value="false" th:selected="${obj[coluna] == false}">Não</option>
+                        </select>
+                    </th:block>
+
+                    <!-- 3. Caso padrão: Input de texto comum -->
+                    <th:block
+                        th:if="${(foreignKeys == null or !foreignKeys.containsKey(coluna)) and !(obj[coluna] instanceof T(java.lang.Boolean))}">
+                        <input type="text" class="form-control" th:id="${coluna}" th:name="${coluna}"
+                            th:value="${obj[coluna] != null ? obj[coluna] : ''}">
+                    </th:block>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+            </form>
         </div>
     </section>
 
 </body>
+
 </html>

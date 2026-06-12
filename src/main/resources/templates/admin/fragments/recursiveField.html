@@ -3,13 +3,12 @@
     <span th:if="${valor == null}" class="text-muted">—</span>
 
     <th:block th:if="${valor != null}">
-        
+
         <!-- CASO A: É uma Entidade Única (Link Direto) -->
         <th:block th:if="${valor.class.name.startsWith(@environment.getProperty('app.entity.package'))}">
             <span>
                 <a th:href="@{/MRYnZpAsC9sp/listar/{entidade}(entidade=${valor.getClass().getSimpleName()}, id=${valor.id})}"
-                th:text="${valor}"
-                title="Clique para ver detalhes">
+                    th:text="${valor}" title="Clique para ver detalhes">
                 </a>
             </span>
         </th:block>
@@ -19,14 +18,15 @@
             <select class="form-select-sm" onchange="if(this.value) window.location.href=this.value">
                 <option value="">-- Ver lista --</option>
                 <option th:each="subItem : ${valor}"
-                        th:value="${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))} ? @{/MRYnZpAsC9sp/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
-                        th:text="${subItem}">
+                    th:value="${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))} ? @{/MRYnZpAsC9sp/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
+                    th:text="${subItem.nome}">
                 </option>
             </select>
         </th:block>
 
         <!-- CASO C: Tipos Simples (Texto comum) -->
-        <th:block th:if="${!valor.class.name.startsWith(@environment.getProperty('app.entity.package')) and !(valor instanceof T(java.util.Collection))}">
+        <th:block
+            th:if="${!valor.class.name.startsWith(@environment.getProperty('app.entity.package')) and !(valor instanceof T(java.util.Collection))}">
             <span th:text="${valor}"></span>
         </th:block>
 

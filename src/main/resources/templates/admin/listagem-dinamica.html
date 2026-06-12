@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org" 
-    xmlns:layout="http://ultraq.net.nz"
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz"
     layout:decorate="~{admin/layouts/main-layout}">
+
 <head>
     <title>Sobre Nós - GWJ</title>
     <!-- Se quiser um CSS específico só para esta página -->
     <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
     <!-- Script responsável por gerenciar a exclusão via modal e API DELETE -->
     <script th:src="@{/js/delete.js}" defer></script>
+    <!-- Importa o script de máscaras universais -->
+    <script th:src="@{/js/masks.js}" defer></script>
 </head>
+
 <body>
 
     <!-- Note que NÃO incluímos o bloco 'aside-content' aqui.
@@ -20,10 +23,11 @@
             (entidadeNome == 'Servico' ? 'GERENCIAR_SERVICOS' : 
             (entidadeNome == 'Agenda' ? 'AGENDAR_HORARIO' : 'ADMIN_ONLY'))}">
             <h3 th:text="'Listagem de ' + ${entidadeNome}"></h3>
-            
+
             <!-- Exibe o botão Criar apenas se o usuário estiver logado E tiver a permissão correta (ou for Admin) -->
-            <div class="mb-3" th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil?.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
-                
+            <div class="mb-3"
+                th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil?.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
+
                 <a th:href="@{/MRYnZpAsC9sp/create/{entity}(entity=${entidadeNome})}" class="btn btn-success">
                     Criar <span th:text="${entidadeNome}"></span>
                 </a>
@@ -38,34 +42,41 @@
                 </thead>
                 <tbody>
                     <tr th:each="item : ${lista}">
-                        <td th:each="col : ${colunas}">
+                        <td th:each="col : ${colunas}" th:data-coluna="${col}">
                             <!-- Delegamos toda a lógica de exibição ao fragmento para evitar duplicidade -->
                             <div th:replace="~{admin/recursiveField :: recursiveField(${item[col]})}"></div>
                         </td>
                         <td>
                             <!-- Corrigido para /MRYnZpAsC9sp/detalhe e adicionado classes do Bootstrap -->
-                            <a th:href="@{/MRYnZpAsC9sp/detalhe/{entity}(entity=${entidadeNome}, id=${item.id})}" class="btn btn-sm btn-info text-white" th:text="'Ver'"></a>
-                            
+                            <a th:href="@{/MRYnZpAsC9sp/detalhe/{entity}(entity=${entidadeNome}, id=${item.id})}"
+                                class="btn btn-sm btn-info text-white" th:text="'Ver'"></a>
+
                             <!-- Botões Editar e Excluir visíveis apenas com as devidas permissões -->
-                            <th:block th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil?.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
-                                <a th:href="@{/MRYnZpAsC9sp/editar/{entity}(entity=${entidadeNome}, id=${item.id})}" class="btn btn-sm btn-warning text-dark">Editar</a>
-                                <button type="button" class="btn btn-sm btn-danger text-white btn-delete" th:attr="data-id=${item.id}, data-entity=${entidadeNome}">Excluir</button>
+                            <th:block
+                                th:if="${session.usuarioLogado != null and (session.usuarioLogado.perfil?.id == 1 or session.usuarioLogado.hasPermissao(permissao))}">
+                                <a th:href="@{/MRYnZpAsC9sp/editar/{entity}(entity=${entidadeNome}, id=${item.id})}"
+                                    class="btn btn-sm btn-warning text-dark">Editar</a>
+                                <button type="button" class="btn btn-sm btn-danger text-white btn-delete"
+                                    th:attr="data-id=${item.id}, data-entity=${entidadeNome}">Excluir</button>
                             </th:block>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            
+
             <!-- Modal de Confirmação de Exclusão (Bootstrap) -->
-            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Fechar"></button>
                         </div>
                         <div class="modal-body">
-                            Tem certeza de que deseja excluir este registro permanentemente? Esta ação não poderá ser desfeita.
+                            Tem certeza de que deseja excluir este registro permanentemente? Esta ação não poderá ser
+                            desfeita.
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -78,4 +89,5 @@
     </section>
 
 </body>
+
 </html>

@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "permissoes")
+@Table(name = "tab_permissao")
 public class Permissao implements IEntity {
 
     // Atributos privados em camelCase
