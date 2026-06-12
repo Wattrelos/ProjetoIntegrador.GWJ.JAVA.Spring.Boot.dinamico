@@ -1,0 +1,92 @@
+@startuml Diagrama de Arquitetura - GWJ Dinâmico
+
+' --- Configurações Visuais ---
+skinparam theme cerulean
+skinparam Handwritten false
+skinparam Monochrome false
+skinparam Shadowing true
+skinparam packageStyle Frame
+skinparam ComponentStyle uml2
+
+title Arquitetura Geral do Projeto Integrador GWJ (Spring Boot Dinâmico)
+
+' --- Camadas ---
+
+package "Apresentação (View - Frontend)" as ViewLayer {
+    component "Thymeleaf Templates\n(HTML5 + Bootstrap)" as Templates
+    component "JavaScript (delete.js, etc.)\n(Requisições Fetch/AJAX)" as JS
+}
+
+package "Controle (Controllers & Interceptors)" as ControllerLayer {
+    component "GenericViewController\n(Rotas Dinâmicas de View)" as GenericView
+    component "JsonController\n(API REST - Operações CRUD)" as JsonCtrl
+    component "LoginController\n(Autenticação e Sessão)" as LoginCtrl
+    component "AdminInterceptor\n(Controle de Acesso/Segurança)" as Interceptor
+}
+
+package "Mapeamento e Fábrica (DTO / Reflection)" as UtilLayer {
+    component "EntityMapper\n(Popula entidades via Reflection)" as Mapper
+    component "SimpleObjectFactory\n(Instanciação dinâmica de IEntity)" as Factory
+}
+
+package "Domínio (Model - Entities)" as ModelLayer {
+    interface "IEntity\n(Interface Base)" as IEntity
+    component "Entidades do Domínio\n(Usuario, Cliente, Perfil,\nPermissao, Servico, Agenda, etc.)" as Entities
+}
+
+package "Acesso a Dados (Custom DAO Layer)" as DAOLayer {
+    component "DataAccessObject\n(Executa CRUD via Reflection)" as DAO
+    component "QueryBuilder\n(Construção dinâmica de SQL)" as QueryBuilder
+    component "SchemaValidator\n(Validação de Schema/Tabelas)" as Validator
+    component "ConnectionDB\n(Gerenciador de Conexão JDBC)" as DBConn
+}
+
+database "MySQL Database" as DB
+
+' --- Relacionamentos e Fluxo de Dados ---
+
+' Fluxo da View para Controllers
+Templates --> GenericView : Requisições HTTP GET (Listagem, Detalhes, Forms)
+JS --> JsonCtrl : Requisições HTTP POST/PUT/DELETE (JSON)
+Templates --> LoginCtrl : Form de Login
+
+' Interceptor monitora requisições
+Interceptor -[dashed]-> GenericView : Intercepta & Valida Sessão
+Interceptor -[dashed]-> JsonCtrl : Intercepta & Valida Sessão
+
+' Controllers utilizam Mapeamento e Fábrica
+GenericView ..> Factory : Cria entidade pelo nome
+GenericView ..> Mapper : Popula dados do Request na Entidade
+JsonCtrl ..> Factory : Cria entidade pelo nome
+JsonCtrl ..> Mapper : Popula dados do Request na Entidade
+
+' Fábricas e Mapeadores trabalham com IEntity e Entidades
+Factory ..> IEntity : Instancia
+Mapper ..> IEntity : Popula
+Entities -up-|> IEntity : Implementam
+
+' Controllers utilizam DAO para persistência
+GenericView --> DAO : read() / query
+JsonCtrl --> DAO : create() / update() / delete() / read()
+
+' Internos da camada DAO
+DAO ..> QueryBuilder : Constrói SQL dinâmico
+DAO ..> Validator : Valida integridade do schema
+DAO --> DBConn : Solicita conexão JDBC
+DBConn --> DB : Conecta via Driver JDBC
+
+note right of UtilLayer
+  A arquitetura utiliza **Reflection**
+  para mapear parâmetros de requisições HTTP
+  diretamente em atributos de entidades,
+  tornando as telas de CRUD 100% dinâmicas.
+end note
+
+note right of DAOLayer
+  Em vez de JPA/Hibernate tradicional,
+  o projeto implementa um **DAO Dinâmico Genérico**
+  que gera queries SQL em tempo de execução
+  com base na estrutura reflexiva das entidades.
+end note
+
+@enduml

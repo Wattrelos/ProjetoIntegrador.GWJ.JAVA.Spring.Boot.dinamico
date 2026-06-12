@@ -19,12 +19,23 @@ public class Router {
     private final DataAccessObject dao = new DataAccessObject();
 
     @GetMapping({"/home","/"})
-    public String home() {
+    public String home(Model model) {
+        IEntity servicoBase = SimpleObjectFactory.create("Servico");
+        List<IEntity> servicos = dao.read(servicoBase);
+        model.addAttribute("servicos", servicos);
         return "home";
     }
 
     @GetMapping("/servicos")
-    public String servico() {
+    public String servico(Model model) {
+        IEntity servicoBase = SimpleObjectFactory.create("Servico");
+        List<IEntity> servicos = dao.read(servicoBase);
+        model.addAttribute("servicos", servicos);
+
+        IEntity profissionalBase = SimpleObjectFactory.create("Profissional");
+        List<IEntity> profissionais = dao.read(profissionalBase);
+        model.addAttribute("profissionais", profissionais);
+
         return "servicos";
     }
 
