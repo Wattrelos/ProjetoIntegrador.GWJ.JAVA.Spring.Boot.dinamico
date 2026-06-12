@@ -8,6 +8,8 @@
     <!-- <link rel="stylesheet" th:href="@{/css/sobre.css}">-->
     <!-- Script responsável por gerenciar a exclusão via modal e API DELETE -->
     <script th:src="@{/js/delete.js}" defer></script>
+    <!-- Importa o script de máscaras universais -->
+    <script th:src="@{/js/masks.js}" defer></script>
 </head>
 <body>
 
@@ -38,7 +40,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="item : ${lista}">
-                        <td th:each="col : ${colunas}">
+                        <td th:each="col : ${colunas}" th:data-coluna="${col}">
                             <!-- Delegamos toda a lógica de exibição ao fragmento para evitar duplicidade -->
                             <div th:replace="~{admin/recursiveField :: recursiveField(${item[col]})}"></div>
                         </td>

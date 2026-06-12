@@ -24,7 +24,7 @@ public class Usuario implements IEntity{
 	protected Perfil        perfil;
 	protected String        nomeUsuario;
 	protected String        email;
-	protected Boolean       status;
+	protected Boolean       status = true;
 	protected String        senha;
 	protected String        token;
 	protected String        ip;

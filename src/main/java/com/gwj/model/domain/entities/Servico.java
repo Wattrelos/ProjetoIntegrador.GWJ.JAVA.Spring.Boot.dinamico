@@ -16,7 +16,7 @@ public class Servico implements IEntity{
     protected BigDecimal  preco;
     protected int         duracao;
     protected String      tipo;
-    protected Boolean     ativo;
+    protected Boolean     ativo = true;
     
 	public Servico() {
 		super();

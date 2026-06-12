@@ -34,7 +34,8 @@ public class EntityMapper {
                 if (paramValue != null && !paramValue.trim().isEmpty()) {
                     try {
                         Class<?> parameterType = method.getParameterTypes()[0];
-                        Object convertedValue = convertValue(paramValue, parameterType);
+                        // Object convertedValue = convertValue(paramValue, parameterType);
+                        Object convertedValue = convertValue(paramValue, parameterType, fieldName);
                         
                         if (convertedValue != null) {
                             method.invoke(entity, convertedValue);
@@ -55,16 +56,31 @@ public class EntityMapper {
      * A partir do Java 17/21, você pode usar o switch diretamente com objetos Class.
      * Veja como o código ficaria muito mais "limpo" e fácil de ler:
      */
-    private static Object convertValue(String value, Class<?> targetType) {
+    // private static Object convertValue(String value, Class<?> targetType) {
+    private static Object convertValue(String value, Class<?> targetType, String fieldName) {
         if (value == null) return null;
             return switch (targetType) {
                 case Class<?> t when t == String.class -> value;
+                case Class<?> t when t == String.class -> {
+                    // Remove as máscaras deixando apenas os números para esses campos específicos
+                    if (fieldName != null && fieldName.toLowerCase().matches(".*(cpf|cnpj|cep|telefone|celular).*")) {
+                        yield value.replaceAll("[^\\d]", "");
+                    }
+                    yield value;
+                }
                 case Class<?> t when t ==     int.class || t == Integer.class -> Integer.parseInt(value);
                 case Class<?> t when t ==    long.class || t ==    Long.class -> Long.parseLong(value);
                 case Class<?> t when t ==  double.class || t ==  Double.class -> Double.parseDouble(value);
                 case Class<?> t when t ==   float.class || t ==   Float.class -> Float.parseFloat(value);
                 case Class<?> t when t == boolean.class || t == Boolean.class -> value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on") || value.equals("1");
-                case Class<?> t when t ==    BigDecimal.class -> new java.math.BigDecimal(value);
+                case Class<?> t when t ==    BigDecimal.class -> {
+                    String cleanValue = value.replaceAll("[R$\\s]", "");
+                    // Tratamento PT-BR: Remove pontos (milhar) e troca a vírgula por ponto (decimal)
+                    if (cleanValue.contains(",")) {
+                        cleanValue = cleanValue.replace(".", "").replace(",", ".");
+                    }
+                    yield new java.math.BigDecimal(cleanValue);
+                }
                 case Class<?> t when t == LocalDateTime.class -> LocalDateTime.parse(value, DATE_FORMATTER);
                 case Class<?> t when t ==     LocalDate.class -> LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
                 default -> null;

@@ -2,6 +2,7 @@ package com.gwj.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.gwj.model.dataAccessObject.DataAccessObject;
 import com.gwj.model.dataTransferObject.EntityMapper;
@@ -10,12 +11,15 @@ import com.gwj.model.domain.factory.SimpleObjectFactory;
 
 import java.util.Collection;
 import java.util.List; // Para o List
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.lang.reflect.Field;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +33,35 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class GenericViewController {
     private final DataAccessObject dao = new DataAccessObject();
+
+    // Helper global injetado em todas as Views para exibir um "Nome Amigável" dinamicamente nos Dropdowns
+    @ModelAttribute("displayHelper")
+    public Function<Object, String> displayHelper() {
+        return obj -> {
+            if (obj == null) return "—";
+            
+            // Tenta buscar por um campo de identificação comum em ordem de prioridade
+            String[] metodos = {"getNome", "getNomeUsuario", "getTitulo", "getDescricao", "getRazaoSocial"};
+            for (String m : metodos) {
+                try {
+                    Object value = obj.getClass().getMethod(m).invoke(obj);
+                    if (value != null && !value.toString().isBlank()) {
+                        return value.toString();
+                    }
+                } catch (Exception ignored) {
+                    // Método não existe nesta classe, tenta o próximo da lista
+                }
+            }
+            
+            // Fallback: se nenhum dos nomes amigáveis existir, retorna o ID
+            try {
+                Object id = obj.getClass().getMethod("getId").invoke(obj);
+                if (id != null) return "ID: " + id.toString();
+            } catch (Exception ignored) {}
+            
+            return obj.toString();
+        };
+    }
 
     // Método auxiliar recursivo para buscar atributos da classe atual e de suas
     // superclasses
@@ -56,6 +89,21 @@ public class GenericViewController {
                     .filter(field -> !Collection.class.isAssignableFrom(field.getType()))
                     .map(Field::getName)
                     .toList();
+
+                // Mapeia chaves estrangeiras (ManyToOne) para preencher os Selects
+                Map<String, List<IEntity>> foreignKeys = new HashMap<>();
+                for (Field field : getAllFields(entidadeBase.getClass())) {
+                    if (IEntity.class.isAssignableFrom(field.getType()) && !Collection.class.isAssignableFrom(field.getType())) {
+                        try {
+                            IEntity fkInstance = (IEntity) field.getType().getDeclaredConstructor().newInstance();
+                            foreignKeys.put(field.getName(), dao.read(fkInstance)); // Busca todos os registros
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                model.addAttribute("foreignKeys", foreignKeys);
+                model.addAttribute("obj", entidadeBase); // Envia o objeto vazio para o formulário
 
             model.addAttribute("title", "Formulario de cadastro");
             model.addAttribute("colunas", colunas);
@@ -153,6 +201,20 @@ public class GenericViewController {
             List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
                     .map(Field::getName)
                     .toList();
+
+                // Mapeia chaves estrangeiras (ManyToOne) para preencher os Selects
+                Map<String, List<IEntity>> foreignKeys = new HashMap<>();
+                for (Field field : getAllFields(entidadeBase.getClass())) {
+                    if (IEntity.class.isAssignableFrom(field.getType()) && !Collection.class.isAssignableFrom(field.getType())) {
+                        try {
+                            IEntity fkInstance = (IEntity) field.getType().getDeclaredConstructor().newInstance();
+                            foreignKeys.put(field.getName(), dao.read(fkInstance)); // Busca todos os registros
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                model.addAttribute("foreignKeys", foreignKeys);
 
             model.addAttribute("detalhe", resultados);
             model.addAttribute("colunas", colunas);

@@ -35,12 +35,35 @@
                         <label th:for="${coluna}" class="form-label" th:text="${#strings.capitalize(coluna)}">Campo</label>
                         
                         <!-- A "mágica" do Thymeleaf: obj['nomeDaVariavel'] acessa o getter automaticamente -->
-                        <input type="text"
-                            class="form-control"
-                            th:id="${coluna}"
-                            th:name="${coluna}"
-                            th:value="${obj[coluna]}"
-                            >
+                        
+                        <!-- 1. Renderiza Select para Chaves Estrangeiras (ManyToOne) -->
+                        <th:block th:if="${foreignKeys != null and foreignKeys.containsKey(coluna)}">
+                            <select class="form-select" th:id="${coluna}" th:name="${coluna}">
+                                <option value="">-- Selecione --</option>
+                                <option th:each="fkObj : ${foreignKeys[coluna]}"
+                                        th:value="${fkObj.id}"
+                                        th:text="${displayHelper.apply(fkObj)}"
+                                        th:selected="${obj[coluna] != null and obj[coluna].id == fkObj.id}">
+                                </option>
+                            </select>
+                        </th:block>
+                        
+                        <!-- 2. Verifica se é um campo Booleano -->
+                        <th:block th:if="${(foreignKeys == null or !foreignKeys.containsKey(coluna)) and obj[coluna] instanceof T(java.lang.Boolean)}">
+                            <select class="form-select" th:id="${coluna}" th:name="${coluna}">
+                                <option value="true" th:selected="${obj[coluna] == true}">Sim</option>
+                                <option value="false" th:selected="${obj[coluna] == false}">Não</option>
+                            </select>
+                        </th:block>
+                        
+                        <!-- 3. Caso padrão: Input de texto comum -->
+                        <th:block th:if="${(foreignKeys == null or !foreignKeys.containsKey(coluna)) and !(obj[coluna] instanceof T(java.lang.Boolean))}">
+                            <input type="text"
+                                class="form-control"
+                                th:id="${coluna}"
+                                th:name="${coluna}"
+                                th:value="${obj[coluna]}">
+                        </th:block>
                     </div>
 
                     <div class="col-12 mt-4">

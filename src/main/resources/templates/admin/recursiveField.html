@@ -8,7 +8,7 @@
         <th:block th:if="${valor.class.name.startsWith(@environment.getProperty('app.entity.package'))}">
             <span>
                 <a th:href="@{/MRYnZpAsC9sp/listar/{entidade}(entidade=${valor.getClass().getSimpleName()}, id=${valor.id})}"
-                th:text="${valor.getClass().getSimpleName() + ' [ID: ' + valor.id + ']'}"
+                th:text="${displayHelper.apply(valor)}"
                 title="Clique para ver detalhes">
                 </a>
             </span>
@@ -21,14 +21,19 @@
                 <option th:each="subItem : ${valor}"
                         th:with="isEntity=${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))}"
                         th:value="${isEntity} ? @{/MRYnZpAsC9sp/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
-                        th:text="${isEntity} ? ${subItem.getClass().getSimpleName() + ' [ID: ' + subItem.id + ']'} : ${subItem}">
+                        th:text="${isEntity} ? ${displayHelper.apply(subItem)} : ${subItem}">
                 </option>
             </select>
         </th:block>
 
         <!-- CASO C: Tipos Simples (Texto comum) -->
         <th:block th:if="${!valor.class.name.startsWith(@environment.getProperty('app.entity.package')) and !(valor instanceof T(java.util.Collection))}">
-            <span th:text="${valor}"></span>
+            <span th:if="${valor instanceof T(java.time.LocalDateTime)}" th:text="${#temporals.format(valor, 'dd/MM/yyyy HH:mm')}"></span>
+            <span th:if="${valor instanceof T(java.time.LocalDate)}" th:text="${#temporals.format(valor, 'dd/MM/yyyy')}"></span>
+            <span th:if="${valor instanceof T(java.util.Date)}" th:text="${#dates.format(valor, 'dd/MM/yyyy HH:mm')}"></span>
+            <span th:if="${valor instanceof T(java.math.BigDecimal)}" th:text="'R$ ' + ${#numbers.formatDecimal(valor, 1, 'POINT', 2, 'COMMA')}"></span>
+            <span th:if="${valor instanceof T(java.lang.Boolean)}" th:class="${valor ? 'badge bg-success' : 'badge bg-secondary'}" th:text="${valor ? 'Sim' : 'Não'}"></span>
+            <span th:if="${!(valor instanceof T(java.time.LocalDateTime)) and !(valor instanceof T(java.time.LocalDate)) and !(valor instanceof T(java.util.Date)) and !(valor instanceof T(java.math.BigDecimal)) and !(valor instanceof T(java.lang.Boolean))}" th:text="${valor}"></span>
         </th:block>
 
     </th:block>

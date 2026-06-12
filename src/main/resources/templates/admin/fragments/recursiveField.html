@@ -20,7 +20,7 @@
                 <option value="">-- Ver lista --</option>
                 <option th:each="subItem : ${valor}"
                         th:value="${subItem != null and subItem.class.name.startsWith(@environment.getProperty('app.entity.package'))} ? @{/MRYnZpAsC9sp/listar/{entidade}(entidade=${subItem.getClass().getSimpleName()}, id=${subItem.id})} : ''"
-                        th:text="${subItem}">
+                        th:text="${subItem.nome}">
                 </option>
             </select>
         </th:block>
