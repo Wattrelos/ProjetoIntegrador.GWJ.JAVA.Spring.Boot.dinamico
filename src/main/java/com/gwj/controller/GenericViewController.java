@@ -4,13 +4,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.gwj.model.dataAccessObject.DataAccessObject;
 import com.gwj.model.dataTransferObject.EntityMapper;
 import com.gwj.model.domain.IEntity;
 import com.gwj.model.domain.factory.SimpleObjectFactory;
+import com.gwj.service.IService;
+import com.gwj.service.ServiceRegistry;
 
 import java.util.Collection;
-import java.util.List; // Para o List
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,15 +25,8 @@ import java.lang.reflect.Field;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/* Por que essa solução é ideal para este caso:
-* Filtro Automático: Como o seu dao.read já ignora nulos, se o usuário chamar /listar?entity=Cliente&nome=João, o DAO fará um WHERE nome = 'João'. Se chamar apenas /listar?entity=Cliente, ele trará todos.
-* Herança e Coleções: Como o SimpleObjectFactory e o EntityMapper já tratam a complexidade dos objetos, o Controller atua apenas como um "maestro", sem precisar saber se está lidando com um Cliente ou um Fornecedor.
-* Manutenção Zero: Se você criar uma nova classe Transportadora amanhã, não precisa mexer no Java. Basta acessar /listar?entity=Transportadora, por exemplo.
-*/
-
 @Controller
 public class GenericViewController {
-    private final DataAccessObject dao = new DataAccessObject();
 
     // Helper global injetado em todas as Views para exibir um "Nome Amigável"
     // dinamicamente nos Dropdowns
@@ -46,7 +40,9 @@ public class GenericViewController {
             String[] metodos = { "getNome", "getNomeUsuario", "getTitulo", "getDescricao", "getRazaoSocial" };
             for (String m : metodos) {
                 try {
-                    Object value = obj.getClass().getMethod(m).invoke(obj);
+                    java.lang.reflect.Method method = obj.getClass().getMethod(m);
+                    method.setAccessible(true);
+                    Object value = method.invoke(obj);
                     if (value != null && !value.toString().isBlank()) {
                         return value.toString();
                     }
@@ -57,7 +53,9 @@ public class GenericViewController {
 
             // Fallback: se nenhum dos nomes amigáveis existir, retorna o ID
             try {
-                Object id = obj.getClass().getMethod("getId").invoke(obj);
+                java.lang.reflect.Method method = obj.getClass().getMethod("getId");
+                method.setAccessible(true);
+                Object id = method.invoke(obj);
                 if (id != null)
                     return "ID: " + id.toString();
             } catch (Exception ignored) {
@@ -101,7 +99,8 @@ public class GenericViewController {
                         && !Collection.class.isAssignableFrom(field.getType())) {
                     try {
                         IEntity fkInstance = (IEntity) field.getType().getDeclaredConstructor().newInstance();
-                        foreignKeys.put(field.getName(), dao.read(fkInstance)); // Busca todos os registros
+                        IService<IEntity> service = ServiceRegistry.getService(field.getType().getSimpleName());
+                        foreignKeys.put(field.getName(), service.read(fkInstance)); // Busca todos os registros
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -127,7 +126,8 @@ public class GenericViewController {
                                                                          // classes com valores, que serão utilizado
                                                                          // para formar o WHERE. Se requeste não tiver
                                                                          // valores, traz todos os registros.
-        List<IEntity> resultados = dao.read(filtro); // Traz todos os registros ou os encontrados no critério de busca.
+        IService<IEntity> service = ServiceRegistry.getService(entityName);
+        List<IEntity> resultados = service.read(filtro); // Traz todos os registros ou os encontrados no critério de busca.
 
         // Extrai os nomes dos atributos da classe para usar como cabeçalho
         List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
@@ -161,7 +161,8 @@ public class GenericViewController {
             // Preenche a entidade com os dados do request
             IEntity filtro = EntityMapper.fillEntity(entidadeBase, request);
 
-            List<IEntity> resultados = dao.read(filtro);
+            IService<IEntity> service = ServiceRegistry.getService(entityName);
+            List<IEntity> resultados = service.read(filtro);
 
             // Reflexão para os cabeçalhos
             List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
@@ -200,7 +201,8 @@ public class GenericViewController {
             // Preenche a entidade com os dados do request
             IEntity filtro = EntityMapper.fillEntity(entidadeBase, request);
 
-            List<IEntity> resultados = dao.read(filtro);
+            IService<IEntity> service = ServiceRegistry.getService(entityName);
+            List<IEntity> resultados = service.read(filtro);
 
             // Reflexão para os cabeçalhos
             List<String> colunas = getAllFields(entidadeBase.getClass()).stream()
@@ -214,7 +216,8 @@ public class GenericViewController {
                         && !Collection.class.isAssignableFrom(field.getType())) {
                     try {
                         IEntity fkInstance = (IEntity) field.getType().getDeclaredConstructor().newInstance();
-                        foreignKeys.put(field.getName(), dao.read(fkInstance)); // Busca todos os registros
+                        IService<IEntity> fkService = ServiceRegistry.getService(field.getType().getSimpleName());
+                        foreignKeys.put(field.getName(), fkService.read(fkInstance)); // Busca todos os registros
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

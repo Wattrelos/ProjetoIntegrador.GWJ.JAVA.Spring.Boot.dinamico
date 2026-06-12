@@ -4,24 +4,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 
-import com.gwj.model.dataAccessObject.DataAccessObject;
 import com.gwj.model.dataTransferObject.EntityMapper;
 import com.gwj.model.domain.IEntity;
 import com.gwj.model.domain.factory.SimpleObjectFactory;
+import com.gwj.service.IService;
+import com.gwj.service.ServiceRegistry;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
-
 @Controller
 public class Router {
-
-    private final DataAccessObject dao = new DataAccessObject();
 
     @GetMapping({"/home","/"})
     public String home(Model model) {
         IEntity servicoBase = SimpleObjectFactory.create("Servico");
-        List<IEntity> servicos = dao.read(servicoBase);
+        IService<IEntity> service = ServiceRegistry.getService("Servico");
+        List<IEntity> servicos = service.read(servicoBase);
         model.addAttribute("servicos", servicos);
         return "home";
     }
@@ -29,11 +28,13 @@ public class Router {
     @GetMapping("/servicos")
     public String servico(Model model) {
         IEntity servicoBase = SimpleObjectFactory.create("Servico");
-        List<IEntity> servicos = dao.read(servicoBase);
+        IService<IEntity> servicoService = ServiceRegistry.getService("Servico");
+        List<IEntity> servicos = servicoService.read(servicoBase);
         model.addAttribute("servicos", servicos);
 
         IEntity profissionalBase = SimpleObjectFactory.create("Profissional");
-        List<IEntity> profissionais = dao.read(profissionalBase);
+        IService<IEntity> profService = ServiceRegistry.getService("Profissional");
+        List<IEntity> profissionais = profService.read(profissionalBase);
         model.addAttribute("profissionais", profissionais);
 
         return "servicos";
@@ -48,10 +49,12 @@ public class Router {
     public String contato() {
         return "contato";
     }
+
     @GetMapping({"/cart","/carrinho"})
     public String carrinho(){
         return "carrinho";
     }    
+
     @GetMapping("/checkout")
     public String checkout() {
         return "checkout";
@@ -65,11 +68,11 @@ public class Router {
     @GetMapping("loja")
     public String shop(Model model) {
         IEntity produtoBase = SimpleObjectFactory.create("Produto");
-        List<IEntity> produtos = dao.read(produtoBase);
+        IService<IEntity> service = ServiceRegistry.getService("Produto");
+        List<IEntity> produtos = service.read(produtoBase);
         model.addAttribute("produtos", produtos);
         return "loja";
     }
-
 
     @GetMapping("/single-product")
     public String singleProduct(HttpServletRequest request, Model model) {
@@ -77,13 +80,12 @@ public class Router {
         if (idParam != null && !idParam.isBlank()) {
             IEntity produtoBase = SimpleObjectFactory.create("Produto");
             IEntity filtro = EntityMapper.fillEntity(produtoBase, request);
-            List<IEntity> resultados = dao.read(filtro);
+            IService<IEntity> service = ServiceRegistry.getService("Produto");
+            List<IEntity> resultados = service.read(filtro);
             if (!resultados.isEmpty()) {
                 model.addAttribute("produto", resultados.get(0));
             }
         }
         return "single-product";
     }   
-
-    
 }

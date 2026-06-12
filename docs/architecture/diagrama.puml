@@ -1,4 +1,4 @@
-@startuml Diagrama de Arquitetura - GWJ Dinâmico
+@startuml Diagrama de Arquitetura - GWJ Dinâmico (Proposta)
 
 ' --- Configurações Visuais ---
 skinparam theme cerulean
@@ -8,7 +8,7 @@ skinparam Shadowing true
 skinparam packageStyle Frame
 skinparam ComponentStyle uml2
 
-title Arquitetura Geral do Projeto Integrador GWJ (Spring Boot Dinâmico)
+title Arquitetura Proposta do Projeto Integrador GWJ (Com Padrões de Projeto & Escalabilidade)
 
 ' --- Camadas ---
 
@@ -24,21 +24,35 @@ package "Controle (Controllers & Interceptors)" as ControllerLayer {
     component "AdminInterceptor\n(Controle de Acesso/Segurança)" as Interceptor
 }
 
-package "Mapeamento e Fábrica (DTO / Reflection)" as UtilLayer {
-    component "EntityMapper\n(Popula entidades via Reflection)" as Mapper
+package "Mapeamento HTTP/Request (DTO / Reflection)" as UtilLayer {
+    component "EntityMapper\n(Popula entidades via HTTP Request)" as HTTPMapper
     component "SimpleObjectFactory\n(Instanciação dinâmica de IEntity)" as Factory
+}
+
+package "Serviços (Service Layer & Transações)" as ServiceLayer {
+    interface "IService<T>\n(Interface Base de Serviço)" as IService
+    component "GenericService\n(Orquestrador CRUD Genérico)" as GenService
+    component "Serviços Específicos\n(UsuarioService, ClienteService,\netc. - Regras de Negócio)" as SpecServices
+    component "ServiceRegistry\n(Resolução Dinâmica de Serviços)" as ServiceRegistry
+    component "UnitOfWork\n(Controle de Transações & ThreadLocal)" as UoW
+}
+
+package "Acesso a Dados (Repository Layer)" as RepositoryLayer {
+    interface "IRepository<T>\n(Interface de Repositório)" as IRepo
+    component "GenericRepository\n(Persistência Base Dinâmica)" as GenRepo
+    component "Repositórios Específicos\n(UsuarioRepository, ClienteRepository,\netc. - Consultas Customizadas)" as SpecRepos
+}
+
+package "Mapeador de Banco (Data Mapper)" as MapperLayer {
+    component "DataMapper\n(Mapeamento SQL <=> Objetos de Domínio)" as DataMapper
+    component "QueryBuilder\n(Construção dinâmica de SQL)" as QueryBuilder
+    component "SchemaValidator\n(Validação de Schema/Tabelas)" as Validator
+    component "ConnectionDB\n(Gerenciador de Conexão JDBC)" as DBConn
 }
 
 package "Domínio (Model - Entities)" as ModelLayer {
     interface "IEntity\n(Interface Base)" as IEntity
     component "Entidades do Domínio\n(Usuario, Cliente, Perfil,\nPermissao, Servico, Agenda, etc.)" as Entities
-}
-
-package "Acesso a Dados (Custom DAO Layer)" as DAOLayer {
-    component "DataAccessObject\n(Executa CRUD via Reflection)" as DAO
-    component "QueryBuilder\n(Construção dinâmica de SQL)" as QueryBuilder
-    component "SchemaValidator\n(Validação de Schema/Tabelas)" as Validator
-    component "ConnectionDB\n(Gerenciador de Conexão JDBC)" as DBConn
 }
 
 database "MySQL Database" as DB
@@ -54,39 +68,56 @@ Templates --> LoginCtrl : Form de Login
 Interceptor -[dashed]-> GenericView : Intercepta & Valida Sessão
 Interceptor -[dashed]-> JsonCtrl : Intercepta & Valida Sessão
 
-' Controllers utilizam Mapeamento e Fábrica
+' Controllers utilizam Mapeamento e Fábrica HTTP
 GenericView ..> Factory : Cria entidade pelo nome
-GenericView ..> Mapper : Popula dados do Request na Entidade
+GenericView ..> HTTPMapper : Popula dados do Request na Entidade
 JsonCtrl ..> Factory : Cria entidade pelo nome
-JsonCtrl ..> Mapper : Popula dados do Request na Entidade
+JsonCtrl ..> HTTPMapper : Popula dados do Request na Entidade
+
+' NOVO FLUXO: Controllers chamam ServiceRegistry para obter o Serviço correto
+GenericView --> ServiceRegistry : Solicita Serviço por entidade
+JsonCtrl --> ServiceRegistry : Solicita Serviço por entidade
+LoginCtrl --> ServiceRegistry : Solicita UsuarioService para autenticação
+
+' Resolução dos Serviços
+ServiceRegistry ..> IService : Gerencia/Resolve
+GenService .up.|> IService
+SpecServices .up.|> IService
+
+' Serviços utilizam Unit of Work para controlar transações
+IService ..> UoW : Inicia / Confirma / Cancela transações
+UoW --> DBConn : Gerencia Connection (ThreadLocal)
+
+' Serviços acessam a camada de Repositório
+IService --> IRepo : Executa regras de persistência
+GenRepo .up.|> IRepo
+SpecRepos .up.|> IRepo
+
+' Repositórios utilizam Data Mapper para converter entidades/SQL
+IRepo ..> DataMapper : Solicita mapeamento objeto-relacional
+DataMapper ..> QueryBuilder : Constrói SQL dinâmico
+DataMapper ..> Validator : Valida integridade do schema
+DataMapper --> DBConn : Executa instruções SQL (Via conexão compartilhada pelo UoW)
+DBConn --> DB : Conecta via Driver JDBC
 
 ' Fábricas e Mapeadores trabalham com IEntity e Entidades
 Factory ..> IEntity : Instancia
-Mapper ..> IEntity : Popula
+HTTPMapper ..> IEntity : Popula
 Entities -up-|> IEntity : Implementam
+DataMapper ..> IEntity : Mapeia
 
-' Controllers utilizam DAO para persistência
-GenericView --> DAO : read() / query
-JsonCtrl --> DAO : create() / update() / delete() / read()
-
-' Internos da camada DAO
-DAO ..> QueryBuilder : Constrói SQL dinâmico
-DAO ..> Validator : Valida integridade do schema
-DAO --> DBConn : Solicita conexão JDBC
-DBConn --> DB : Conecta via Driver JDBC
-
-note right of UtilLayer
-  A arquitetura utiliza **Reflection**
-  para mapear parâmetros de requisições HTTP
-  diretamente em atributos de entidades,
-  tornando as telas de CRUD 100% dinâmicas.
+note right of ServiceLayer
+  A introdução de **Serviços** e **Unit of Work**
+  centraliza as regras de negócio e garante atomicidade
+  nas transações (ACID), separando a lógica de controle
+  HTTP do acesso aos dados.
 end note
 
-note right of DAOLayer
-  Em vez de JPA/Hibernate tradicional,
-  o projeto implementa um **DAO Dinâmico Genérico**
-  que gera queries SQL em tempo de execução
-  com base na estrutura reflexiva das entidades.
+note right of MapperLayer
+  O **Data Mapper** assume a responsabilidade de reflexão
+  e geração de queries SQL que antes residiam no DAO,
+  deixando a camada de Repositórios limpa e focada
+  apenas no contrato de dados.
 end note
 
 @enduml

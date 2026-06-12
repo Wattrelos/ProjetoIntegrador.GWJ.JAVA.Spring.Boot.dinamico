@@ -118,4 +118,23 @@ public class SchemaValidator {
     }
     return classes;
 }
+    public static void ensureUniqueEmailIndex() {
+        try (java.sql.Connection conn = com.gwj.model.dataAccessObject.ConnectionDB.getInstance().getConnection();
+             java.sql.Statement stmt = conn.createStatement()) {
+            
+            try {
+                stmt.execute("ALTER TABLE `tab_usuario` ADD UNIQUE KEY `email_unique` (`email`)");
+                System.out.println("✅ Índice UNIQUE no campo 'email' criado com sucesso na tabela tab_usuario.");
+            } catch (java.sql.SQLException e) {
+                // Código SQLState 42000 ou ER_DUP_KEYNAME (1061) indica que o índice já existe
+                if (e.getErrorCode() == 1061 || "42000".equals(e.getSQLState())) {
+                    System.out.println("ℹ️ O índice UNIQUE no campo 'email' já existe.");
+                } else {
+                    System.err.println("Aviso ao assegurar índice de e-mail UNIQUE: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao obter conexão para validação de Schema: " + e.getMessage());
+        }
+    }
 }

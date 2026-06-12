@@ -79,6 +79,17 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<net.bytebuddy.experimental>true</net.bytebuddy.experimental>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<!-- Desativado temporariamente pois não suporta Java 21 (major version 65) no ciclo de build padrão -->
+			<!--
+			<plugin>
 				<groupId>com.iluwatar.urm</groupId>
 				<artifactId>urm-maven-plugin</artifactId>
 				<version>2.1.1</version>
@@ -86,8 +97,6 @@
 					<packages>
 						<package>com.gwj.model.domain.entities</package>
 					</packages>
-					<!-- Define o formato de saída como Mermaid -->
-					<!-- mermaid/PlantUML -->
 					<presenter>PlantUML</presenter>
 				</configuration>
 				<executions>
@@ -99,6 +108,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 </project>

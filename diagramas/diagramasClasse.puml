@@ -1,44 +1,116 @@
-' Este diagrama ilustra a separação de responsabilidades entre os controladores (que lidam com as requisições HTTP) e a camada de modelo (responsável pela persistência dinâmica via Reflection e lógica de negócio).
-' Destaques da Arquitetura:
-' * Desacoplamento: O JsonController não conhece detalhes de SQL; ele utiliza o DataAccessObject e o EntityMapper para abstrair a complexidade.
-' * Genericidade: Note como quase todos os componentes dependem da interface IEntity. Isso permite que você adicione novas tabelas ao banco apenas criando a classe Java correspondente, sem mexer no código do Controller ou do DAO.
-' * Configuração Centralizada: O AppConfig serve como a "fonte da verdade" para caminhos de pacotes e prefixos de tabela, mantendo o sistema flexível.
-
 @startuml
-
+ 
 skinparam monochrome true
 skinparam classAttributeIconSize 0
 
+title Diagrama de Classes - Projeto Integrador GWJ (Nova Arquitetura)
+
 package com.gwj.controller {
-    class HomeController {
-        +listarEntidades(model: Model): String
+    class GenericViewController {
+        +create(entity: String, request: HttpServletRequest, model: Model): String
+        +listar(entity: String, request: HttpServletRequest, model: Model): String
+        +detalhe(entity: String, request: HttpServletRequest, model: Model): String
+        +editar(entity: String, request: HttpServletRequest, model: Model): String
     }
 
     class JsonController {
-        -dao: DataAccessObject
         +create(entityName: String, request: HttpServletRequest): ResponseEntity
         +read(entityName: String, request: HttpServletRequest): ResponseEntity
         +update(request: HttpServletRequest): ResponseEntity
         +delete(entityName: String, request: HttpServletRequest): ResponseEntity
     }
+
+    class LoginController {
+        +showLoginForm(session: HttpSession): String
+        +processLogin(email: String, senha: String, request: HttpServletRequest, model: Model): String
+        +logout(request: HttpServletRequest): String
+    }
+
+    class Router {
+        +home(model: Model): String
+        +servico(model: Model): String
+        +shop(model: Model): String
+        +singleProduct(request: HttpServletRequest, model: Model): String
+    }
+}
+
+package com.gwj.service {
+    interface IService<T> {
+        +create(entity: T): T
+        +read(entity: T): List<T>
+        +update(entity: T): Long
+        +delete(entity: T): Long
+    }
+
+    class GenericService<T> {
+        #repository: IRepository<T>
+        +GenericService(entityClass: Class)
+        +GenericService(repository: IRepository<T>)
+    }
+
+    class UsuarioService {
+        +UsuarioService()
+    }
+
+    class ServiceRegistry {
+        {static} -registry: Map<String, IService>
+        {static} +getService(entityName: String): IService<T>
+    }
+}
+
+package com.gwj.service.transaction {
+    class UnitOfWork {
+        {static} -currentConnection: ThreadLocal<Connection>
+        {static} -inTransaction: ThreadLocal<Boolean>
+        {static} +getConnection(): Connection
+        {static} +beginTransaction()
+        {static} +commit()
+        {static} +rollback()
+        +close()
+    }
+}
+
+package com.gwj.model.repository {
+    interface IRepository<T> {
+        +save(entity: T): T
+        +query(entity: T): List<T>
+        +update(entity: T): Long
+        +delete(entity: T): Long
+    }
+
+    class GenericRepository<T> {
+        -entityClass: Class<T>
+        +GenericRepository(entityClass: Class<T>)
+    }
+
+    class UsuarioRepository {
+        +UsuarioRepository()
+    }
 }
 
 package com.gwj.model.dataAccessObject {
-    class DataAccessObject {
-        -tablePrefix: String
-        +create(entity: IEntity): Long
-        +read(entity: IEntity): List<IEntity>
-        +update(entity: IEntity): Long
-        +delete(entity: IEntity): Long
-        -getEntityHierarchy(startClass: Class): List<Class>
-        -fillEntityRecursively(instance: IEntity, currentClazz: Class, rs: ResultSet, conn: Connection)
-        -saveAssociations(conn: Connection, instance: IEntity)
+    class DataMapper {
+        {static} +getEntityHierarchy(startClass: Class): List<Class>
+        {static} +getTableName(clazz: Class): String
+        {static} +getColumnName(clazz: Class, method: Method, isEntityValue: boolean): String
+        {static} +convertToTargetType(value: Object, targetType: Class, field: Field): Object
+        {static} +convertPascalCaseToSnakeCase(name: String): String
+        {static} +capitalize(str: String): String
     }
 
     class ConnectionDB {
         {static} -instance: ConnectionDB
         +getConnection(): Connection
         {static} +getInstance(): ConnectionDB
+    }
+
+    class QueryBuilder {
+        +select(fields: String): QueryBuilder
+        +from(table: String): QueryBuilder
+        +where(condition: String): QueryBuilder
+        +insertInto(table: String): QueryBuilder
+        +update(table: String): QueryBuilder
+        +build(): String
     }
 }
 
@@ -62,30 +134,44 @@ package com.gwj.model.domain.factory {
 
     class SchemaValidator {
         {static} +validateAllEntities()
-        -validateNamingConvention(clazz: Class)
     }
 }
 
-class com.gwj.AppConfig {
-    {static} +DB_URL: String
-    {static} +ENTITIES_PATH: String
-    {static} +TABLE_PREFIX: String
-}
+' Relacionamentos e Fluxo
 
-' Relacionamentos
-JsonController --> DataAccessObject : usa
-JsonController ..> SimpleObjectFactory : usa
+' Apresentação para Controle
+GenericViewController ..> ServiceRegistry : usa
+JsonController ..> ServiceRegistry : usa
+LoginController ..> ServiceRegistry : usa
+Router ..> ServiceRegistry : usa
+
+GenericViewController ..> EntityMapper : usa
 JsonController ..> EntityMapper : usa
-JsonController ..> IEntity : manipula
+Router ..> EntityMapper : usa
 
-HomeController ..> com.gwj.AppConfig : consulta path
+' Registro para Serviços
+ServiceRegistry o--> IService : gerencia
+GenericService ..|> IService
+UsuarioService --|> GenericService
 
-DataAccessObject --> ConnectionDB : obtém conexão
-DataAccessObject ..> com.gwj.AppConfig : consulta prefixo
-DataAccessObject ..> IEntity : persiste
+' Serviços usam Repositórios e UnitOfWork
+GenericService --> IRepository : delega para
+GenericService ..> UnitOfWork : controla transação
+UsuarioService ..> UsuarioRepository : usa
 
-SchemaValidator ..> IEntity : valida contrato
-EntityMapper ..> IEntity : popula dados
-SimpleObjectFactory ..> IEntity : instancia
+' Repositórios
+GenericRepository ..|> IRepository
+UsuarioRepository --|> GenericRepository
+
+' Repositórios acessam conexão via UoW e convertem via DataMapper
+GenericRepository ..> UnitOfWork : obtém Connection
+GenericRepository ..> DataMapper : realiza mapeamento
+GenericRepository ..> QueryBuilder : constrói SQL
+DataMapper ..> ConnectionDB : opcional
+
+' Auxiliares de Domínio
+EntityMapper ..> IEntity : popula
+SimpleObjectFactory ..> IEntity : cria instâncias
+SchemaValidator ..> IEntity : valida schema
 
 @enduml

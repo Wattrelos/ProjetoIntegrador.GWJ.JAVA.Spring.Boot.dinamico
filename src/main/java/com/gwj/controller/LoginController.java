@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.gwj.model.dataAccessObject.DataAccessObject;
 import com.gwj.model.domain.IEntity;
 import com.gwj.model.domain.entities.Usuario;
+import com.gwj.service.IService;
+import com.gwj.service.ServiceRegistry;
 import com.gwj.controller.PasswordUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +19,6 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LoginController {
-
-    private final DataAccessObject dao = new DataAccessObject();
 
     @GetMapping("/login")
     public String showLoginForm(HttpSession session) {
@@ -39,15 +38,14 @@ public class LoginController {
         Usuario filtro = new Usuario();
         filtro.setEmail(email);
         
-        // Retorna a lista de usuários baseada no email (o DAO carrega perfil e permissões automaticamente)
-        List<IEntity> resultados = dao.read(filtro);
+        IService<Usuario> service = ServiceRegistry.getService("Usuario");
+        // Retorna a lista de usuários baseada no email (o Serviço carrega perfil e permissões automaticamente)
+        List<Usuario> resultados = service.read(filtro);
         
         // Aplica o hash na senha fornecida pelo formulário
         String senhaCriptografada = "{sha256}" + PasswordUtil.hash(senha);
 
-        for (IEntity entity : resultados) {
-            Usuario usuarioBanco = (Usuario) entity;
-            
+        for (Usuario usuarioBanco : resultados) {
             boolean senhaValida = false;
             
             // Verifica se a senha no banco já está no novo formato criptografado
@@ -58,7 +56,7 @@ public class LoginController {
                 senhaValida = usuarioBanco.getSenha().equals(senha);
             }
 
-            // Validação exata no Java para contornar o "LIKE" do DAO
+            // Validação exata no Java para contornar o "LIKE" do DAO/Repository
             if (usuarioBanco.getEmail().equalsIgnoreCase(email) && senhaValida) {
                 
                 // Login bem-sucedido! Guardamos o objeto completo na sessão

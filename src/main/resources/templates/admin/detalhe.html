@@ -45,6 +45,8 @@
                         <div th:unless="${obj[coluna] instanceof T(java.util.Collection)}"
                             class="form-control bg-light text-muted border-0" th:id="${coluna}">
                             <th:block th:if="${obj[coluna] != null}">
+                                <span th:if="${obj[coluna] instanceof T(com.gwj.model.domain.IEntity)}"
+                                    th:text="${displayHelper.apply(obj[coluna])}"></span>
                                 <span th:if="${obj[coluna] instanceof T(java.time.LocalDateTime)}"
                                     th:text="${#temporals.format(obj[coluna], 'dd/MM/yyyy HH:mm')}"></span>
                                 <span th:if="${obj[coluna] instanceof T(java.time.LocalDate)}"
@@ -57,7 +59,7 @@
                                     th:class="${obj[coluna] ? 'badge bg-success' : 'badge bg-secondary'}"
                                     th:text="${obj[coluna] ? 'Sim' : 'Não'}"></span>
                                 <span
-                                    th:if="${!(obj[coluna] instanceof T(java.time.LocalDateTime)) and !(obj[coluna] instanceof T(java.time.LocalDate)) and !(obj[coluna] instanceof T(java.util.Date)) and !(obj[coluna] instanceof T(java.math.BigDecimal)) and !(obj[coluna] instanceof T(java.lang.Boolean))}"
+                                    th:if="${!(obj[coluna] instanceof T(com.gwj.model.domain.IEntity)) and !(obj[coluna] instanceof T(java.time.LocalDateTime)) and !(obj[coluna] instanceof T(java.time.LocalDate)) and !(obj[coluna] instanceof T(java.util.Date)) and !(obj[coluna] instanceof T(java.math.BigDecimal)) and !(obj[coluna] instanceof T(java.lang.Boolean))}"
                                     th:text="${obj[coluna]}"></span>
                             </th:block>
                             <span th:if="${obj[coluna] == null}">—</span>
