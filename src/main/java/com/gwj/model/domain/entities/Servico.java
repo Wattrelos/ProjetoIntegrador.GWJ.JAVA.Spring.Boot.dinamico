@@ -90,8 +90,8 @@ public class Servico implements IEntity {
 
 	@Override
 	public String toString() {
-		return "Servico [nome=" + nome + ", descricao=" + descricao + ", preco=" + preco + ", duracao=" + duracao
-				+ ", tipo=" + tipo + ", ativo=" + ativo + ", imagem=" + imagem + "]";
+		return nome + ", R$ " + String.format("%.2f", preco) + ", " + duracao
+				+ ", " + tipo;
 	}
 
 }

@@ -57,8 +57,14 @@ public class AgendamentoServiceTest {
     @Test
     public void testHorariosDisponiveis() {
         AgendamentoService service = new AgendamentoService();
-        List<java.util.Map<String, Object>> slots = service.getHorariosDisponiveis(1L, 2L, "2026-06-15");
-        assertNotNull(slots);
-        assertFalse(slots.isEmpty());
+        // Terça-feira (2026-06-16) - Barbearia aberta
+        List<java.util.Map<String, Object>> slotsAbertos = service.getHorariosDisponiveis(1L, 2L, "2026-06-16");
+        assertNotNull(slotsAbertos);
+        assertFalse(slotsAbertos.isEmpty());
+
+        // Segunda-feira (2026-06-15) - Barbearia fechada
+        List<java.util.Map<String, Object>> slotsFechados = service.getHorariosDisponiveis(1L, 2L, "2026-06-15");
+        assertNotNull(slotsFechados);
+        assertTrue(slotsFechados.isEmpty());
     }
 }

@@ -21,7 +21,8 @@
         <div class="data-table" th:with="permissao=${
             entidadeNome == 'Cliente' ? 'GERENCIAR_CLIENTES' : 
             (entidadeNome == 'Servico' ? 'GERENCIAR_SERVICOS' : 
-            (entidadeNome == 'Agenda' ? 'AGENDAR_HORARIO' : 'ADMIN_ONLY'))}">
+            (entidadeNome == 'Agenda' ? 'AGENDAR_HORARIO' : 
+            (entidadeNome == 'Agendamento' or entidadeNome == 'DiasFuncionamento' or entidadeNome == 'GradeHorarios' ? 'GERENCIAR_TODAS_AGENDAS' : 'ADMIN_ONLY')))}">
             <h3 th:text="'Listagem de ' + ${entidadeNome}"></h3>
 
             <!-- Exibe o botão Criar apenas se o usuário estiver logado E tiver a permissão correta (ou for Admin) -->

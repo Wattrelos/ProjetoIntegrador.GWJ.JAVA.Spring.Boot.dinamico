@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "tab_perfil") // Mapeia para a tabela 'perfis' do MySQL
@@ -21,8 +23,8 @@ public class Perfil implements IEntity {
     private Long id;
     private String nome;
 
-    // Relacionamento: Um perfil possui muitas permissões
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "tab_perfil_permissao", joinColumns = @JoinColumn(name = "perfil_id"), inverseJoinColumns = @JoinColumn(name = "permissao_id"))
     private List<Permissao> permissoes;
 
     // Construtor padrão (obrigatório para frameworks)
@@ -58,5 +60,10 @@ public class Perfil implements IEntity {
 
     public void setPermissoes(List<Permissao> permissoes) {
         this.permissoes = permissoes;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 }

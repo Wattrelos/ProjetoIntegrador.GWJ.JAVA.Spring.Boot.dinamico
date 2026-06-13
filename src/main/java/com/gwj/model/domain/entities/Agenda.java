@@ -7,6 +7,8 @@ import java.util.List;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gwj.model.domain.IEntity;
@@ -25,6 +27,11 @@ public class Agenda implements IEntity{
     protected Profissional profissional;
     protected Cliente cliente;
 	@ManyToMany
+    @JoinTable(
+        name = "tab_agenda_servico",
+        joinColumns = @JoinColumn(name = "agenda_id"),
+        inverseJoinColumns = @JoinColumn(name = "servico_id")
+    )
     private   List<Servico> listaServico = new ArrayList<>(); // Declaração da lista de Serviços.
 	
 	

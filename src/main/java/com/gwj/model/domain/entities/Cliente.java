@@ -4,6 +4,8 @@ import java.util.List;
 
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class Cliente extends Usuario { // A classe Cliente é uma especialização de Usuario, herdando atributos e métodos
@@ -15,8 +17,12 @@ public class Cliente extends Usuario { // A classe Cliente é uma especializaç�
 	protected String cpf;
 	protected String observacao;
 
-	// Atributos complexos:
 	@ManyToMany
+    @JoinTable(
+        name = "tab_cliente_endereco",
+        joinColumns = @JoinColumn(name = "cliente_id"),
+        inverseJoinColumns = @JoinColumn(name = "endereco_id")
+    )
 	private List<Endereco> listaEndereco = new ArrayList<>(); // Declaração da lista de Endereço. Note que inicializei a lista com new ArrayList<>() para evitar que o método tente remover algo de uma lista nula.
 
 	public Cliente() {

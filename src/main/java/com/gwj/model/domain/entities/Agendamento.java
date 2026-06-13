@@ -39,6 +39,10 @@ public class Agendamento implements IEntity {
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
 
+    @ManyToOne
+    @JoinColumn(name = "grade_horarios_id", nullable = true)
+    private GradeHorarios gradeHorarios;
+
     // Construtor Padrão (Obrigatório para o Hibernate/Reflexão)
     public Agendamento() {
     }
@@ -125,5 +129,13 @@ public class Agendamento implements IEntity {
 
     public void setServico(Servico servico) {
         this.servico = servico;
+    }
+
+    public GradeHorarios getGradeHorarios() {
+        return gradeHorarios;
+    }
+
+    public void setGradeHorarios(GradeHorarios gradeHorarios) {
+        this.gradeHorarios = gradeHorarios;
     }
 }

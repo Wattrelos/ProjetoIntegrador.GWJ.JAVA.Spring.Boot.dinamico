@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Tempo de geração: 13/06/2026 às 01:06
+-- Tempo de geração: 13/06/2026 às 23:37
 -- Versão do servidor: 11.8.6-MariaDB-0+deb13u1 from Debian
 -- Versão do PHP: 8.4.22
 
@@ -34,6 +34,11 @@ CREATE TABLE `permissoes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `permissoes`
+--
+
+TRUNCATE TABLE `permissoes`;
+--
 -- Despejando dados para a tabela `permissoes`
 --
 
@@ -62,6 +67,11 @@ CREATE TABLE `tab_agenda` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_agenda`
+--
+
+TRUNCATE TABLE `tab_agenda`;
+--
 -- Despejando dados para a tabela `tab_agenda`
 --
 
@@ -84,26 +94,34 @@ CREATE TABLE `tab_agendamento` (
   `hora_inicio` time NOT NULL,
   `hora_fim` time NOT NULL,
   `status` varchar(20) DEFAULT 'Confirmado',
-  `created_at` timestamp NULL DEFAULT current_timestamp()
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `grade_horarios_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Tabela truncada antes do insert `tab_agendamento`
+--
+
+TRUNCATE TABLE `tab_agendamento`;
 --
 -- Despejando dados para a tabela `tab_agendamento`
 --
 
-INSERT INTO `tab_agendamento` (`id`, `cliente_nome`, `cliente_telefone`, `profissional_id`, `servico_id`, `data_agendamento`, `hora_inicio`, `hora_fim`, `status`, `created_at`) VALUES
-(1, 'Marcos Silva', '(11) 99999-1111', 2, 1, '2026-06-15', '09:00:00', '09:30:00', 'Confirmado', '2026-06-13 00:08:29'),
-(2, 'Arthur Rezende', '(11) 99999-2222', 2, 7, '2026-06-15', '10:00:00', '11:50:00', 'Confirmado', '2026-06-13 00:08:29'),
-(3, 'Bruno Oliveira', '(11) 99999-3333', 2, 2, '2026-06-15', '14:00:00', '14:20:00', 'Confirmado', '2026-06-13 00:08:29'),
-(4, 'Rodrigo Costa', '(11) 99999-4444', 2, 3, '2026-06-15', '15:30:00', '17:00:00', 'Confirmado', '2026-06-13 00:08:29'),
-(5, 'Marcos Silva', '(11) 99999-1111', 2, 1, '2026-06-15', '09:00:00', '09:30:00', 'Confirmado', '2026-06-13 00:09:34'),
-(6, 'Arthur Rezende', '(11) 99999-2222', 2, 7, '2026-06-15', '10:00:00', '11:50:00', 'Confirmado', '2026-06-13 00:09:34'),
-(7, 'Bruno Oliveira', '(11) 99999-3333', 2, 2, '2026-06-15', '14:00:00', '14:20:00', 'Confirmado', '2026-06-13 00:09:34'),
-(8, 'Rodrigo Costa', '(11) 99999-4444', 2, 3, '2026-06-15', '15:30:00', '17:00:00', 'Confirmado', '2026-06-13 00:09:34'),
-(9, 'Felipe Amorim', '(11) 99999-5555', 9, 4, '2026-06-15', '09:00:00', '12:20:00', 'Confirmado', '2026-06-13 00:09:34'),
-(10, 'Lucas (Pai: Roberto)', '(11) 99999-6666', 9, 8, '2026-06-15', '14:00:00', '14:40:00', 'Confirmado', '2026-06-13 00:09:34'),
-(11, 'Gustavo Henrique', '(11) 99999-7777', 9, 1, '2026-06-15', '15:00:00', '15:30:00', 'Confirmado', '2026-06-13 00:09:34'),
-(23, 'Sebastião Silva', '11123456789', 2, 2, '2026-06-13', '14:30:00', '14:50:00', 'Confirmado', '2026-06-13 01:02:02');
+INSERT INTO `tab_agendamento` (`id`, `cliente_nome`, `cliente_telefone`, `profissional_id`, `servico_id`, `data_agendamento`, `hora_inicio`, `hora_fim`, `status`, `created_at`, `grade_horarios_id`) VALUES
+(1, 'Marcos Silva', '(11) 99999-1111', 2, 1, '2026-06-15', '09:00:00', '09:30:00', 'Confirmado', '2026-06-13 00:08:29', NULL),
+(2, 'Arthur Rezende', '(11) 99999-2222', 2, 7, '2026-06-15', '10:00:00', '11:50:00', 'Confirmado', '2026-06-13 00:08:29', NULL),
+(3, 'Bruno Oliveira', '(11) 99999-3333', 2, 2, '2026-06-15', '14:00:00', '14:20:00', 'Confirmado', '2026-06-13 00:08:29', NULL),
+(4, 'Rodrigo Costa', '(11) 99999-4444', 2, 3, '2026-06-15', '15:30:00', '17:00:00', 'Confirmado', '2026-06-13 00:08:29', NULL),
+(5, 'Marcos Silva', '(11) 99999-1111', 2, 1, '2026-06-15', '09:00:00', '09:30:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(6, 'Arthur Rezende', '(11) 99999-2222', 2, 7, '2026-06-15', '10:00:00', '11:50:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(7, 'Bruno Oliveira', '(11) 99999-3333', 2, 2, '2026-06-15', '14:00:00', '14:20:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(8, 'Rodrigo Costa', '(11) 99999-4444', 2, 3, '2026-06-15', '15:30:00', '17:00:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(9, 'Felipe Amorim', '(11) 99999-5555', 9, 4, '2026-06-15', '09:00:00', '12:20:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(10, 'Lucas (Pai: Roberto)', '(11) 99999-6666', 9, 8, '2026-06-15', '14:00:00', '14:40:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(11, 'Gustavo Henrique', '(11) 99999-7777', 9, 1, '2026-06-15', '15:00:00', '15:30:00', 'Confirmado', '2026-06-13 00:09:34', NULL),
+(23, 'Sebastião Silva', '11123456789', 2, 2, '2026-06-13', '14:30:00', '14:50:00', 'Confirmado', '2026-06-13 01:02:02', NULL),
+(24, 'João da Silva', '11123456789', 2, 1, '2026-06-13', '10:20:00', '10:50:00', 'Confirmado', '2026-06-13 22:30:45', 155),
+(25, 'Pedro Ferreira da Silva', '11987654321', 2, 4, '2026-06-14', '13:20:00', '16:40:00', 'Confirmado', '2026-06-13 22:33:39', 14);
 
 -- --------------------------------------------------------
 
@@ -116,6 +134,11 @@ CREATE TABLE `tab_agenda_servico` (
   `servico_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Tabela truncada antes do insert `tab_agenda_servico`
+--
+
+TRUNCATE TABLE `tab_agenda_servico`;
 --
 -- Despejando dados para a tabela `tab_agenda_servico`
 --
@@ -140,6 +163,11 @@ CREATE TABLE `tab_cliente` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_cliente`
+--
+
+TRUNCATE TABLE `tab_cliente`;
+--
 -- Despejando dados para a tabela `tab_cliente`
 --
 
@@ -159,6 +187,11 @@ CREATE TABLE `tab_cliente_endereco` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_cliente_endereco`
+--
+
+TRUNCATE TABLE `tab_cliente_endereco`;
+--
 -- Despejando dados para a tabela `tab_cliente_endereco`
 --
 
@@ -166,6 +199,39 @@ INSERT INTO `tab_cliente_endereco` (`cliente_id`, `endereco_id`) VALUES
 (3, 1),
 (3, 2),
 (6, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `tab_dias_funcionamento`
+--
+
+CREATE TABLE `tab_dias_funcionamento` (
+  `id` int(11) NOT NULL,
+  `dia_semana` int(11) NOT NULL COMMENT '1 = Domingo a 7 = Sábado',
+  `nome` varchar(14) NOT NULL COMMENT 'Nome do dia da semana',
+  `aberto` tinyint(1) DEFAULT 1,
+  `horario_inicio` time DEFAULT NULL,
+  `horario_fim` time DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Tabela truncada antes do insert `tab_dias_funcionamento`
+--
+
+TRUNCATE TABLE `tab_dias_funcionamento`;
+--
+-- Despejando dados para a tabela `tab_dias_funcionamento`
+--
+
+INSERT INTO `tab_dias_funcionamento` (`id`, `dia_semana`, `nome`, `aberto`, `horario_inicio`, `horario_fim`) VALUES
+(1, 1, 'Domingo', 1, '09:00:00', '19:00:00'),
+(2, 2, 'Segunda-feira', 0, NULL, NULL),
+(3, 3, 'Terça-feira', 1, '09:00:00', '19:00:00'),
+(4, 4, 'Quarta-feira', 1, '09:00:00', '19:00:00'),
+(5, 5, 'Quinta-feira', 1, '09:00:00', '19:00:00'),
+(6, 6, 'Sexta-feira', 1, '09:00:00', '19:00:00'),
+(7, 7, 'Sábado', 1, '09:00:00', '19:00:00');
 
 -- --------------------------------------------------------
 
@@ -188,6 +254,11 @@ CREATE TABLE `tab_endereco` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_endereco`
+--
+
+TRUNCATE TABLE `tab_endereco`;
+--
 -- Despejando dados para a tabela `tab_endereco`
 --
 
@@ -201,6 +272,210 @@ INSERT INTO `tab_endereco` (`id`, `nome`, `logradouro`, `numero`, `complemento`,
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `tab_grade_horarios`
+--
+
+CREATE TABLE `tab_grade_horarios` (
+  `id` int(11) NOT NULL,
+  `dia_funcionamento_id` int(11) DEFAULT NULL,
+  `horario_inicio` time NOT NULL,
+  `horario_fim` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Tabela truncada antes do insert `tab_grade_horarios`
+--
+
+TRUNCATE TABLE `tab_grade_horarios`;
+--
+-- Despejando dados para a tabela `tab_grade_horarios`
+--
+
+INSERT INTO `tab_grade_horarios` (`id`, `dia_funcionamento_id`, `horario_inicio`, `horario_fim`) VALUES
+(1, 1, '09:00:00', '09:20:00'),
+(2, 1, '09:20:00', '09:40:00'),
+(3, 1, '09:40:00', '10:00:00'),
+(4, 1, '10:00:00', '10:20:00'),
+(5, 1, '10:20:00', '10:40:00'),
+(6, 1, '10:40:00', '11:00:00'),
+(7, 1, '11:00:00', '11:20:00'),
+(8, 1, '11:20:00', '11:40:00'),
+(9, 1, '11:40:00', '12:00:00'),
+(10, 1, '12:00:00', '12:20:00'),
+(11, 1, '12:20:00', '12:40:00'),
+(12, 1, '12:40:00', '13:00:00'),
+(13, 1, '13:00:00', '13:20:00'),
+(14, 1, '13:20:00', '13:40:00'),
+(15, 1, '13:40:00', '14:00:00'),
+(16, 1, '14:00:00', '14:20:00'),
+(17, 1, '14:20:00', '14:40:00'),
+(18, 1, '14:40:00', '15:00:00'),
+(19, 1, '15:00:00', '15:20:00'),
+(20, 1, '15:20:00', '15:40:00'),
+(21, 1, '15:40:00', '16:00:00'),
+(22, 1, '16:00:00', '16:20:00'),
+(23, 1, '16:20:00', '16:40:00'),
+(24, 1, '16:40:00', '17:00:00'),
+(25, 1, '17:00:00', '17:20:00'),
+(26, 1, '17:20:00', '17:40:00'),
+(27, 1, '17:40:00', '18:00:00'),
+(28, 1, '18:00:00', '18:20:00'),
+(29, 1, '18:20:00', '18:40:00'),
+(30, 1, '18:40:00', '19:00:00'),
+(31, 3, '09:00:00', '09:20:00'),
+(32, 3, '09:20:00', '09:40:00'),
+(33, 3, '09:40:00', '10:00:00'),
+(34, 3, '10:00:00', '10:20:00'),
+(35, 3, '10:20:00', '10:40:00'),
+(36, 3, '10:40:00', '11:00:00'),
+(37, 3, '11:00:00', '11:20:00'),
+(38, 3, '11:20:00', '11:40:00'),
+(39, 3, '11:40:00', '12:00:00'),
+(40, 3, '12:00:00', '12:20:00'),
+(41, 3, '12:20:00', '12:40:00'),
+(42, 3, '12:40:00', '13:00:00'),
+(43, 3, '13:00:00', '13:20:00'),
+(44, 3, '13:20:00', '13:40:00'),
+(45, 3, '13:40:00', '14:00:00'),
+(46, 3, '14:00:00', '14:20:00'),
+(47, 3, '14:20:00', '14:40:00'),
+(48, 3, '14:40:00', '15:00:00'),
+(49, 3, '15:00:00', '15:20:00'),
+(50, 3, '15:20:00', '15:40:00'),
+(51, 3, '15:40:00', '16:00:00'),
+(52, 3, '16:00:00', '16:20:00'),
+(53, 3, '16:20:00', '16:40:00'),
+(54, 3, '16:40:00', '17:00:00'),
+(55, 3, '17:00:00', '17:20:00'),
+(56, 3, '17:20:00', '17:40:00'),
+(57, 3, '17:40:00', '18:00:00'),
+(58, 3, '18:00:00', '18:20:00'),
+(59, 3, '18:20:00', '18:40:00'),
+(60, 3, '18:40:00', '19:00:00'),
+(61, 4, '09:00:00', '09:20:00'),
+(62, 4, '09:20:00', '09:40:00'),
+(63, 4, '09:40:00', '10:00:00'),
+(64, 4, '10:00:00', '10:20:00'),
+(65, 4, '10:20:00', '10:40:00'),
+(66, 4, '10:40:00', '11:00:00'),
+(67, 4, '11:00:00', '11:20:00'),
+(68, 4, '11:20:00', '11:40:00'),
+(69, 4, '11:40:00', '12:00:00'),
+(70, 4, '12:00:00', '12:20:00'),
+(71, 4, '12:20:00', '12:40:00'),
+(72, 4, '12:40:00', '13:00:00'),
+(73, 4, '13:00:00', '13:20:00'),
+(74, 4, '13:20:00', '13:40:00'),
+(75, 4, '13:40:00', '14:00:00'),
+(76, 4, '14:00:00', '14:20:00'),
+(77, 4, '14:20:00', '14:40:00'),
+(78, 4, '14:40:00', '15:00:00'),
+(79, 4, '15:00:00', '15:20:00'),
+(80, 4, '15:20:00', '15:40:00'),
+(81, 4, '15:40:00', '16:00:00'),
+(82, 4, '16:00:00', '16:20:00'),
+(83, 4, '16:20:00', '16:40:00'),
+(84, 4, '16:40:00', '17:00:00'),
+(85, 4, '17:00:00', '17:20:00'),
+(86, 4, '17:20:00', '17:40:00'),
+(87, 4, '17:40:00', '18:00:00'),
+(88, 4, '18:00:00', '18:20:00'),
+(89, 4, '18:20:00', '18:40:00'),
+(90, 4, '18:40:00', '19:00:00'),
+(91, 5, '09:00:00', '09:20:00'),
+(92, 5, '09:20:00', '09:40:00'),
+(93, 5, '09:40:00', '10:00:00'),
+(94, 5, '10:00:00', '10:20:00'),
+(95, 5, '10:20:00', '10:40:00'),
+(96, 5, '10:40:00', '11:00:00'),
+(97, 5, '11:00:00', '11:20:00'),
+(98, 5, '11:20:00', '11:40:00'),
+(99, 5, '11:40:00', '12:00:00'),
+(100, 5, '12:00:00', '12:20:00'),
+(101, 5, '12:20:00', '12:40:00'),
+(102, 5, '12:40:00', '13:00:00'),
+(103, 5, '13:00:00', '13:20:00'),
+(104, 5, '13:20:00', '13:40:00'),
+(105, 5, '13:40:00', '14:00:00'),
+(106, 5, '14:00:00', '14:20:00'),
+(107, 5, '14:20:00', '14:40:00'),
+(108, 5, '14:40:00', '15:00:00'),
+(109, 5, '15:00:00', '15:20:00'),
+(110, 5, '15:20:00', '15:40:00'),
+(111, 5, '15:40:00', '16:00:00'),
+(112, 5, '16:00:00', '16:20:00'),
+(113, 5, '16:20:00', '16:40:00'),
+(114, 5, '16:40:00', '17:00:00'),
+(115, 5, '17:00:00', '17:20:00'),
+(116, 5, '17:20:00', '17:40:00'),
+(117, 5, '17:40:00', '18:00:00'),
+(118, 5, '18:00:00', '18:20:00'),
+(119, 5, '18:20:00', '18:40:00'),
+(120, 5, '18:40:00', '19:00:00'),
+(121, 6, '09:00:00', '09:20:00'),
+(122, 6, '09:20:00', '09:40:00'),
+(123, 6, '09:40:00', '10:00:00'),
+(124, 6, '10:00:00', '10:20:00'),
+(125, 6, '10:20:00', '10:40:00'),
+(126, 6, '10:40:00', '11:00:00'),
+(127, 6, '11:00:00', '11:20:00'),
+(128, 6, '11:20:00', '11:40:00'),
+(129, 6, '11:40:00', '12:00:00'),
+(130, 6, '12:00:00', '12:20:00'),
+(131, 6, '12:20:00', '12:40:00'),
+(132, 6, '12:40:00', '13:00:00'),
+(133, 6, '13:00:00', '13:20:00'),
+(134, 6, '13:20:00', '13:40:00'),
+(135, 6, '13:40:00', '14:00:00'),
+(136, 6, '14:00:00', '14:20:00'),
+(137, 6, '14:20:00', '14:40:00'),
+(138, 6, '14:40:00', '15:00:00'),
+(139, 6, '15:00:00', '15:20:00'),
+(140, 6, '15:20:00', '15:40:00'),
+(141, 6, '15:40:00', '16:00:00'),
+(142, 6, '16:00:00', '16:20:00'),
+(143, 6, '16:20:00', '16:40:00'),
+(144, 6, '16:40:00', '17:00:00'),
+(145, 6, '17:00:00', '17:20:00'),
+(146, 6, '17:20:00', '17:40:00'),
+(147, 6, '17:40:00', '18:00:00'),
+(148, 6, '18:00:00', '18:20:00'),
+(149, 6, '18:20:00', '18:40:00'),
+(150, 6, '18:40:00', '19:00:00'),
+(151, 7, '09:00:00', '09:20:00'),
+(152, 7, '09:20:00', '09:40:00'),
+(153, 7, '09:40:00', '10:00:00'),
+(154, 7, '10:00:00', '10:20:00'),
+(155, 7, '10:20:00', '10:40:00'),
+(156, 7, '10:40:00', '11:00:00'),
+(157, 7, '11:00:00', '11:20:00'),
+(158, 7, '11:20:00', '11:40:00'),
+(159, 7, '11:40:00', '12:00:00'),
+(160, 7, '12:00:00', '12:20:00'),
+(161, 7, '12:20:00', '12:40:00'),
+(162, 7, '12:40:00', '13:00:00'),
+(163, 7, '13:00:00', '13:20:00'),
+(164, 7, '13:20:00', '13:40:00'),
+(165, 7, '13:40:00', '14:00:00'),
+(166, 7, '14:00:00', '14:20:00'),
+(167, 7, '14:20:00', '14:40:00'),
+(168, 7, '14:40:00', '15:00:00'),
+(169, 7, '15:00:00', '15:20:00'),
+(170, 7, '15:20:00', '15:40:00'),
+(171, 7, '15:40:00', '16:00:00'),
+(172, 7, '16:00:00', '16:20:00'),
+(173, 7, '16:20:00', '16:40:00'),
+(174, 7, '16:40:00', '17:00:00'),
+(175, 7, '17:00:00', '17:20:00'),
+(176, 7, '17:20:00', '17:40:00'),
+(177, 7, '17:40:00', '18:00:00'),
+(178, 7, '18:00:00', '18:20:00'),
+(179, 7, '18:20:00', '18:40:00'),
+(180, 7, '18:40:00', '19:00:00');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `tab_perfil`
 --
 
@@ -209,6 +484,11 @@ CREATE TABLE `tab_perfil` (
   `nome` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Tabela truncada antes do insert `tab_perfil`
+--
+
+TRUNCATE TABLE `tab_perfil`;
 --
 -- Despejando dados para a tabela `tab_perfil`
 --
@@ -230,6 +510,11 @@ CREATE TABLE `tab_perfil_permissao` (
   `permissao_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Tabela truncada antes do insert `tab_perfil_permissao`
+--
+
+TRUNCATE TABLE `tab_perfil_permissao`;
 --
 -- Despejando dados para a tabela `tab_perfil_permissao`
 --
@@ -267,6 +552,11 @@ CREATE TABLE `tab_permissao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_permissao`
+--
+
+TRUNCATE TABLE `tab_permissao`;
+--
 -- Despejando dados para a tabela `tab_permissao`
 --
 
@@ -298,6 +588,11 @@ CREATE TABLE `tab_produto` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_produto`
+--
+
+TRUNCATE TABLE `tab_produto`;
+--
 -- Despejando dados para a tabela `tab_produto`
 --
 
@@ -322,6 +617,11 @@ CREATE TABLE `tab_profissional` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_profissional`
+--
+
+TRUNCATE TABLE `tab_profissional`;
+--
 -- Despejando dados para a tabela `tab_profissional`
 --
 
@@ -340,6 +640,11 @@ CREATE TABLE `tab_profissional_endereco` (
   `endereco_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Tabela truncada antes do insert `tab_profissional_endereco`
+--
+
+TRUNCATE TABLE `tab_profissional_endereco`;
 --
 -- Despejando dados para a tabela `tab_profissional_endereco`
 --
@@ -365,6 +670,11 @@ CREATE TABLE `tab_servico` (
   `imagem` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Tabela truncada antes do insert `tab_servico`
+--
+
+TRUNCATE TABLE `tab_servico`;
 --
 -- Despejando dados para a tabela `tab_servico`
 --
@@ -396,6 +706,11 @@ CREATE TABLE `tab_usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Tabela truncada antes do insert `tab_usuario`
+--
+
+TRUNCATE TABLE `tab_usuario`;
+--
 -- Despejando dados para a tabela `tab_usuario`
 --
 
@@ -406,7 +721,7 @@ INSERT INTO `tab_usuario` (`id`, `perfil_id`, `nome_usuario`, `email`, `senha`, 
 (6, 1, 'Teste', 'teste@teste.com', '123456', 1, NULL, NULL, '2026-05-25 18:45:20'),
 (7, 1, 'Gabriel', 'gabriel@admin.com', '{sha256}CsTZVEv8fvog4F4xISxq3jbQHsrxfStz9x6Yd0vPWvo=', 1, NULL, NULL, '2026-06-06 16:57:50'),
 (8, 1, 'Wallace', 'wallace@admin.com', '{sha256}UfLgCc5Yfrh7z7g4eCFkVwhlFSGPuNjMGB048x7OjTw=', 1, NULL, NULL, '2026-06-06 18:11:23'),
-(9, 3, 'tiago', 'tiago.3554@gmail.com', '{sha256}jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=', 0, NULL, NULL, '2026-06-11 19:56:53');
+(9, 3, 'tiago', 'tiago.3554@gmail.com', '{sha256}jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=', 1, NULL, NULL, '2026-06-11 19:56:53');
 
 --
 -- Índices para tabelas despejadas
@@ -431,7 +746,8 @@ ALTER TABLE `tab_agenda`
 -- Índices de tabela `tab_agendamento`
 --
 ALTER TABLE `tab_agendamento`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_agendamento_grade_horarios` (`grade_horarios_id`);
 
 --
 -- Índices de tabela `tab_agenda_servico`
@@ -455,10 +771,23 @@ ALTER TABLE `tab_cliente_endereco`
   ADD KEY `fk_link_endereco` (`endereco_id`);
 
 --
+-- Índices de tabela `tab_dias_funcionamento`
+--
+ALTER TABLE `tab_dias_funcionamento`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices de tabela `tab_endereco`
 --
 ALTER TABLE `tab_endereco`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `tab_grade_horarios`
+--
+ALTER TABLE `tab_grade_horarios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `dia_funcionamento_id` (`dia_funcionamento_id`);
 
 --
 -- Índices de tabela `tab_perfil`
@@ -535,13 +864,25 @@ ALTER TABLE `tab_agenda`
 -- AUTO_INCREMENT de tabela `tab_agendamento`
 --
 ALTER TABLE `tab_agendamento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT de tabela `tab_dias_funcionamento`
+--
+ALTER TABLE `tab_dias_funcionamento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `tab_endereco`
 --
 ALTER TABLE `tab_endereco`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de tabela `tab_grade_horarios`
+--
+ALTER TABLE `tab_grade_horarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 
 --
 -- AUTO_INCREMENT de tabela `tab_perfil`
@@ -585,6 +926,12 @@ ALTER TABLE `tab_agenda`
   ADD CONSTRAINT `fk_agenda_profissional` FOREIGN KEY (`profissional_id`) REFERENCES `tab_profissional` (`id`);
 
 --
+-- Restrições para tabelas `tab_agendamento`
+--
+ALTER TABLE `tab_agendamento`
+  ADD CONSTRAINT `fk_agendamento_grade_horarios` FOREIGN KEY (`grade_horarios_id`) REFERENCES `tab_grade_horarios` (`id`) ON DELETE SET NULL;
+
+--
 -- Restrições para tabelas `tab_agenda_servico`
 --
 ALTER TABLE `tab_agenda_servico`
@@ -603,6 +950,12 @@ ALTER TABLE `tab_cliente`
 ALTER TABLE `tab_cliente_endereco`
   ADD CONSTRAINT `fk_link_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `tab_cliente` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_link_endereco` FOREIGN KEY (`endereco_id`) REFERENCES `tab_endereco` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `tab_grade_horarios`
+--
+ALTER TABLE `tab_grade_horarios`
+  ADD CONSTRAINT `tab_grade_horarios_ibfk_1` FOREIGN KEY (`dia_funcionamento_id`) REFERENCES `tab_dias_funcionamento` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `tab_perfil_permissao`
