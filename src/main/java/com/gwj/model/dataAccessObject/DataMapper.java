@@ -144,6 +144,18 @@ public class DataMapper {
                 case String s -> java.time.LocalDateTime.parse(s);
                 default -> 0;
             };
+            case "LocalDate" -> switch (value) {
+                case java.sql.Date d -> d.toLocalDate();
+                case java.sql.Timestamp t -> t.toLocalDateTime().toLocalDate();
+                case String s -> java.time.LocalDate.parse(s);
+                default -> value;
+            };
+            case "LocalTime" -> switch (value) {
+                case java.sql.Time t -> t.toLocalTime();
+                case java.sql.Timestamp ts -> ts.toLocalDateTime().toLocalTime();
+                case String s -> java.time.LocalTime.parse(s);
+                default -> value;
+            };
             default -> value;
         };
     }

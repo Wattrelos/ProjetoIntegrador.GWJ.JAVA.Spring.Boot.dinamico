@@ -2,6 +2,7 @@ package com.gwj.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.ui.Model;
 
 import com.gwj.model.dataTransferObject.EntityMapper;
@@ -56,12 +57,89 @@ public class Router {
     }    
 
     @GetMapping("/checkout")
-    public String checkout() {
+    public String checkout(
+            @RequestParam("servicoId") Long servicoId,
+            @RequestParam(value = "profissionalId", required = false) Long profissionalId,
+            @RequestParam("dataHora") String dataHoraStr,
+            HttpServletRequest request,
+            Model model) {
+        
+        try {
+            // Carregar Serviço
+            IService<com.gwj.model.domain.entities.Servico> servicoService = ServiceRegistry.getService("Servico");
+            com.gwj.model.domain.entities.Servico sFiltro = new com.gwj.model.domain.entities.Servico();
+            sFiltro.setId(servicoId);
+            List<com.gwj.model.domain.entities.Servico> servicos = servicoService.read(sFiltro);
+            if (!servicos.isEmpty()) {
+                model.addAttribute("servico", servicos.get(0));
+            }
+
+            // Carregar Profissional
+            if (profissionalId != null && profissionalId > 0) {
+                IService<com.gwj.model.domain.entities.Profissional> profService = ServiceRegistry.getService("Profissional");
+                com.gwj.model.domain.entities.Profissional pFiltro = new com.gwj.model.domain.entities.Profissional();
+                pFiltro.setId(profissionalId);
+                List<com.gwj.model.domain.entities.Profissional> profissionais = profService.read(pFiltro);
+                if (!profissionais.isEmpty()) {
+                    model.addAttribute("profissional", profissionais.get(0));
+                }
+            } else {
+                model.addAttribute("profissionalNome", "Qualquer profissional livre");
+            }
+
+            // Passar os dados brutos de agendamento
+            model.addAttribute("servicoId", servicoId);
+            model.addAttribute("profissionalId", profissionalId != null ? profissionalId : 0L);
+            model.addAttribute("dataHora", dataHoraStr);
+
+            // Formatar a dataHora de forma amigável para exibição
+            java.time.LocalDateTime dt = java.time.LocalDateTime.parse(dataHoraStr);
+            java.time.format.DateTimeFormatter formatador = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM', às' HH:mm", new java.util.Locale("pt", "BR"));
+            model.addAttribute("dataHoraFormatada", dt.format(formatador));
+
+            // Verificar se o usuário logado está na sessão e carregar dados do Cliente associado
+            jakarta.servlet.http.HttpSession session = request.getSession(false);
+            if (session != null) {
+                com.gwj.model.domain.entities.Usuario usuarioLogado = (com.gwj.model.domain.entities.Usuario) session.getAttribute("usuarioLogado");
+                if (usuarioLogado != null) {
+                    IService<com.gwj.model.domain.entities.Cliente> clienteService = ServiceRegistry.getService("Cliente");
+                    com.gwj.model.domain.entities.Cliente cFiltro = new com.gwj.model.domain.entities.Cliente();
+                    cFiltro.setId(usuarioLogado.getId());
+                    List<com.gwj.model.domain.entities.Cliente> clientes = clienteService.read(cFiltro);
+                    if (!clientes.isEmpty()) {
+                        model.addAttribute("clienteLogado", clientes.get(0));
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "checkout";
     }
 
-    @GetMapping("order-confirmation")
-    public String orderConfirmation() {
+    @GetMapping("/order-confirmation")
+    public String orderConfirmation(@RequestParam("id") Long agendamentoId, Model model) {
+        try {
+            IService<com.gwj.model.domain.entities.Agendamento> agendamentoService = ServiceRegistry.getService("Agendamento");
+            com.gwj.model.domain.entities.Agendamento aFiltro = new com.gwj.model.domain.entities.Agendamento();
+            aFiltro.setId(agendamentoId);
+            List<com.gwj.model.domain.entities.Agendamento> resultados = agendamentoService.read(aFiltro);
+            if (!resultados.isEmpty()) {
+                com.gwj.model.domain.entities.Agendamento agendamento = resultados.get(0);
+                model.addAttribute("agendamento", agendamento);
+ 
+                // Formata a data de forma amigável
+                if (agendamento.getDataAgendamento() != null && agendamento.getHoraInicio() != null) {
+                    java.time.LocalDateTime dt = java.time.LocalDateTime.of(agendamento.getDataAgendamento(), agendamento.getHoraInicio());
+                    java.time.format.DateTimeFormatter formatador = java.time.format.DateTimeFormatter.ofPattern("dd 'de' MMMM', às' HH:mm", new java.util.Locale("pt", "BR"));
+                    model.addAttribute("dataHoraFormatada", dt.format(formatador));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "order-confirmation";
     }
     

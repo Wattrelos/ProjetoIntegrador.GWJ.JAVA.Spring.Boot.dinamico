@@ -1,0 +1,9 @@
+Estudos para melhorar o sistema de agendamento:
+Como sua Aplicação valida a Grade de Horários?
+
+Com o retorno do banco de dados (ex: Início às 09:00 e Fim às 10:30), o seu código realiza a filtragem da sua lista estática baseando-se em duas regras fundamentais:
+Regra 1 (Remover Horários Conflitantes): Qualquer horário estático que seja maior ou igual à hora_inicio e estritamente menor que a hora_fim deve ser removido da tela.No exemplo acima: Os horários "09:00", "09:30" e "10:00" ficam indisponíveis. O horário das "10:30" continua livre para o próximo cliente.
+Regra 2 (Validar Espaço para o Novo Serviço): Quando o cliente clica em um horário livre (ex: "17:00") e escolhe o Combo de 110 minutos, o sistema precisa verificar se existem slots livres suficientes em sequência na tabela estática (nesse caso, precisaria de 17:00, 17:30, 18:00 e 18:30 livres) antes de confirmar a reserva, garantindo que o atendimento não estoure o horário de fechamento da barbearia.
+Para finalizarmos a regra de validação do sistema:
+Não utilizar a coluna duracao_minutos da tabela de serviços para a grade dinâmica, pois esta coluna é usada apenas para cálculo automático de ocupação na agenda final. O cálculo de bloqueio/liberação de slots é feito utilizando a lógica de tempo real do sistema, comparando os horários estáticos com os horários já agendados no banco de dados.
+Qual é o horário de encerramento da barbearia (último horário limite para o fechamento da casa)?O sistema deve permitir que um serviço longo comece no último horário da lista (ex: marcar um serviço de 2 horas às 17:30) ou o sistema deve bloquear isso? Resposta: Ainda não temos o arquivo de configuração da loja. Por enquanto, vamos definir o horários de fechamento da seguinte forma: 19:00. A lógica deve verificar se o horário de término calculado (hora_inicio + duração_servico) excede o horário de fechamento definido na configuração da barbearia (ex: 19:00). Se sim, o slot deve ser bloqueado na tela.

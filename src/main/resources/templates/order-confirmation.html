@@ -14,33 +14,37 @@
                 <!-- Ícone de Sucesso Mockado -->
                 <div class="success-icon">✓</div>
 
-                <h1 style="margin-bottom: 1rem;">Reserva Confirmada!</h1>
-                <p class="confirmation-msg">
-                    Obrigado, João! Seu agendamento foi realizado com sucesso. Um e-mail com os detalhes do seu pedido foi enviado para você.
-                </p>
-
-                <!-- Card de Resumo do Pedido -->
-                <div class="details-panel">
-                    <h3 class="details-header">Detalhes da Reserva</h3>
-                    
-                    <div class="details-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Número da Reserva</span>
-                            <strong>#TGO-8492</strong>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Data e Horário</span>
-                            <strong>24 de Out, 10:30</strong>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Profissional</span>
-                            <strong>Qualquer profissional</strong>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Total a Pagar</span>
-                            <strong class="has-theme-3-color">R$ 80,00</strong>
-                        </div>
-                    </div>
+                 <h1 style="margin-bottom: 1rem;">Reserva Confirmada!</h1>
+                 <p class="confirmation-msg">
+                     Obrigado, <span th:text="${agendamento != null ? agendamento.clienteNome : 'Cliente'}">João</span>! Seu agendamento foi realizado com sucesso. Um e-mail com os detalhes do seu pedido foi enviado para você.
+                 </p>
+ 
+                 <!-- Card de Resumo do Pedido -->
+                 <div class="details-panel" th:if="${agendamento}">
+                     <h3 class="details-header">Detalhes da Reserva</h3>
+                     
+                     <div class="details-grid">
+                         <div class="detail-item">
+                             <span class="detail-label">Número da Reserva</span>
+                             <strong th:text="'#TGO-' + ${agendamento.id}">#TGO-8492</strong>
+                         </div>
+                         <div class="detail-item">
+                             <span class="detail-label">Data e Horário</span>
+                             <strong th:text="${dataHoraFormatada}">24 de Out, 10:30</strong>
+                         </div>
+                         <div class="detail-item">
+                             <span class="detail-label">Profissional</span>
+                             <strong th:text="${agendamento.profissional.nome} + ' ' + ${agendamento.profissional.sobrenome}">Carlos Tesoura</strong>
+                         </div>
+                         <div class="detail-item" th:if="${agendamento.servico != null}">
+                             <span class="detail-label">Serviço</span>
+                             <strong th:text="${agendamento.servico.nome}">Corte Masculino</strong>
+                         </div>
+                         <div class="detail-item" th:if="${agendamento.servico != null}">
+                             <span class="detail-label">Total a Pagar</span>
+                             <strong class="has-theme-3-color" th:text="'R$ ' + ${#numbers.formatDecimal(agendamento.servico.preco, 1, 'POINT', 2, 'COMMA')}">R$ 80,00</strong>
+                         </div>
+                     </div>
 
                     <div class="instructions-panel">
                         <h4>Instruções Importantes</h4>
