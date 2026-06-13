@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Tempo de geração: 06/06/2026 às 21:15
--- Versão do servidor: 11.8.3-MariaDB-0+deb13u1 from Debian
--- Versão do PHP: 8.4.21
+-- Tempo de geração: 13/06/2026 às 01:06
+-- Versão do servidor: 11.8.6-MariaDB-0+deb13u1 from Debian
+-- Versão do PHP: 8.4.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,32 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `gwj2`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `permissoes`
+--
+
+CREATE TABLE `permissoes` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `descricao` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `permissoes`
+--
+
+INSERT INTO `permissoes` (`id`, `nome`, `descricao`) VALUES
+(1, 'AGENDAR_HORARIO', 'Permite que o cliente ou recepcionista crie um agendamento'),
+(2, 'CANCELAR_AGENDAMENTO', 'Permite cancelar um horário agendado'),
+(3, 'VISUALIZAR_PROPRIA_AGENDA', 'Permite ao barbeiro ver apenas os seus atendimentos'),
+(4, 'GERENCIAR_TODAS_AGENDAS', 'Permite à recepção/adm mover e organizar horários de todos'),
+(5, 'GERENCIAR_CLIENTES', 'Permite cadastrar, editar ou bloquear perfis de clientes'),
+(6, 'GERENCIAR_SERVICOS', 'Permite alterar preços e cadastrar novos serviços (Cabelo, Barba, etc)'),
+(7, 'VISUALIZAR_FATURAMENTO', 'Permite ver relatórios financeiros e comissões da equipe'),
+(8, 'GERENCIAR_ESTOQUE', 'Permite dar entrada e saída em produtos (Pomadas, Shampoos)');
 
 -- --------------------------------------------------------
 
@@ -41,6 +67,43 @@ CREATE TABLE `tab_agenda` (
 
 INSERT INTO `tab_agenda` (`id`, `nome`, `data`, `cliente_id`, `profissional_id`) VALUES
 (1, 'Corte Semanal', '2023-10-27 14:00:00', 3, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `tab_agendamento`
+--
+
+CREATE TABLE `tab_agendamento` (
+  `id` int(11) NOT NULL,
+  `cliente_nome` varchar(100) NOT NULL,
+  `cliente_telefone` varchar(20) DEFAULT NULL,
+  `profissional_id` int(11) NOT NULL,
+  `servico_id` int(11) NOT NULL,
+  `data_agendamento` date NOT NULL,
+  `hora_inicio` time NOT NULL,
+  `hora_fim` time NOT NULL,
+  `status` varchar(20) DEFAULT 'Confirmado',
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `tab_agendamento`
+--
+
+INSERT INTO `tab_agendamento` (`id`, `cliente_nome`, `cliente_telefone`, `profissional_id`, `servico_id`, `data_agendamento`, `hora_inicio`, `hora_fim`, `status`, `created_at`) VALUES
+(1, 'Marcos Silva', '(11) 99999-1111', 2, 1, '2026-06-15', '09:00:00', '09:30:00', 'Confirmado', '2026-06-13 00:08:29'),
+(2, 'Arthur Rezende', '(11) 99999-2222', 2, 7, '2026-06-15', '10:00:00', '11:50:00', 'Confirmado', '2026-06-13 00:08:29'),
+(3, 'Bruno Oliveira', '(11) 99999-3333', 2, 2, '2026-06-15', '14:00:00', '14:20:00', 'Confirmado', '2026-06-13 00:08:29'),
+(4, 'Rodrigo Costa', '(11) 99999-4444', 2, 3, '2026-06-15', '15:30:00', '17:00:00', 'Confirmado', '2026-06-13 00:08:29'),
+(5, 'Marcos Silva', '(11) 99999-1111', 2, 1, '2026-06-15', '09:00:00', '09:30:00', 'Confirmado', '2026-06-13 00:09:34'),
+(6, 'Arthur Rezende', '(11) 99999-2222', 2, 7, '2026-06-15', '10:00:00', '11:50:00', 'Confirmado', '2026-06-13 00:09:34'),
+(7, 'Bruno Oliveira', '(11) 99999-3333', 2, 2, '2026-06-15', '14:00:00', '14:20:00', 'Confirmado', '2026-06-13 00:09:34'),
+(8, 'Rodrigo Costa', '(11) 99999-4444', 2, 3, '2026-06-15', '15:30:00', '17:00:00', 'Confirmado', '2026-06-13 00:09:34'),
+(9, 'Felipe Amorim', '(11) 99999-5555', 9, 4, '2026-06-15', '09:00:00', '12:20:00', 'Confirmado', '2026-06-13 00:09:34'),
+(10, 'Lucas (Pai: Roberto)', '(11) 99999-6666', 9, 8, '2026-06-15', '14:00:00', '14:40:00', 'Confirmado', '2026-06-13 00:09:34'),
+(11, 'Gustavo Henrique', '(11) 99999-7777', 9, 1, '2026-06-15', '15:00:00', '15:30:00', 'Confirmado', '2026-06-13 00:09:34'),
+(23, 'Sebastião Silva', '11123456789', 2, 2, '2026-06-13', '14:30:00', '14:50:00', 'Confirmado', '2026-06-13 01:02:02');
 
 -- --------------------------------------------------------
 
@@ -101,7 +164,8 @@ CREATE TABLE `tab_cliente_endereco` (
 
 INSERT INTO `tab_cliente_endereco` (`cliente_id`, `endereco_id`) VALUES
 (3, 1),
-(3, 2);
+(3, 2),
+(6, 5);
 
 -- --------------------------------------------------------
 
@@ -262,7 +326,8 @@ CREATE TABLE `tab_profissional` (
 --
 
 INSERT INTO `tab_profissional` (`id`, `nome`, `sobrenome`, `telefone`, `cpf`, `observacao`) VALUES
-(2, 'Carlos', 'Tesoura', '(11) 99999-1111', NULL, NULL);
+(2, 'Carlos', 'Tesoura', '(11) 99999-1111', NULL, NULL),
+(9, 'Tiago (Especialista em Fade)', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -296,20 +361,21 @@ CREATE TABLE `tab_servico` (
   `preco` decimal(10,2) NOT NULL,
   `duracao` int(11) DEFAULT NULL,
   `tipo` varchar(50) DEFAULT NULL,
-  `ativo` tinyint(1) DEFAULT 1
+  `ativo` tinyint(1) DEFAULT 1,
+  `imagem` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Despejando dados para a tabela `tab_servico`
 --
 
-INSERT INTO `tab_servico` (`id`, `nome`, `descricao`, `preco`, `duracao`, `tipo`, `ativo`) VALUES
-(1, 'Corte de Cabelo Masculino', 'Promocional', 45.00, 30, 'Tradicional', 1),
-(2, 'Barba Completa (Toalha Quente)', 'O mais pedido', 35.00, 20, NULL, 1),
-(3, 'Combo: Cabelo + Barba', NULL, 70.00, 50, NULL, 1),
-(4, 'Corte moicano', 'Corte estilo moicano', 130.00, 90, 'Exótico', 1),
-(5, 'Corte moicano', 'Corte estilo moicano', 130.00, 90, 'Exótico', 1),
-(6, 'Trança rastafari', 'Estilo cultural', 230.00, 200, 'Cultural', 1);
+INSERT INTO `tab_servico` (`id`, `nome`, `descricao`, `preco`, `duracao`, `tipo`, `ativo`, `imagem`) VALUES
+(1, 'Corte de Cabelo Masculino', 'Promocional', 45.00, 30, 'Tradicional', 1, '/img/Corte-cabelo-masculino.jpeg'),
+(2, 'Barba Completa (Toalha Quente)', 'O mais pedido', 35.00, 20, 'Tradicional', 1, '/img/photo-1621605815971-fbc98d665033.jpeg'),
+(3, 'Corte moicano', 'Corte estilo moicano', 130.00, 90, 'Exótico', 1, NULL),
+(4, 'Trança rastafari', 'Estilo cultural', 230.00, 200, 'Cultural', 1, NULL),
+(7, 'Combo (Cabelo + Barba)', 'Combo', 98.00, 110, 'Mais procurado', 1, NULL),
+(8, 'Corte Infantil', 'Infanto', 45.00, 40, 'Infanto-Juvenil', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -334,17 +400,24 @@ CREATE TABLE `tab_usuario` (
 --
 
 INSERT INTO `tab_usuario` (`id`, `perfil_id`, `nome_usuario`, `email`, `senha`, `status`, `token`, `ip`, `data_cadastro`) VALUES
-(1, NULL, 'admin', 'contato@barbearia.com', '123', 1, NULL, NULL, '2026-05-07 19:28:21'),
-(2, NULL, 'barbeiro1', 'carlos@email.com', '123', 1, NULL, NULL, '2026-05-07 19:28:21'),
-(3, NULL, 'cliente1', 'marcos@email.com', '123', 1, 'byscKmvPh87emtl7fAjYKJHkOFfzPlYH83TDsZtX372c0lmEVkgfzKALwGjCBT9S', '192.168.0.1', '2026-05-07 19:28:21'),
+(2, 3, 'barbeiro1', 'carlos@email.com', '123', 1, NULL, NULL, '2026-05-07 19:28:21'),
+(3, 4, 'cliente1', 'marcos@email.com', '{sha256}pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 1, 'byscKmvPh87emtl7fAjYKJHkOFfzPlYH83TDsZtX372c0lmEVkgfzKALwGjCBT9S', '192.168.0.1', '2026-05-07 19:28:21'),
 (4, 1, 'Pedro123', 'pedro.cefas@yahoo.com.br', '4321', 1, '111', NULL, '2026-05-13 18:35:00'),
 (6, 1, 'Teste', 'teste@teste.com', '123456', 1, NULL, NULL, '2026-05-25 18:45:20'),
 (7, 1, 'Gabriel', 'gabriel@admin.com', '{sha256}CsTZVEv8fvog4F4xISxq3jbQHsrxfStz9x6Yd0vPWvo=', 1, NULL, NULL, '2026-06-06 16:57:50'),
-(8, 1, 'Wallace', 'wallace@admin.com', '{sha256}UfLgCc5Yfrh7z7g4eCFkVwhlFSGPuNjMGB048x7OjTw=', 1, NULL, NULL, '2026-06-06 18:11:23');
+(8, 1, 'Wallace', 'wallace@admin.com', '{sha256}UfLgCc5Yfrh7z7g4eCFkVwhlFSGPuNjMGB048x7OjTw=', 1, NULL, NULL, '2026-06-06 18:11:23'),
+(9, 3, 'tiago', 'tiago.3554@gmail.com', '{sha256}jZae727K08KaOmKSgOaGzww/XVqGr/PKEgIMkjrcbJI=', 0, NULL, NULL, '2026-06-11 19:56:53');
 
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices de tabela `permissoes`
+--
+ALTER TABLE `permissoes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nome` (`nome`);
 
 --
 -- Índices de tabela `tab_agenda`
@@ -353,6 +426,12 @@ ALTER TABLE `tab_agenda`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_agenda_cliente` (`cliente_id`),
   ADD KEY `fk_agenda_profissional` (`profissional_id`);
+
+--
+-- Índices de tabela `tab_agendamento`
+--
+ALTER TABLE `tab_agendamento`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `tab_agenda_servico`
@@ -433,17 +512,30 @@ ALTER TABLE `tab_servico`
 --
 ALTER TABLE `tab_usuario`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome_usuario` (`nome_usuario`);
+  ADD UNIQUE KEY `nome_usuario` (`nome_usuario`),
+  ADD UNIQUE KEY `email_unique` (`email`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
+-- AUTO_INCREMENT de tabela `permissoes`
+--
+ALTER TABLE `permissoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
 -- AUTO_INCREMENT de tabela `tab_agenda`
 --
 ALTER TABLE `tab_agenda`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `tab_agendamento`
+--
+ALTER TABLE `tab_agendamento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de tabela `tab_endereco`
@@ -473,13 +565,13 @@ ALTER TABLE `tab_produto`
 -- AUTO_INCREMENT de tabela `tab_servico`
 --
 ALTER TABLE `tab_servico`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `tab_usuario`
 --
 ALTER TABLE `tab_usuario`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Restrições para tabelas despejadas
