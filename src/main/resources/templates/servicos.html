@@ -63,7 +63,7 @@
                         <span class="legend-item"><span class="legend-dot selected"></span> Selecionado</span>
                     </div>
 
-                    <button type="button" id="btnConfirmar" class="wp-element-button btn-block" disabled style="opacity: 0.6; cursor: not-allowed;">Confirmar e Pagar</button>
+                    <button type="button" id="btnConfirmar" class="wp-element-button btn-block" disabled>Confirmar e Pagar</button>
                 </div>
             </div>
         </div>
@@ -112,8 +112,6 @@
 
                 labelDataFormatada.textContent = formatarDataLonga(data);
                 btnConfirmar.disabled = true;
-                btnConfirmar.style.opacity = "0.6";
-                btnConfirmar.style.cursor = "not-allowed";
                 selectedTime = null;
 
                 // Exibir indicador de carregamento
@@ -156,8 +154,6 @@
                                     
                                     // Habilita botão confirmar
                                     btnConfirmar.disabled = false;
-                                    btnConfirmar.style.opacity = "1";
-                                    btnConfirmar.style.cursor = "pointer";
                                 });
                             }
                             slotsGrid.appendChild(btn);

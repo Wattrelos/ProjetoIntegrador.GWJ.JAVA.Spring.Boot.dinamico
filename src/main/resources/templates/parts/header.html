@@ -12,7 +12,10 @@
     <header class="modern-header" th:fragment="header">
         <div class="header-container alignwide">
             <div class="header-logo">
-                <a th:href="@{/}" th:text="${empresa.nome}">Tgo's Barbearia</a>
+                <a th:href="@{/}" style="display: flex; align-items: center; gap: 10px;">
+                    <img th:if="${empresa.logo_url != null and !empresa.logo_url.isEmpty()}" th:src="${empresa.logo_url}" th:alt="${empresa.logo_alt != null ? empresa.logo_alt : empresa.nome}" style="max-height: 40px;">
+                    <span th:text="${empresa.nome}">Tgo's Barbearia</span>
+                </a>
             </div>
             
             <!-- Botão do Menu Hambúrguer -->
@@ -31,24 +34,24 @@
                     <li><a th:href="@{/loja}">Loja</a></li>
                     <li><a th:href="@{/carrinho}">Carrinho</a></li>
                     <li th:if="${session.usuarioLogado != null}"><a th:href="@{/meus-agendamentos}">Meus Agendamentos</a></li>
-                    <li th:if="${session.usuarioLogado != null}"><a th:href="@{/logout}" style="color: #ff6666;">Sair</a></li>
+                    <li th:if="${session.usuarioLogado != null}"><a th:href="@{/logout}" class="header-link-danger">Sair</a></li>
                     <li th:if="${session.usuarioLogado == null}"><a th:href="@{/login}">Entrar</a></li>
                     <li th:if="${session.usuarioLogado == null}"><a th:href="@{/cadastro}">Cadastrar</a></li>
                     <!-- O botão CTA inserido na lista apenas para a visualização mobile -->
-                    <li class="mobile-cta"><a th:href="@{/servicos}" class="wp-element-button">Agendar Agora</a></li>
+                    <li class="mobile-cta"><a th:href="@{/servicos}" class="btn btn-theme">Agendar Agora</a></li>
                 </ul>
             </nav>
-            <div class="header-actions" style="display: flex; align-items: center; gap: 1rem;">
-                <div th:if="${session.usuarioLogado != null}" style="display: flex; align-items: center; gap: 0.75rem;">
-                    <span style="font-size: 0.9rem; color: #ccc;">Olá, <strong th:text="${session.usuarioLogado.nomeUsuario}">Cliente</strong></span>
-                    <a th:href="@{/meus-agendamentos}" style="font-size: 0.9rem; color: #ffffff; text-decoration: none; font-weight: 500;">Meus Agendamentos</a>
-                    <a th:href="@{/logout}" style="font-size: 0.9rem; color: #ff6666; text-decoration: none; font-weight: 500;">Sair</a>
+            <div class="header-actions header-actions-group">
+                <div th:if="${session.usuarioLogado != null}" class="header-user-menu">
+                    <span class="header-welcome-text">Olá, <strong th:text="${session.usuarioLogado.nomeUsuario}">Cliente</strong></span>
+                    <a th:href="@{/meus-agendamentos}" class="header-link">Meus Agendamentos</a>
+                    <a th:href="@{/logout}" class="header-link-danger">Sair</a>
                 </div>
-                <div th:if="${session.usuarioLogado == null}" style="display: flex; align-items: center; gap: 1rem;">
-                    <a th:href="@{/login}" style="font-size: 0.9rem; color: #ffffff; text-decoration: none; font-weight: 500; transition: color 0.3s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#ffffff'">Entrar</a>
-                    <a th:href="@{/cadastro}" style="font-size: 0.9rem; color: #d4af37; text-decoration: none; font-weight: 500; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Cadastrar</a>
+                <div th:if="${session.usuarioLogado == null}" class="header-guest-menu">
+                    <a th:href="@{/login}" class="header-link">Entrar</a>
+                    <a th:href="@{/cadastro}" class="header-link-primary">Cadastrar</a>
                 </div>
-                <a th:href="@{/servicos}" class="wp-element-button">Agendar</a>
+                <a th:href="@{/servicos}" class="btn btn-theme">Agendar</a>
             </div>
         </div>
         <script>

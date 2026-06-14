@@ -1,47 +1,30 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main-layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/main-layout}">
+
 <head>
     <title>Página de Erro - GWJ</title>
-    <style>
-        .error-container {
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .error-card {
-            max-width: 650px;
-            width: 100%;
-            border: none;
-            border-radius: 15px;
-            border-top: 5px solid #dc3545; /* Destaque em vermelho no topo */
-            background-color: #ffffff;
-        }
-        .error-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-        }
-    </style>
 </head>
+
 <body>
     <section layout:fragment="content" class="container mt-5 error-container">
         <div class="card shadow-lg p-5 text-center error-card">
             <div class="error-icon">⚠️</div>
-            
+
             <h1 class="display-1 fw-bold text-danger" th:text="${status ?: 'Erro'}">500</h1>
             <h2 class="text-dark mb-3" th:text="${error ?: 'Erro Inesperado'}">Internal Server Error</h2>
             <hr class="mb-4">
-            
-            <p class="lead text-secondary mb-4" th:text="${message ?: 'Ocorreu um problema ao processar sua requisição.'}">
+
+            <p class="lead text-secondary mb-4"
+                th:text="${message ?: 'Ocorreu um problema ao processar sua requisição.'}">
                 Mensagem de erro detalhada vai aqui.
             </p>
-            
+
             <div class="bg-light p-3 rounded mb-4 text-start border">
-                <p class="text-muted mb-0"><strong>Caminho solicitado:</strong> <code th:text="${path ?: 'Desconhecido'}">/</code></p>
+                <p class="text-muted mb-0"><strong>Caminho solicitado:</strong> <code
+                        th:text="${path ?: 'Desconhecido'}">/</code></p>
             </div>
-            
+
             <div class="d-flex justify-content-center gap-3">
                 <a th:href="@{/home}" class="btn btn-primary px-4 py-2 fw-bold">Voltar para a Home</a>
                 <a th:href="@{/MRYnZpAsC9sp}" class="btn btn-outline-secondary px-4 py-2 fw-bold">Ir para o Painel</a>
@@ -49,4 +32,5 @@
         </div>
     </section>
 </body>
+
 </html>

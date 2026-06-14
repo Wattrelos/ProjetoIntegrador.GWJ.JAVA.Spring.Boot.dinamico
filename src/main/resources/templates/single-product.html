@@ -8,7 +8,7 @@
 <body>
 
     <section layout:fragment="content">
-        <main class="wp-block-group alignfull" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50)">
+        <main class="wp-block-group alignfull single-product-main">
             <div class="alignwide">
                 <!-- Breadcrumbs Dinâmico -->
                 <div class="breadcrumbs">
@@ -53,7 +53,7 @@
                 </div>
 
                 <!-- Mensagem de erro caso não encontre -->
-                <div th:if="${produto == null}" style="text-align: center; padding: 4rem;">
+                <div th:if="${produto == null}" class="product-not-found">
                     <h2>Produto não encontrado!</h2>
                     <p>O produto que você está procurando não existe ou foi removido.</p>
                     <a th:href="@{/loja}" class="wp-element-button">Voltar para a Loja</a>
