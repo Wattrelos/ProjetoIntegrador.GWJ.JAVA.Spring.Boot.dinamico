@@ -17,22 +17,22 @@
                     
                     <div class="info-item">
                         <h4><span class="icon">📍</span> Endereço</h4>
-                        <p>Rua Principal, 123, Centro<br>Cidade, Estado - CEP 12345-678</p>
+                        <p style="white-space: pre-line;" th:text="${empresa.endereco_completo}">Rua Principal, 123, Centro<br>Cidade, Estado - CEP 12345-678</p>
                     </div>
                     
                     <div class="info-item">
                         <h4><span class="icon">📞</span> Telefone e WhatsApp</h4>
-                        <p>(11) 99999-9999</p>
+                        <p th:text="${empresa.telefone}">(11) 99999-9999</p>
                     </div>
 
                     <div class="info-item">
                         <h4><span class="icon">✉️</span> E-mail</h4>
-                        <p>contato@tgosbarbearia.com</p>
+                        <p th:text="${empresa.email}">contato@tgosbarbearia.com</p>
                     </div>
 
                     <div class="info-item">
                         <h4><span class="icon">⏰</span> Horário de Funcionamento</h4>
-                        <p>Segunda a Sábado<br>Das 09:00 às 20:00</p>
+                        <p style="white-space: pre-line;" th:text="${empresa.horarios}">Segunda a Sábado<br>Das 09:00 às 20:00</p>
                     </div>
                 </div>
 

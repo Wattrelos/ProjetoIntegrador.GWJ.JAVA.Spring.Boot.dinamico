@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{layouts/main-layout}">
+<head>
+    <title>Meus Agendamentos - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+         <main class="wp-block-group alignfull page-main-bg">
+              <div class="alignwide" style="max-width: 1000px; margin: 0 auto; padding: 2rem 1rem;">
+                  
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+                      <div>
+                          <h1 style="margin: 0; font-size: 2.5rem;">Meus Agendamentos</h1>
+                          <p style="color: #666; margin: 0.25rem 0 0 0; font-size: 1.05rem;">Acompanhe suas reservas e histórico de serviços</p>
+                      </div>
+                      <a th:href="@{/servicos}" class="wp-element-button" style="text-decoration: none; padding: 0.8rem 1.5rem; font-weight: bold; border-radius: 4px; display: inline-block;">Novo Agendamento</a>
+                  </div>
+                  
+                  <!-- Card Principal -->
+                  <div class="card-panel" style="padding: 2.5rem;">
+                      
+                      <!-- Perfil de Informações do Cliente -->
+                      <div class="cliente-profile-info mb-5" style="border-bottom: 1px solid #eee; padding-bottom: 2rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+                          <div class="profile-avatar" style="width: 55px; height: 55px; border-radius: 50%; background-color: var(--wp--preset--color--theme-3, #d4af37); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);">
+                              <span th:text="${#strings.substring(clienteLogado.nome, 0, 1).toUpperCase()}">C</span>
+                          </div>
+                          <div>
+                              <h3 style="margin: 0; font-size: 1.35rem; font-weight: 700; color: #1a1a1a;" th:text="${clienteLogado.nome + ' ' + clienteLogado.sobrenome}">Nome do Cliente</h3>
+                              <p style="color: #666; margin: 0.35rem 0 0 0; font-size: 0.95rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                                  <span>📱 <span th:text="${clienteLogado.telefone}">Telefone</span></span>
+                                  <span style="color: #ccc;">|</span>
+                                  <span>✉️ <span th:text="${clienteLogado.email}">Email</span></span>
+                              </p>
+                          </div>
+                      </div>
+
+                      <!-- Tabela de Agendamentos -->
+                      <div th:if="${not #lists.isEmpty(agendamentos)}" class="table-responsive">
+                          <table class="custom-table" style="margin-bottom: 0;">
+                              <thead>
+                                  <tr>
+                                      <th class="py-1-0" style="width: 80px;">Cód.</th>
+                                      <th>Serviço</th>
+                                      <th>Barbeiro / Profissional</th>
+                                      <th>Data e Horário</th>
+                                      <th>Valor</th>
+                                      <th class="text-right">Status</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr th:each="agendamento : ${agendamentos}">
+                                      <td class="py-1-0" style="font-weight: bold; color: #888;" th:text="'#' + ${agendamento.id}">#1</td>
+                                      <td>
+                                          <span style="font-weight: bold; color: #1a1a1a; font-size: 1.05rem;" th:text="${agendamento.servico.nome}">Corte de Cabelo</span>
+                                          <div style="font-size: 0.8rem; color: #888; margin-top: 0.15rem;" th:text="${agendamento.servico.duracao + ' min'}">30 min</div>
+                                      </td>
+                                      <td>
+                                          <span style="font-weight: 500; color: #333;" th:text="${agendamento.profissional.nome + ' ' + (agendamento.profissional.sobrenome != null ? agendamento.profissional.sobrenome : '')}">Carlos Tesoura</span>
+                                      </td>
+                                      <td>
+                                          <span style="color: #333;" th:text="${#temporals.format(agendamento.dataAgendamento, 'dd/MM/yyyy')}">15/06/2026</span>
+                                          <div style="font-size: 0.85rem; font-weight: bold; color: var(--wp--preset--color--theme-3, #d4af37); margin-top: 0.15rem;" 
+                                               th:text="${#strings.substring(agendamento.horaInicio.toString(), 0, 5) + ' às ' + #strings.substring(agendamento.horaFim.toString(), 0, 5)}">
+                                              09:00 às 09:30
+                                          </div>
+                                      </td>
+                                      <td>
+                                          <strong style="color: #1a1a1a;" th:text="'R$ ' + ${#numbers.formatDecimal(agendamento.servico.preco, 1, 'POINT', 2, 'COMMA')}">R$ 45,00</strong>
+                                      </td>
+                                      <td class="text-right">
+                                          <span th:if="${agendamento.status == 'Confirmado'}" class="badge" style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">Confirmado</span>
+                                          <span th:if="${agendamento.status != 'Confirmado'}" class="badge" style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;" th:text="${agendamento.status}">Cancelado</span>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                      </div>
+
+                      <!-- Fallback sem agendamentos (Estado Vazio) -->
+                      <div th:if="${#lists.isEmpty(agendamentos)}" style="text-align: center; padding: 4rem 1rem;">
+                          <div style="font-size: 3.5rem; color: #d4af37; margin-bottom: 1.5rem; opacity: 0.6;">📅</div>
+                          <h4 style="font-weight: 700; color: #1a1a1a;">Nenhum agendamento encontrado</h4>
+                          <p style="color: #666; max-width: 440px; margin: 0.5rem auto 2rem; line-height: 1.6;">
+                              Você ainda não possui agendamentos cadastrados. Faça sua primeira reserva online em poucos passos e escolha seu profissional favorito!
+                          </p>
+                          <a th:href="@{/servicos}" class="wp-element-button" style="text-decoration: none; padding: 0.8rem 2rem; border-radius: 4px; display: inline-block;">Agendar meu primeiro serviço</a>
+                      </div>
+                  </div>
+              </div>
+         </main>
+    </section>
+
+</body>
+</html>

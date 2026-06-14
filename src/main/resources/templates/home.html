@@ -13,7 +13,7 @@
 
         <!-- Seção Hero com Efeito Parallax -->
         <div class="hero-section">
-            <h1 class="hero-title">Bem-vindo à Tgo's Barbearia</h1>
+            <h1 class="hero-title" th:text="'Bem-vindo à ' + ${empresa.nome}">Bem-vindo à Tgo's Barbearia</h1>
             <p class="hero-description">Tradição, estilo e o melhor atendimento para você. Agende seu horário e viva
                 essa experiência.</p>
 
@@ -35,7 +35,7 @@
                     <strong class="servico-price"
                         th:text="'R$ ' + ${#numbers.formatDecimal(servico.preco, 1, 'POINT', 2, 'COMMA')}">R$
                         45,00</strong>
-                    <a th:href="@{/servicos}" class="wp-element-button servico-btn">Agendar</a>
+                    <a th:href="@{/servicos(servicoId=${servico.id})}" class="wp-element-button servico-btn">Agendar</a>
                 </div>
             </div>
         </div>

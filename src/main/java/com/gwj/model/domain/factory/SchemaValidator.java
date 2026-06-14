@@ -137,4 +137,44 @@ public class SchemaValidator {
             System.err.println("Erro ao obter conexão para validação de Schema: " + e.getMessage());
         }
     }
+
+    public static void ensureSettingsTableExists() {
+        try (java.sql.Connection conn = com.gwj.model.dataAccessObject.ConnectionDB.getInstance().getConnection();
+             java.sql.Statement stmt = conn.createStatement()) {
+            
+            // Cria a tabela tab_setting se ela não existir
+            String createTableSql = "CREATE TABLE IF NOT EXISTS `tab_setting` (" +
+                                    "  `id` BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                                    "  `chave` VARCHAR(255) NOT NULL UNIQUE," +
+                                    "  `valor` TEXT" +
+                                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+            stmt.execute(createTableSql);
+            System.out.println("✅ Tabela tab_setting criada ou já existente.");
+
+            // Verifica se a tabela está vazia, se sim, insere os dados padrão da empresa
+            try (java.sql.ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM `tab_setting`")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    System.out.println("ℹ️ Inserindo dados de configuração padrão da empresa...");
+                    String insertSql = "INSERT INTO `tab_setting` (`chave`, `valor`) VALUES " +
+                                       "('nome', 'Tgo\\'s Barbearia'), " +
+                                       "('descricao', 'Tradição e estilo para o homem moderno. Cuidamos do seu visual com excelência, usando as melhores técnicas e produtos para você se sentir incrível.'), " +
+                                       "('endereco_curto', 'Rua Principal, 123 - Centro'), " +
+                                       "('endereco_completo', 'Rua Principal, 123, Centro\\nCidade, Estado - CEP 12345-678'), " +
+                                       "('telefone', '(11) 99999-9999'), " +
+                                       "('email', 'contato@tgosbarbearia.com'), " +
+                                       "('horarios', 'Segunda a Sábado\\nDas 09:00 às 20:00'), " +
+                                       "('sobre_titulo', 'Tradição e Estilo'), " +
+                                       "('sobre_texto1', 'Fundada com o propósito de resgatar a clássica experiência de ir ao barbeiro, nossa Barbearia une o ambiente nostálgico com as mais modernas técnicas de visagismo masculino.'), " +
+                                       "('sobre_texto2', 'Acreditamos que um bom corte de cabelo e uma barba bem feita são fundamentais para a autoestima do homem contemporâneo. Aqui, cada cliente é tratado como um amigo. Sente-se, tome um café ou uma cerveja gelada e deixe o visual por nossa conta.'), " +
+                                       "('sobre_imagem', 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80'), " +
+                                       "('logo_alt', 'Fatec-FV'), " +
+                                       "('logo_url', '/img/logo.png');";
+                    stmt.execute(insertSql);
+                    System.out.println("✅ Configurações padrão da empresa inseridas com sucesso.");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar tabela tab_setting: " + e.getMessage());
+        }
+    }
 }

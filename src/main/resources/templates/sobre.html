@@ -13,16 +13,16 @@
                 <div style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: center;">
                     <!-- Coluna da Imagem -->
                     <div style="flex: 1 1 400px;">
-                        <img th:src="@{https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80}" alt="Interior da Barbearia" style="width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 4/3;">
+                        <img th:src="${empresa.sobre_imagem}" alt="Interior da Barbearia" style="width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 4/3;">
                     </div>
                     
                     <!-- Coluna de Texto -->
                     <div style="flex: 1 1 400px;">
-                        <h1 style="margin-top: 0; margin-bottom: 1rem;">Tradição e Estilo</h1>
-                        <p style="color: #555; line-height: 1.6; margin-bottom: 1rem;">
+                        <h1 style="margin-top: 0; margin-bottom: 1rem;" th:text="${empresa.sobre_titulo}">Tradição e Estilo</h1>
+                        <p style="color: #555; line-height: 1.6; margin-bottom: 1rem;" th:text="${empresa.sobre_texto1}">
                             Fundada com o propósito de resgatar a clássica experiência de ir ao barbeiro, nossa Barbearia une o ambiente nostálgico com as mais modernas técnicas de visagismo masculino.
                         </p>
-                        <p style="color: #555; line-height: 1.6;">
+                        <p style="color: #555; line-height: 1.6;" th:text="${empresa.sobre_texto2}">
                             Acreditamos que um bom corte de cabelo e uma barba bem feita são fundamentais para a autoestima do homem contemporâneo. Aqui, cada cliente é tratado como um amigo. Sente-se, tome um café ou uma cerveja gelada e deixe o visual por nossa conta.
                         </p>
                     </div>

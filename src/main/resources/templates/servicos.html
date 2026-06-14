@@ -189,6 +189,15 @@
                 window.location.href = checkoutUrl;
             });
 
+            // Checar se há servicoId na URL e pre-selecionar
+            const urlParams = new URLSearchParams(window.location.search);
+            const servicoIdParam = urlParams.get('servicoId');
+            if (servicoIdParam) {
+                if (Array.from(selectServico.options).some(option => option.value === servicoIdParam)) {
+                    selectServico.value = servicoIdParam;
+                }
+            }
+
             // Carregar horários inicialmente
             buscarHorariosDisponiveis();
         });

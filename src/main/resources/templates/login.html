@@ -20,6 +20,11 @@
             <span th:text="${erro}">E-mail ou senha inválidos.</span>
         </div>
 
+        <!-- Exibe o alerta de sucesso se o cadastro foi realizado -->
+        <div th:if="${sucesso != null}" class="alert alert-success text-center" role="alert">
+            <span th:text="${sucesso}">Sucesso no cadastro.</span>
+        </div>
+
         <!-- Formulário de Autenticação -->
         <form th:action="@{/login}" method="post">
             
@@ -36,8 +41,14 @@
             </div>
             
             <!-- Botão de Enviar -->
-            <div class="d-grid">
+            <div class="d-grid mb-3">
                 <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+            </div>
+
+            <!-- Link para cadastro -->
+            <div class="text-center">
+                <span class="text-muted">Não tem uma conta?</span>
+                <a th:href="@{/cadastro}" class="fw-bold text-decoration-none">Cadastre-se</a>
             </div>
             
         </form>

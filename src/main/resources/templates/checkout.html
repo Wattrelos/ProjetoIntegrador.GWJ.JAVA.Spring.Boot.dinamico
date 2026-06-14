@@ -4,6 +4,7 @@
       layout:decorate="~{layouts/main-layout}">
 <head>
     <title>Checkout - Barbearia</title>
+    <script th:src="@{/js/masks.js}" defer></script>
 </head>
 <body>
 
@@ -17,6 +18,19 @@
                      <!-- Coluna 1: Formulário de Dados e Pagamento -->
                      <div class="card-panel">
                          <h2 class="panel-title">Seus Dados</h2>
+                         
+                         <!-- Alerta de Agendamento como Visitante -->
+                         <div th:if="${clienteLogado == null}" class="checkout-login-prompt" style="background: rgba(0, 0, 0, 0.02); border: 1px dashed #ccc; padding: 1.25rem; border-radius: 6px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                             <div>
+                                 <p style="margin: 0; font-weight: bold; font-size: 0.95rem; color: #333;">Agendando como Visitante</p>
+                                 <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #666;">Seus dados não serão salvos para futuros acessos. Quer agilizar os próximos agendamentos?</p>
+                             </div>
+                             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                 <a th:href="@{/login}" class="wp-element-button" style="text-decoration: none; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 4px; white-space: nowrap; background-color: #1a1a1a; color: #ffffff;">Fazer Login</a>
+                                 <a th:href="@{/cadastro}" class="wp-element-button" style="text-decoration: none; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 4px; white-space: nowrap;">Cadastrar-se</a>
+                             </div>
+                         </div>
+
                          <form id="checkoutForm" th:action="@{/checkout/confirmar}" method="POST" class="flex-col gap-1-5">
                              
                              <input type="hidden" name="servicoId" th:value="${servicoId}">
@@ -30,26 +44,45 @@
                                  <label>Sobrenome: <input type="text" name="sobrenome" th:value="${clienteLogado != null ? clienteLogado.sobrenome : ''}" placeholder="Silva" class="custom-input mt-2" required></label>
                              </div>
                              
-                             <label>E-mail: <input type="email" name="email" th:value="${clienteLogado != null ? clienteLogado.email : ''}" placeholder="joao@email.com" class="custom-input mt-2" required></label>
+                             <label>E-mail (Opcional): <input type="email" name="email" th:value="${clienteLogado != null ? clienteLogado.email : ''}" placeholder="joao@email.com" class="custom-input mt-2"></label>
                              <label>Telefone / WhatsApp: <input type="tel" name="telefone" th:value="${clienteLogado != null ? clienteLogado.telefone : ''}" placeholder="(11) 99999-9999" class="custom-input mt-2" required></label>
  
                              <h2 class="panel-title mt-5">Método de Pagamento</h2>
                              
                              <div class="payment-panel">
-                                 <label class="payment-method-label">
-                                     <input type="radio" name="pagamento" value="cartao" checked> Cartão de Crédito
-                                 </label>
-                                 <input type="text" placeholder="Número do Cartão (0000 0000 0000 0000)" class="custom-input mb-4">
-                                 <div class="custom-form-row">
-                                     <input type="text" placeholder="Validade (MM/AA)" class="custom-input">
-                                     <input type="text" placeholder="CVC" class="custom-input">
+                                 <div class="payment-options" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                     <!-- Opção: Cartão de Crédito -->
+                                     <div class="payment-option-group">
+                                         <label class="payment-method-label" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; cursor: pointer;">
+                                             <input type="radio" name="pagamento" value="cartao" checked> Cartão de Crédito
+                                         </label>
+                                         
+                                         <!-- Detalhes do Cartão -->
+                                         <div id="creditCardDetails" class="payment-details-box" style="margin-top: 1rem; padding-left: 1.5rem; transition: all 0.3s ease;">
+                                             <input type="text" id="cardNumber" placeholder="Número do Cartão (0000 0000 0000 0000)" class="custom-input mb-4" required>
+                                             <div class="custom-form-row">
+                                                 <input type="text" id="cardExpiry" placeholder="Validade (MM/AA)" class="custom-input" required>
+                                                 <input type="text" id="cardCvc" placeholder="CVC" class="custom-input" required>
+                                             </div>
+                                         </div>
+                                     </div>
+                                     
+                                     <hr class="divider" style="margin: 0.5rem 0;">
+                                     
+                                     <!-- Opção: Presencial -->
+                                     <div class="payment-option-group">
+                                         <label class="payment-method-label" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0; cursor: pointer;">
+                                             <input type="radio" name="pagamento" value="presencial"> Pagar na Barbearia (Dinheiro ou Pix)
+                                         </label>
+                                         
+                                         <!-- Detalhes Presencial -->
+                                         <div id="presencialDetails" class="payment-details-box" style="display: none; margin-top: 1rem; padding-left: 1.5rem; transition: all 0.3s ease;">
+                                             <p class="text-muted" style="margin: 0; font-size: 0.9rem; color: #666; line-height: 1.5;">
+                                                 ✨ <strong>Pagamento no local:</strong> Você poderá pagar via Pix, Cartão ou Dinheiro diretamente no balcão da barbearia após a realização do serviço.
+                                             </p>
+                                         </div>
+                                     </div>
                                  </div>
-                                 
-                                 <hr class="divider">
-                                 
-                                 <label class="payment-method-label" style="margin-bottom: 0;">
-                                     <input type="radio" name="pagamento" value="presencial"> Pagar na Barbearia (Dinheiro ou Pix)
-                                 </label>
                              </div>
                          </form>
                      </div>
@@ -81,7 +114,77 @@
                  </div>
              </div>
          </main>
-     </section>
+
+         <script>
+             document.addEventListener('DOMContentLoaded', () => {
+                 const paymentRadios = document.querySelectorAll('input[name="pagamento"]');
+                 const creditCardDetails = document.getElementById('creditCardDetails');
+                 const presencialDetails = document.getElementById('presencialDetails');
+                 
+                 // Inputs do cartão
+                 const cardInputs = [
+                     document.getElementById('cardNumber'),
+                     document.getElementById('cardExpiry'),
+                     document.getElementById('cardCvc')
+                 ];
+                 
+                 const togglePaymentDetails = () => {
+                     const selectedRadio = document.querySelector('input[name="pagamento"]:checked');
+                     const selectedMethod = selectedRadio ? selectedRadio.value : 'cartao';
+                     if (selectedMethod === 'cartao') {
+                         creditCardDetails.style.display = 'block';
+                         presencialDetails.style.display = 'none';
+                         cardInputs.forEach(input => {
+                             if (input) input.setAttribute('required', 'required');
+                         });
+                     } else {
+                         creditCardDetails.style.display = 'none';
+                         presencialDetails.style.display = 'block';
+                         cardInputs.forEach(input => {
+                             if (input) input.removeAttribute('required');
+                         });
+                     }
+                 };
+                 
+                 paymentRadios.forEach(radio => {
+                     radio.addEventListener('change', togglePaymentDetails);
+                 });
+                 
+                 // Executa na inicialização
+                 togglePaymentDetails();
+                 
+                 // Máscara básica opcional para os campos de cartão de crédito
+                 const cardNumberInput = document.getElementById('cardNumber');
+                 const cardExpiryInput = document.getElementById('cardExpiry');
+                 const cardCvcInput = document.getElementById('cardCvc');
+                 
+                 if (cardNumberInput) {
+                     cardNumberInput.addEventListener('input', (e) => {
+                         let value = e.target.value.replace(/\D/g, '');
+                         value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                         e.target.value = value.substring(0, 19); // 16 dígitos + 3 espaços
+                     });
+                 }
+                 
+                 if (cardExpiryInput) {
+                     cardExpiryInput.addEventListener('input', (e) => {
+                         let value = e.target.value.replace(/\D/g, '');
+                         if (value.length > 2) {
+                             value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                         }
+                         e.target.value = value.substring(0, 5);
+                     });
+                 }
+                 
+                 if (cardCvcInput) {
+                     cardCvcInput.addEventListener('input', (e) => {
+                         let value = e.target.value.replace(/\D/g, '');
+                         e.target.value = value.substring(0, 4);
+                     });
+                 }
+             });
+         </script>
+    </section>
 
 </body>
 </html>

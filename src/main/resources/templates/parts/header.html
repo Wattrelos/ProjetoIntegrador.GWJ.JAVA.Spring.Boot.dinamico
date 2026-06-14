@@ -4,7 +4,7 @@
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tgo's Barbearia</title>
+    <title th:text="${empresa.nome}">Tgo's Barbearia</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <header class="modern-header" th:fragment="header">
         <div class="header-container alignwide">
             <div class="header-logo">
-                <a th:href="@{/}">Tgo's <span>Barbearia</span></a>
+                <a th:href="@{/}" th:text="${empresa.nome}">Tgo's Barbearia</a>
             </div>
             
             <!-- Botão do Menu Hambúrguer -->
@@ -30,11 +30,24 @@
                     <li><a th:href="@{/contato}">Contato</a></li>
                     <li><a th:href="@{/loja}">Loja</a></li>
                     <li><a th:href="@{/carrinho}">Carrinho</a></li>
+                    <li th:if="${session.usuarioLogado != null}"><a th:href="@{/meus-agendamentos}">Meus Agendamentos</a></li>
+                    <li th:if="${session.usuarioLogado != null}"><a th:href="@{/logout}" style="color: #ff6666;">Sair</a></li>
+                    <li th:if="${session.usuarioLogado == null}"><a th:href="@{/login}">Entrar</a></li>
+                    <li th:if="${session.usuarioLogado == null}"><a th:href="@{/cadastro}">Cadastrar</a></li>
                     <!-- O botão CTA inserido na lista apenas para a visualização mobile -->
                     <li class="mobile-cta"><a th:href="@{/servicos}" class="wp-element-button">Agendar Agora</a></li>
                 </ul>
             </nav>
-            <div class="header-actions">
+            <div class="header-actions" style="display: flex; align-items: center; gap: 1rem;">
+                <div th:if="${session.usuarioLogado != null}" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 0.9rem; color: #ccc;">Olá, <strong th:text="${session.usuarioLogado.nomeUsuario}">Cliente</strong></span>
+                    <a th:href="@{/meus-agendamentos}" style="font-size: 0.9rem; color: #ffffff; text-decoration: none; font-weight: 500;">Meus Agendamentos</a>
+                    <a th:href="@{/logout}" style="font-size: 0.9rem; color: #ff6666; text-decoration: none; font-weight: 500;">Sair</a>
+                </div>
+                <div th:if="${session.usuarioLogado == null}" style="display: flex; align-items: center; gap: 1rem;">
+                    <a th:href="@{/login}" style="font-size: 0.9rem; color: #ffffff; text-decoration: none; font-weight: 500; transition: color 0.3s;" onmouseover="this.style.color='#d4af37'" onmouseout="this.style.color='#ffffff'">Entrar</a>
+                    <a th:href="@{/cadastro}" style="font-size: 0.9rem; color: #d4af37; text-decoration: none; font-weight: 500; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Cadastrar</a>
+                </div>
                 <a th:href="@{/servicos}" class="wp-element-button">Agendar</a>
             </div>
         </div>

@@ -42,7 +42,7 @@ public class AgendaController {
             @RequestParam("dataHora") String dataHora,
             @RequestParam("nome") String nome,
             @RequestParam("sobrenome") String sobrenome,
-            @RequestParam("email") String email,
+            @RequestParam(value = "email", required = false) String email,
             @RequestParam("telefone") String telefone,
             @RequestParam(value = "pagamento", required = false) String pagamento,
             RedirectAttributes redirectAttributes) {

@@ -12,6 +12,10 @@ import com.gwj.service.IService;
 import com.gwj.service.ServiceRegistry;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import com.gwj.model.domain.entities.Usuario;
+import com.gwj.model.domain.entities.Cliente;
+import com.gwj.model.domain.entities.Agendamento;
 import java.util.List;
 
 @Controller
@@ -165,5 +169,48 @@ public class Router {
             }
         }
         return "single-product";
-    }   
+    }
+
+    @GetMapping({"/pedidos", "/meus-agendamentos"})
+    public String meusAgendamentos(HttpServletRequest request, Model model) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuarioLogado") == null) {
+            return "redirect:/login";
+        }
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+        
+        try {
+            // Buscar dados do Cliente completo
+            IService<Cliente> clienteService = ServiceRegistry.getService("Cliente");
+            Cliente cFiltro = new Cliente();
+            cFiltro.setId(usuarioLogado.getId());
+            List<Cliente> clientes = clienteService.read(cFiltro);
+            
+            if (!clientes.isEmpty()) {
+                Cliente cliente = clientes.get(0);
+                model.addAttribute("clienteLogado", cliente);
+                
+                // Buscar agendamentos do telefone correspondente
+                IService<Agendamento> agendamentoService = ServiceRegistry.getService("Agendamento");
+                Agendamento aFiltro = new Agendamento();
+                aFiltro.setClienteTelefone(cliente.getTelefone());
+                List<Agendamento> agendamentos = agendamentoService.read(aFiltro);
+                
+                // Ordenar do mais recente para o mais antigo
+                agendamentos.sort((a1, a2) -> {
+                    if (a1.getDataAgendamento() == null || a2.getDataAgendamento() == null) return 0;
+                    int compData = a2.getDataAgendamento().compareTo(a1.getDataAgendamento());
+                    if (compData != 0) return compData;
+                    if (a1.getHoraInicio() == null || a2.getHoraInicio() == null) return 0;
+                    return a2.getHoraInicio().compareTo(a1.getHoraInicio());
+                });
+                
+                model.addAttribute("agendamentos", agendamentos);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return "meus-agendamentos";
+    }
 }
