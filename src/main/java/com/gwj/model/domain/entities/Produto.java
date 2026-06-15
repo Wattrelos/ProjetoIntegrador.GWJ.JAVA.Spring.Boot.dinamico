@@ -17,7 +17,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "tab_produto")
-public class Produto  implements IEntity{
+public class Produto implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
@@ -31,13 +31,15 @@ public class Produto  implements IEntity{
     private Integer estoque;
     private String marca;
     private String categoria;
+    private String imagem;
 
     // Campos simples (mapeados automaticamente como colunas)
     private LocalDateTime dataCadastro;
+
     // Campo para armazenar data e hora do cadastro
     @PrePersist
     // Método executado automaticamente ANTES de salvar no banco de dados
-    public void prePersist(){
+    public void prePersist() {
         this.dataCadastro = LocalDateTime.now();
     }
 
@@ -53,6 +55,7 @@ public class Produto  implements IEntity{
         this.estoque = estoque;
         this.marca = marca;
         this.categoria = categoria;
+        this.imagem = imagem;
     }
 
     public Long getId() {
@@ -62,46 +65,68 @@ public class Produto  implements IEntity{
     public void setId(Long id) {
         Id = id;
     }
+
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
+
     public String getDescricao() {
         return descricao;
-    }public void setDescricao(String descricao) {
+    }
+
+    public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
     public BigDecimal getPreco() {
         return preco;
     }
+
     public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
+
     public Integer getEstoque() {
         return estoque;
     }
+
     public void setEstoque(Integer estoque) {
         this.estoque = estoque;
     }
+
     public String getMarca() {
         return marca;
     }
+
     public void setMarca(String marca) {
         this.marca = marca;
     }
+
     public String getCategoria() {
         return categoria;
     }
+
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
+
     public LocalDateTime getDataCadastro() {
         return dataCadastro;
     }
+
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
-    
+
+    public String getImagem() {
+        return imagem;
+    }
+
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
+    }
 }

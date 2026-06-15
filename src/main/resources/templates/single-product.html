@@ -20,7 +20,7 @@
                     
                     <!-- Coluna Esquerda: Imagem -->
                     <div class="single-product-image-col">
-                        <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80" th:alt="${produto.nome}">
+                        <img th:src="${produto.imagem != null and produto.imagem != '' ? produto.imagem : '/img/no-image.png'}" th:alt="${produto.nome}">
                     </div>
 
                     <!-- Coluna Direita: Informações -->

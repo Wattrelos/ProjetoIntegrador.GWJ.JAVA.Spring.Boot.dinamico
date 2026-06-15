@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://thymeleaf.org">
+
 <body>
     <!-- Fragmento do Card de Produto -->
-    <div th:fragment="card(produto)" class="product-card">
-        <!-- Usamos uma imagem padrão até que a classe suporte URLs de imagem no banco -->
-        <img src="https://images.unsplash.com/photo-1599305090598-fe179d501227?w=400&q=80" th:alt="${produto.nome}">
+    <!-- Altere a primeira linha do seu fragmento para garantir a assinatura -->
+    <div th:fragment="card(produto)" th:assert="${produto != null}" class="product-card">
+
+        <!-- Imagem do produto no banco ou fallback padrão -->
+        <img th:src="${produto.imagem != null and produto.imagem != '' ? produto.imagem : '/img/no-image.png'}"
+            th:alt="${produto.nome}">
         <div class="product-meta" th:text="${produto.categoria} + ' • ' + ${produto.marca}">Categoria • Marca</div>
         <h3 class="product-title" th:text="${produto.nome}">Nome do Produto</h3>
         <p class="product-desc" th:text="${produto.descricao}">Descrição do produto...</p>
-        <strong class="product-price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+        <strong class="product-price"
+            th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
         <a th:href="@{/single-product(id=${produto.id})}" class="wp-element-button product-btn">Ver Detalhes</a>
     </div>
 </body>
+
 </html>

@@ -289,8 +289,16 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
                 for (Object item : collection) {
                     IEntity child = (IEntity) item;
                     if (isOneToMany) {
-                        String fkSetterName = "set" + instance.getClass().getSimpleName();
-                        Method fkSetter = DataMapper.getMethodInHierarchy(childClass, fkSetterName, instance.getClass());
+                        Method fkSetter = null;
+                        String mappedBy = field.getAnnotation(OneToMany.class).mappedBy();
+                        if (mappedBy != null && !mappedBy.trim().isEmpty()) {
+                            String fkSetterName = "set" + DataMapper.capitalize(mappedBy);
+                            fkSetter = DataMapper.getMethodInHierarchy(childClass, fkSetterName, instance.getClass());
+                        }
+                        if (fkSetter == null) {
+                            String fkSetterName = "set" + instance.getClass().getSimpleName();
+                            fkSetter = DataMapper.getMethodInHierarchy(childClass, fkSetterName, instance.getClass());
+                        }
                         if (fkSetter != null) {
                             fkSetter.invoke(child, instance);
                             if (child.getId() == null || child.getId() <= 0) {
@@ -343,8 +351,18 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
                 Class<?> childClass = (Class<?>) listType.getActualTypeArguments()[0];
 
                 if (IEntity.class.isAssignableFrom(childClass)) {
-                    String fkSetterName = "set" + instance.getClass().getSimpleName();
-                    Method fkSetter = DataMapper.getMethodInHierarchy(childClass, fkSetterName, instance.getClass());
+                    Method fkSetter = null;
+                    if (field.isAnnotationPresent(OneToMany.class)) {
+                        String mappedBy = field.getAnnotation(OneToMany.class).mappedBy();
+                        if (mappedBy != null && !mappedBy.trim().isEmpty()) {
+                            String fkSetterName = "set" + DataMapper.capitalize(mappedBy);
+                            fkSetter = DataMapper.getMethodInHierarchy(childClass, fkSetterName, instance.getClass());
+                        }
+                    }
+                    if (fkSetter == null) {
+                        String fkSetterName = "set" + instance.getClass().getSimpleName();
+                        fkSetter = DataMapper.getMethodInHierarchy(childClass, fkSetterName, instance.getClass());
+                    }
 
                     if (fkSetter != null) {
                         IEntity criteria = (IEntity) childClass.getDeclaredConstructor().newInstance();

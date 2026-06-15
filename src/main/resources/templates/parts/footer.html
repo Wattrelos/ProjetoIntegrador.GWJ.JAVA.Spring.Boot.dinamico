@@ -5,8 +5,8 @@
     <footer class="modern-footer" th:fragment="footer">
         <div class="footer-container alignwide">
             <div class="footer-col">
-                <h3 th:text="${empresa.nome}">Tgo's Barbearia</h3>
-                <p th:text="${empresa.descricao}">Tradição e estilo para o homem moderno. Cuidamos do seu visual com excelência, usando as melhores técnicas e produtos para você se sentir incrível.</p>
+                <h3 th:text="${empresa != null ? empresa.nome : 'Tgo''s Barbearia'}">Tgo's Barbearia</h3>
+                <p th:text="${empresa != null ? empresa.descricao : 'Tradição e estilo para o homem moderno. Cuidamos do seu visual com excelência, usando as melhores técnicas e produtos para você se sentir incrível.'}">Tradição e estilo para o homem moderno. Cuidamos do seu visual com excelência, usando as melhores técnicas e produtos para você se sentir incrível.</p>
             </div>
             <div class="footer-col">
                 <h3>Links Rápidos</h3>
@@ -20,13 +20,13 @@
             </div>
             <div class="footer-col">
                 <h3>Contato e Endereço</h3>
-                <p th:text="'📍 ' + ${empresa.endereco_curto}">📍 Rua Principal, 123 - Centro</p>
-                <p th:text="'📞 ' + ${empresa.telefone}">📞 (11) 99999-9999</p>
-                <p th:text="'✉️ ' + ${empresa.email}">✉️ contato@tgosbarbearia.com</p>
+                <p th:text="'📍 ' + ${empresa != null ? empresa.endereco_curto : 'Rua Principal, 123 - Centro'}">📍 Rua Principal, 123 - Centro</p>
+                <p th:text="'📞 ' + ${empresa != null ? empresa.telefone : '(11) 99999-9999'}">📞 (11) 99999-9999</p>
+                <p th:text="'✉️ ' + ${empresa != null ? empresa.email : 'contato@tgosbarbearia.com'}">✉️ contato@tgosbarbearia.com</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 [[${empresa.nome}]]. Todos os direitos reservados.</p>
+            <p>&copy; 2024 [[${empresa != null ? empresa.nome : 'Tgo''s Barbearia'}]]. Todos os direitos reservados.</p>
         </div>
     </footer>
 </body>

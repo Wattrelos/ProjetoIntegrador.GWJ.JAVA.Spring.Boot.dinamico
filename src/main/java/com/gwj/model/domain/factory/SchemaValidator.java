@@ -177,4 +177,36 @@ public class SchemaValidator {
             System.err.println("Erro ao inicializar tabela tab_setting: " + e.getMessage());
         }
     }
+
+    public static void ensureProductImageColumnAndDataExist() {
+        try (java.sql.Connection conn = com.gwj.model.dataAccessObject.ConnectionDB.getInstance().getConnection();
+             java.sql.Statement stmt = conn.createStatement()) {
+            
+            // 1. Adiciona a coluna imagem se ela não existir
+            try {
+                stmt.execute("ALTER TABLE `tab_produto` ADD COLUMN `imagem` VARCHAR(255) DEFAULT NULL");
+                System.out.println("✅ Coluna 'imagem' adicionada com sucesso na tabela tab_produto.");
+            } catch (java.sql.SQLException e) {
+                // Código 1060 indica que a coluna já existe
+                if (e.getErrorCode() == 1060 || "42S21".equals(e.getSQLState())) {
+                    System.out.println("ℹ️ A coluna 'imagem' já existe na tabela tab_produto.");
+                } else {
+                    System.err.println("Aviso ao adicionar coluna imagem: " + e.getMessage());
+                }
+            }
+
+            // 2. Insere URLs de imagem padrão para os produtos iniciais se estiverem vazios/nulos
+            try {
+                stmt.execute("UPDATE `tab_produto` SET `imagem` = 'https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600&q=80' WHERE `id` = 1 AND (`imagem` IS NULL OR `imagem` = '')");
+                stmt.execute("UPDATE `tab_produto` SET `imagem` = 'https://images.unsplash.com/photo-1626015561531-77ec3411190c?w=600&q=80' WHERE `id` = 2 AND (`imagem` IS NULL OR `imagem` = '')");
+                stmt.execute("UPDATE `tab_produto` SET `imagem` = 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=600&q=80' WHERE `id` = 3 AND (`imagem` IS NULL OR `imagem` = '')");
+                System.out.println("✅ URLs de imagem padrão populadas para os produtos iniciais.");
+            } catch (java.sql.SQLException e) {
+                System.err.println("Aviso ao popular imagens dos produtos: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar coluna de imagem em tab_produto: " + e.getMessage());
+        }
+    }
 }
+

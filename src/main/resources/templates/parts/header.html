@@ -4,7 +4,7 @@
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${empresa.nome}">Tgo's Barbearia</title>
+    <title th:text="${empresa != null ? empresa.nome : 'Tgo''s Barbearia'}">Tgo's Barbearia</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -13,8 +13,8 @@
         <div class="header-container alignwide">
             <div class="header-logo">
                 <a th:href="@{/}" style="display: flex; align-items: center; gap: 10px;">
-                    <img th:if="${empresa.logo_url != null and !empresa.logo_url.isEmpty()}" th:src="${empresa.logo_url}" th:alt="${empresa.logo_alt != null ? empresa.logo_alt : empresa.nome}" style="max-height: 40px;">
-                    <span th:text="${empresa.nome}">Tgo's Barbearia</span>
+                    <img th:if="${empresa != null and empresa.logo_url != null and !empresa.logo_url.isEmpty()}" th:src="${empresa.logo_url}" th:alt="${empresa.logo_alt != null ? empresa.logo_alt : (empresa.nome != null ? empresa.nome : 'Tgo''s Barbearia')}" style="max-height: 40px;">
+                    <span th:text="${empresa != null ? empresa.nome : 'Tgo''s Barbearia'}">Tgo's Barbearia</span>
                 </a>
             </div>
             
