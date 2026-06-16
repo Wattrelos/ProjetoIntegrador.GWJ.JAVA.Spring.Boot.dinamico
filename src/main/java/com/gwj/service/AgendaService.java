@@ -117,6 +117,9 @@ public class AgendaService extends GenericService<Agenda> {
                 }
             }
 
+            LocalDate hoje = LocalDate.now();
+            LocalTime agora = LocalTime.now();
+
             for (LocalTime slotStart : startTimes) {
                 String h = String.format("%02d:%02d", slotStart.getHour(), slotStart.getMinute());
                 long startMin = slotStart.getHour() * 60L + slotStart.getMinute();
@@ -124,7 +127,11 @@ public class AgendaService extends GenericService<Agenda> {
                 long closingMin = diaFim.getHour() * 60L + diaFim.getMinute();
 
                 boolean disponivel = false;
-                if (endMin <= closingMin) {
+
+                // Impedir horários do passado
+                boolean noPassado = localDate.isBefore(hoje) || (localDate.isEqual(hoje) && slotStart.isBefore(agora));
+
+                if (endMin <= closingMin && !noPassado) {
                     if (profissionalId != null && profissionalId > 0) {
                         Set<String> ocupados = ocupadosPorProfissional.get(profissionalId);
                         disponivel = (ocupados != null && !ocupados.contains(h));
@@ -165,6 +172,12 @@ public class AgendaService extends GenericService<Agenda> {
         LocalDate data = dataHora.toLocalDate();
         LocalTime horaInicio = dataHora.toLocalTime();
         LocalTime horaFim = horaInicio.plusMinutes(servico.getDuracao());
+
+        // Regra para impedir agendamento no passado
+        LocalDateTime agora = LocalDateTime.now();
+        if (dataHora.isBefore(agora)) {
+            throw new RuntimeException("Não é possível realizar um agendamento para uma data/hora no passado.");
+        }
 
         try (UnitOfWork uow = new UnitOfWork()) {
             Connection conn = UnitOfWork.getConnection();

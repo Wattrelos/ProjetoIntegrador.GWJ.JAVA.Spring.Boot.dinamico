@@ -15,6 +15,7 @@ public class StartApplication {
 		SchemaValidator.ensureUniqueEmailIndex();
 		SchemaValidator.ensureSettingsTableExists();
 		SchemaValidator.ensureProductImageColumnAndDataExist();
+		SchemaValidator.ensureOrderTablesExist();
 	 // Este comando inicia o servidor Tomcat embutido e sobe sua API
         SpringApplication.run(StartApplication.class, args);
         System.out.println("=== Servidor Spring Boot iniciado com sucesso! ===");

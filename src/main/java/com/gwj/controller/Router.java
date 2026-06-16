@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import com.gwj.model.domain.entities.Usuario;
 import com.gwj.model.domain.entities.Cliente;
 import com.gwj.model.domain.entities.Agendamento;
+import com.gwj.model.domain.entities.Pedido;
 import java.util.List;
 
 @Controller
@@ -103,6 +104,12 @@ public class Router {
                     .ofPattern("dd 'de' MMMM', às' HH:mm", new java.util.Locale("pt", "BR"));
             model.addAttribute("dataHoraFormatada", dt.format(formatador));
 
+            // Validar se o horário está no passado
+            java.time.LocalDateTime agora = java.time.LocalDateTime.now();
+            if (dt.isBefore(agora)) {
+                model.addAttribute("erro", "O horário selecionado está no passado. Por favor, volte e escolha outro horário.");
+            }
+
             // Verificar se o usuário logado está na sessão e carregar dados do Cliente
             // associado
             jakarta.servlet.http.HttpSession session = request.getSession(false);
@@ -153,6 +160,24 @@ public class Router {
             e.printStackTrace();
         }
         return "order-confirmation";
+    }
+
+    @GetMapping("/compra-confirmada")
+    public String compraConfirmada(@RequestParam(value = "id", required = false) Long pedidoId, Model model) {
+        if (pedidoId != null) {
+            try {
+                IService<Pedido> service = ServiceRegistry.getService("Pedido");
+                Pedido filtro = new Pedido();
+                filtro.setId(pedidoId);
+                List<Pedido> resultados = service.read(filtro);
+                if (!resultados.isEmpty()) {
+                    model.addAttribute("pedido", resultados.get(0));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return "compra-confirmada";
     }
 
     @GetMapping("/loja")

@@ -5,12 +5,28 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.gwj.service.ServiceRegistry;
 import com.gwj.service.IService;
 import com.gwj.model.domain.entities.Setting;
+import com.gwj.model.domain.Carrinho;
+import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
 public class GlobalAttributesAdvice {
+
+    @Autowired
+    private HttpSession session;
+
+    @ModelAttribute("carrinho")
+    public Carrinho getCarrinho() {
+        Carrinho carrinho = (Carrinho) session.getAttribute("carrinho");
+        if (carrinho == null) {
+            carrinho = new Carrinho();
+            session.setAttribute("carrinho", carrinho);
+        }
+        return carrinho;
+    }
 
     @ModelAttribute("empresa")
     public Map<String, String> getEmpresaConfig() {

@@ -208,5 +208,41 @@ public class SchemaValidator {
             System.err.println("Erro ao inicializar coluna de imagem em tab_produto: " + e.getMessage());
         }
     }
+
+    public static void ensureOrderTablesExist() {
+        try (java.sql.Connection conn = com.gwj.model.dataAccessObject.ConnectionDB.getInstance().getConnection();
+             java.sql.Statement stmt = conn.createStatement()) {
+            
+            // 1. Criar tab_pedidos se não existir
+            String createPedidosSql = "CREATE TABLE IF NOT EXISTS `tab_pedidos` (" +
+                                      "  `id` BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                                      "  `cliente_id` BIGINT NULL," +
+                                      "  `nome_visitante` VARCHAR(100) NULL," +
+                                      "  `telefone_visitante` VARCHAR(20) NULL," +
+                                      "  `data_pedido` TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                                      "  `forma_pagamento` VARCHAR(50) DEFAULT 'Pagamento na Retirada'," +
+                                      "  `status` VARCHAR(50) DEFAULT 'Aguardando Retirada'," +
+                                      "  `valor_total` DECIMAL(10, 2) NOT NULL," +
+                                      "  FOREIGN KEY (`cliente_id`) REFERENCES `tab_cliente`(`id`) ON DELETE SET NULL" +
+                                      ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+            stmt.execute(createPedidosSql);
+            System.out.println("✅ Tabela tab_pedidos criada ou já existente.");
+
+            // 2. Criar tab_itens_pedido se não existir
+            String createItensSql = "CREATE TABLE IF NOT EXISTS `tab_itens_pedido` (" +
+                                    "  `id` BIGINT AUTO_INCREMENT PRIMARY KEY," +
+                                    "  `pedido_id` BIGINT NOT NULL," +
+                                    "  `produto_id` BIGINT NOT NULL," +
+                                    "  `quantidade` INT NOT NULL," +
+                                    "  `preco_unitario` DECIMAL(10, 2) NOT NULL," +
+                                    "  FOREIGN KEY (`pedido_id`) REFERENCES `tab_pedidos`(`id`) ON DELETE CASCADE" +
+                                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+            stmt.execute(createItensSql);
+            System.out.println("✅ Tabela tab_itens_pedido criada ou já existente.");
+
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar tabelas de pedidos: " + e.getMessage());
+        }
+    }
 }
 

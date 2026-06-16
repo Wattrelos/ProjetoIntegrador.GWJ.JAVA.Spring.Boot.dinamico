@@ -34,10 +34,10 @@
 
                         <!-- Seletor de Quantidade e Botão Adicionar -->
                         <div class="single-product-actions">
-                            <input type="number" value="1" min="1" th:max="${produto.estoque}" class="single-product-qty">
-                            <a th:href="@{/cart}" class="wp-element-button single-product-add-btn">
-                                Adicionar ao Carrinho
-                            </a>
+                            <input type="number" id="productQty" value="1" min="1" th:max="${produto.estoque}" class="single-product-qty">
+                            <button th:onclick="'adicionarAoCarrinhoDoDetalhe(' + ${produto.id} + ')'" class="wp-element-button single-product-add-btn">
+                                <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
                         </div>
 
                         <!-- Detalhes do Produto Dinâmicos -->
@@ -60,6 +60,18 @@
                 </div>
             </div>
         </main>
+        
+        <script>
+            function adicionarAoCarrinhoDoDetalhe(produtoId) {
+                const qtyInput = document.getElementById("productQty");
+                const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+                if (typeof adicionarAoCarrinho === 'function') {
+                    adicionarAoCarrinho(produtoId, qty);
+                } else {
+                    console.error('Função adicionarAoCarrinho não carregada.');
+                }
+            }
+        </script>
     </section>
 </body>
 </html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{layouts/main-layout}">
+<head>
+    <title>Finalizar Compra - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull page-main-bg">
+            <div class="alignwide">
+                <h1 class="mb-40">Finalizar Compra</h1>
+                
+                <div class="layout-grid">
+                    
+                    <!-- Coluna Esquerda: Formulário de Confirmação -->
+                    <div class="card-panel" style="flex: 1 1 500px;">
+                        <h3 class="panel-title">Informações de Retirada</h3>
+                        
+                        <form th:action="@{/carrinho/checkout/confirmar}" method="POST" id="checkoutForm">
+                            
+                            <!-- Usuário Logado -->
+                            <div th:if="${session.usuarioLogado != null}" class="alert-info" style="background-color: rgba(212, 175, 55, 0.05); border: 1px solid var(--primary-color); border-radius: 6px; padding: 1.5rem; margin-bottom: 2rem;">
+                                <i class="bi bi-person-check-fill" style="color: var(--primary-color); font-size: 1.2rem; margin-right: 8px;"></i>
+                                <span style="font-size: 0.95rem; color: var(--text-main);">
+                                    Olá, <strong th:text="${session.usuarioLogado.nomeUsuario}">Cliente</strong>! Seu pedido de produtos será vinculado à sua conta.
+                                </span>
+                            </div>
+                            
+                            <!-- Visitante (Não Logado) -->
+                            <div th:if="${session.usuarioLogado == null}" class="flex-col gap-1-5" style="margin-bottom: 2rem;">
+                                <p class="panel-subtitle" style="margin-bottom: 1.5rem;">Preencha seus dados para podermos separar seus produtos na barbearia:</p>
+                                
+                                <div class="custom-form-group">
+                                    <label for="nomeVisitante" class="custom-label">Nome Completo *</label>
+                                    <input type="text" id="nomeVisitante" name="nomeVisitante" class="custom-input" required placeholder="Digite seu nome completo">
+                                </div>
+                                
+                                <div class="custom-form-group" style="margin-top: 1rem;">
+                                    <label for="telefoneVisitante" class="custom-label">Telefone / WhatsApp *</label>
+                                    <input type="tel" id="telefoneVisitante" name="telefoneVisitante" class="custom-input" required placeholder="(11) 99999-9999">
+                                </div>
+                            </div>
+                            
+                            <hr class="divider">
+                            
+                            <h3 class="panel-title">Forma de Pagamento</h3>
+                            <p class="panel-subtitle">Todos os pedidos da loja online são pagos na retirada no balcão da barbearia. Selecione a forma de pagamento de sua preferência:</p>
+                            
+                            <div class="payment-panel flex-col gap-1" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                <label class="payment-method-label" style="display: flex; align-items: center; gap: 10px; font-weight: normal; margin: 0; padding: 0.8rem; background: #ffffff; border: 1px solid #ddd; border-radius: 6px;">
+                                    <input type="radio" name="formaPagamento" value="PIX" checked style="accent-color: var(--primary-color);">
+                                    <span><i class="bi bi-qr-code" style="margin-right: 6px;"></i> PIX (na retirada)</span>
+                                </label>
+                                
+                                <label class="payment-method-label" style="display: flex; align-items: center; gap: 10px; font-weight: normal; margin: 0; padding: 0.8rem; background: #ffffff; border: 1px solid #ddd; border-radius: 6px;">
+                                    <input type="radio" name="formaPagamento" value="Cartão de Crédito" style="accent-color: var(--primary-color);">
+                                    <span><i class="bi bi-credit-card" style="margin-right: 6px;"></i> Cartão de Crédito</span>
+                                </label>
+                                
+                                <label class="payment-method-label" style="display: flex; align-items: center; gap: 10px; font-weight: normal; margin: 0; padding: 0.8rem; background: #ffffff; border: 1px solid #ddd; border-radius: 6px;">
+                                    <input type="radio" name="formaPagamento" value="Cartão de Débito" style="accent-color: var(--primary-color);">
+                                    <span><i class="bi bi-credit-card-2-front" style="margin-right: 6px;"></i> Cartão de Débito</span>
+                                </label>
+                                
+                                <label class="payment-method-label" style="display: flex; align-items: center; gap: 10px; font-weight: normal; margin: 0; padding: 0.8rem; background: #ffffff; border: 1px solid #ddd; border-radius: 6px;">
+                                    <input type="radio" name="formaPagamento" value="Dinheiro" style="accent-color: var(--primary-color);">
+                                    <span><i class="bi bi-cash" style="margin-right: 6px;"></i> Dinheiro</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="wp-element-button btn-block" style="width: 100%; border: none; font-weight: bold; background-color: var(--text-main); color: var(--card-bg); cursor: pointer; border-radius: 6px; padding: 1.2rem; transition: opacity 0.2s;">
+                                Confirmar Pedido
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Coluna Direita: Resumo do Pedido -->
+                    <div class="card-panel is-sticky" style="flex: 1 1 350px;">
+                        <h3 class="panel-title">Resumo do Pedido</h3>
+                        
+                        <div class="checkout-items" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                            <div th:each="item : ${carrinho.listaItens}" style="display: flex; align-items: center; gap: 10px; padding-bottom: 0.8rem; border-bottom: 1px solid #eee;">
+                                <img th:src="${item.produto.imagem != null and item.produto.imagem != '' ? item.produto.imagem : '/img/no-image.png'}" th:alt="${item.produto.nome}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                                <div style="flex-grow: 1;">
+                                    <h4 th:text="${item.produto.nome}" style="margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--text-main);">Nome</h4>
+                                    <span th:text="${item.quantidade} + ' x R$ ' + ${#numbers.formatDecimal(item.produto.preco, 1, 'POINT', 2, 'COMMA')}" style="font-size: 0.85rem; color: var(--text-muted);">1 x R$ 0,00</span>
+                                </div>
+                                <strong th:text="'R$ ' + ${#numbers.formatDecimal(item.getSubtotal(), 1, 'POINT', 2, 'COMMA')}" style="font-size: 0.95rem; color: var(--text-main);">R$ 0,00</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-total" style="border-top: 1px solid #eee; padding-top: 1.5rem; display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
+                            <span>Total Geral:</span>
+                            <span style="color: var(--primary-color);" th:text="'R$ ' + ${#numbers.formatDecimal(carrinho.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>

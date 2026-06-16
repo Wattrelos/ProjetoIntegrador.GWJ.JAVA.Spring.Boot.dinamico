@@ -435,8 +435,10 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
                         }
                         if (value instanceof String) {
                             conditions.add("`" + columnName + "` LIKE '%" + value + "%'");
-                        } else {
+                        } else if (value instanceof Number || value instanceof Boolean) {
                             conditions.add("`" + columnName + "` = " + value);
+                        } else {
+                            conditions.add("`" + columnName + "` = '" + value + "'");
                         }
                     }
                 } catch (Exception ignored) {}

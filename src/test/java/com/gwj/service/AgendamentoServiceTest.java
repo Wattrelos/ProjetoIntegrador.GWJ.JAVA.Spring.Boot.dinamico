@@ -67,4 +67,28 @@ public class AgendamentoServiceTest {
         assertNotNull(slotsFechados);
         assertTrue(slotsFechados.isEmpty());
     }
+
+    @Test
+    public void testHorariosNoPassadoComoIndisponiveis() {
+        AgendamentoService service = new AgendamentoService();
+        // Terça-feira no passado (2026-06-09)
+        List<java.util.Map<String, Object>> slots = service.getHorariosDisponiveis(1L, 2L, "2026-06-09");
+        assertNotNull(slots);
+        assertFalse(slots.isEmpty());
+        for (java.util.Map<String, Object> slot : slots) {
+            assertFalse((Boolean) slot.get("disponivel"));
+        }
+    }
+
+    @Test
+    public void testConfirmarReservaNoPassadoLancaExcecao() {
+        AgendamentoService service = new AgendamentoService();
+        // Tentar agendar para terça-feira no passado
+        assertThrows(RuntimeException.class, () -> {
+            service.confirmarReserva(
+                1L, 2L, "2026-06-09", "10:00:00",
+                "Teste", "Passado", "teste@email.com", "11999999999"
+            );
+        });
+    }
 }

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Gestão de Pedidos - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="container-fluid p-4">
+        
+        <!-- Breadcrumb / Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">Gestão de Pedidos</h1>
+                <p class="text-muted mb-0">Gerencie os pedidos feitos no mini-shopping da barbearia</p>
+            </div>
+            <a th:href="@{/MRYnZpAsC9sp/}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Voltar ao Painel
+            </a>
+        </div>
+
+        <!-- Tabela Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Todos os Pedidos</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3" style="width: 100px;">Pedido</th>
+                                <th class="py-3">Cliente / Retirante</th>
+                                <th class="py-3">Data do Pedido</th>
+                                <th class="py-3">Pagamento</th>
+                                <th class="py-3">Valor Total</th>
+                                <th class="py-3" style="width: 180px;">Status</th>
+                                <th class="px-4 py-3 text-end" style="width: 150px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="pedido : ${pedidos}">
+                                <td class="px-4 fw-bold" th:text="'#PED-' + ${pedido.id}">#PED-1</td>
+                                <td>
+                                    <!-- Cliente Cadastrado -->
+                                    <div th:if="${pedido.cliente != null}">
+                                        <span class="fw-semibold text-dark" th:text="${pedido.cliente.nome} + ' ' + ${pedido.cliente.sobrenome}">João Silva</span>
+                                        <small class="d-block text-muted" th:text="${pedido.cliente.telefone}">(11) 99999-9999</small>
+                                    </div>
+                                    <!-- Visitante -->
+                                    <div th:if="${pedido.cliente == null}">
+                                        <span class="fw-semibold text-dark" th:text="${pedido.nomeVisitante}">Carlos Visitante</span>
+                                        <small class="d-block text-muted" th:text="${pedido.telefoneVisitante}">(11) 98888-8888</small>
+                                        <span class="badge bg-secondary" style="font-size: 0.7rem;">Visitante</span>
+                                    </div>
+                                </td>
+                                <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}">16/06/2026 14:00</td>
+                                <td th:text="${pedido.formaPagamento}">PIX</td>
+                                <td class="fw-bold text-dark" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                                <td>
+                                    <span th:if="${pedido.status == 'Aguardando Retirada'}" class="badge bg-warning text-dark px-3 py-2">Aguardando Retirada</span>
+                                    <span th:if="${pedido.status == 'Retirado'}" class="badge bg-success px-3 py-2">Retirado</span>
+                                    <span th:if="${pedido.status == 'Cancelado'}" class="badge bg-danger px-3 py-2">Cancelado</span>
+                                </td>
+                                <td class="px-4 text-end">
+                                    <a th:href="@{/MRYnZpAsC9sp/pedidos/detalhe(id=${pedido.id})}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(pedidos)}">
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-receipt-cutoff display-4 d-block mb-3"></i>
+                                    Nenhum pedido realizado no momento.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

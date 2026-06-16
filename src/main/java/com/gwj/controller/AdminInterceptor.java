@@ -1,13 +1,19 @@
 package com.gwj.controller;
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
-
-import com.gwj.model.domain.entities.Usuario;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.FlashMapManager;
+import org.springframework.web.servlet.support.RequestContextUtils;
+
+import com.gwj.model.domain.entities.Usuario;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
@@ -16,30 +22,50 @@ public class AdminInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
         
-        // Verifica se a sessão é nula ou se não existe o atributo 'usuarioLogado' nela
+        // Se a sessão não existir ou não tiver o usuário logado, barra o acesso
         if (session == null || session.getAttribute("usuarioLogado") == null) {
-            // Se for uma requisição para a API (JSON), retorna erro 401 (Não Autorizado) em vez de redirecionar
-            if (request.getRequestURI().contains("-json")) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acesso negado. Por favor, faça login.");
-            } else {
-                // Se for navegação normal no painel /MRYnZpAsC9sp, redireciona o usuário para a página de login
-                response.sendRedirect("/login");
-            }
-            return false; // Interrompe a requisição e não deixa chegar no Controller
+            response.sendRedirect(request.getContextPath() + "/login");
+            return false; // Interrompe o fluxo (não chega no Controller)
         }
         
-        // Verifica se o usuário logado possui perfil de Cliente (ID 4)
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario.getPerfil() != null && usuario.getPerfil().getId() == 4L) {
-            if (request.getRequestURI().contains("-json")) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acesso negado. Permissão insuficiente.");
-            } else {
-                // Clientes são redirecionados para a Home pública
-                response.sendRedirect("/");
-            }
-            return false; // Bloqueia o acesso
+        Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+
+        // O Administrador (Perfil 1) sempre tem acesso total a tudo
+        if (usuarioLogado.getPerfil() != null && usuarioLogado.getPerfil().getId() == 1L) {
+            return true; 
         }
-        
-        return true; // Sessão válida e perfil autorizado, permite que a requisição continue normalmente
+
+        // O Spring Boot salva as variáveis de rota (como o {entity}) neste atributo especial
+        @SuppressWarnings("unchecked")
+        Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
+        // Verifica se a URL acessada exigia uma entidade específica (como nas rotas /listar, /create, /editar)
+        if (pathVariables != null && pathVariables.containsKey("entity")) {
+            String entidade = pathVariables.get("entity");
+            
+            // Mapeia qual permissão é necessária para a entidade acessada
+            String permissaoNecessaria = "ADMIN_ONLY"; // Bloqueio padrão para classes não mapeadas
+            if ("Cliente".equalsIgnoreCase(entidade)) permissaoNecessaria = "GERENCIAR_CLIENTES";
+            else if ("Servico".equalsIgnoreCase(entidade)) permissaoNecessaria = "GERENCIAR_SERVICOS";
+            else if ("Agenda".equalsIgnoreCase(entidade)) permissaoNecessaria = "AGENDAR_HORARIO";
+
+            // Se o usuário não possuir a permissão estipulada, barra e redireciona ao painel principal
+            if (!usuarioLogado.hasPermissao(permissaoNecessaria)) {
+                
+                // Cria uma mensagem Flash (disponível apenas na próxima requisição e some ao atualizar a página)
+                FlashMap flashMap = new FlashMap();
+                flashMap.put("mensagemErro", "Acesso Negado: Você não possui permissão para gerenciar " + entidade + ".");
+                FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(request);
+                if (flashMapManager != null) {
+                    flashMapManager.saveOutputFlashMap(flashMap, request, response);
+                }
+
+                // Corrigido o caminho do redirecionamento
+                response.sendRedirect(request.getContextPath() + "/MRYnZpAsC9sp");
+                return false; // Interrompe a requisição (O Controller nem chega a ser acionado)
+            }
+        }
+
+        return true; // Usuário logado, permite continuar o acesso
     }
 }

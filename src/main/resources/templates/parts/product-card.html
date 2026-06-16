@@ -14,7 +14,12 @@
         <p class="product-desc" th:text="${produto.descricao}">Descrição do produto...</p>
         <strong class="product-price"
             th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
-        <a th:href="@{/single-product(id=${produto.id})}" class="wp-element-button product-btn">Ver Detalhes</a>
+        <div class="product-card-actions">
+            <a th:href="@{/single-product(id=${produto.id})}" class="wp-element-button product-btn-secondary">Detalhes</a>
+            <button th:onclick="'adicionarAoCarrinho(' + ${produto.id} + ', 1)'" class="wp-element-button product-btn-primary">
+                <i class="bi bi-cart-plus"></i> Adicionar
+            </button>
+        </div>
     </div>
 </body>
 

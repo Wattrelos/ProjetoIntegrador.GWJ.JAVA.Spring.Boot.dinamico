@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{layouts/main-layout}">
+<head>
+    <title>Compra Confirmada - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull page-main-bg">
+            <div class="alignwide confirmation-wrapper" style="max-width: 600px; margin: 0 auto; padding: 4rem 1rem;">
+                
+                <!-- Ícone de Sucesso -->
+                <div class="success-icon" style="background-color: var(--primary-color); color: #1a1a1a; font-weight: bold; margin: 0 auto 2rem auto; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">
+                    ✓
+                </div>
+
+                <h1 style="margin-bottom: 1rem; color: var(--text-main); font-weight: 700;">Pedido Recebido!</h1>
+                
+                <p class="confirmation-msg" style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2.5rem;">
+                    Seus produtos foram reservados com sucesso. Eles já estão separados e aguardando você no balcão da barbearia para retirada e pagamento.
+                </p>
+
+                <!-- Resumo do Pedido Salvo -->
+                <div class="details-panel" th:if="${pedido}" style="background-color: #fffdfa; border: 1px solid #eee; border-radius: 8px; padding: 2rem; text-align: left; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02); margin-bottom: 2rem;">
+                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 0.8rem;">Resumo da Compra</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <span style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Número do Pedido</span>
+                            <strong style="font-size: 1.1rem; color: var(--text-main);" th:text="'#PED-' + ${pedido.id}">#PED-1</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Cliente / Retirante</span>
+                            <strong style="font-size: 1.1rem; color: var(--text-main);" th:text="${pedido.cliente != null ? pedido.cliente.nome + ' ' + pedido.cliente.sobrenome : pedido.nomeVisitante}">Carlos Silva</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Forma de Pagamento</span>
+                            <strong style="font-size: 1.1rem; color: var(--text-main);" th:text="${pedido.formaPagamento}">PIX</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Status do Pedido</span>
+                            <strong style="font-size: 1.1rem; color: var(--primary-color);" th:text="${pedido.status}">Aguardando Retirada</strong>
+                        </div>
+                    </div>
+
+                    <!-- Itens do Pedido -->
+                    <div style="border-top: 1px solid #eee; padding-top: 1rem;">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--text-main);">Itens Separados</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                            <div th:each="item : ${pedido.itens}" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem;">
+                                <span>
+                                    <span th:text="${item.produto != null ? item.produto.nome : item.nomeProduto}">Produto</span>
+                                    <span style="color: var(--text-muted); font-size: 0.85rem;" th:text="' x ' + ${item.quantidade}">x 1</span>
+                                </span>
+                                <strong th:text="'R$ ' + ${#numbers.formatDecimal(item.getPrecoTotalItem(), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div style="border-top: 1px solid #eee; padding-top: 1rem; margin-top: 1rem; display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
+                        <span>Valor Total a Pagar:</span>
+                        <span style="color: var(--primary-color);" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <!-- Painel de Instruções de Retirada -->
+                <div class="details-panel" style="background-color: #fffdfa; border: 1px solid #eee; border-radius: 8px; padding: 2rem; text-align: left; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02); margin-bottom: 2.5rem;">
+                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 0.8rem;">Instruções de Retirada</h3>
+                    
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem;">
+                        <li style="display: flex; gap: 10px; align-items: flex-start;">
+                            <span style="color: var(--primary-color); font-weight: bold;">•</span>
+                            <span style="color: var(--text-muted); font-size: 0.95rem;">Retire seus produtos em até <strong>48 horas</strong> no balcão de atendimento.</span>
+                        </li>
+                        <li style="display: flex; gap: 10px; align-items: flex-start;">
+                            <span style="color: var(--primary-color); font-weight: bold;">•</span>
+                            <span style="color: var(--text-muted); font-size: 0.95rem;">Apresente o seu <strong>número de pedido</strong> ou <strong>nome</strong> ao atendente.</span>
+                        </li>
+                        <li style="display: flex; gap: 10px; align-items: flex-start;">
+                            <span style="color: var(--primary-color); font-weight: bold;">•</span>
+                            <span style="color: var(--text-muted); font-size: 0.95rem;">O pagamento final será processado no balcão da barbearia.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <a th:href="@{/loja}" class="wp-element-button btn-primary-inline" style="background-color: var(--text-main); color: var(--card-bg); text-decoration: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: bold; transition: opacity 0.2s;">Voltar para a Loja</a>
+                    <a th:href="@{/}" class="wp-element-button btn-primary-inline" style="background-color: transparent; color: var(--text-main); border: 1px solid var(--text-main); text-decoration: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: bold; transition: background-color 0.2s;">Início</a>
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${empresa != null ? empresa.nome : 'Tgo''s Barbearia'}">Tgo's Barbearia</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
     <!-- Fragmento do HEADER (Cabeçalho da Página) -->
@@ -32,7 +33,12 @@
                     <li><a th:href="@{/sobre-nos}">Sobre Nós</a></li>
                     <li><a th:href="@{/contato}">Contato</a></li>
                     <li><a th:href="@{/loja}">Loja</a></li>
-                    <li><a th:href="@{/carrinho}">Carrinho</a></li>
+                    <li>
+                        <a th:href="@{/carrinho}" class="nav-carrinho-link">
+                            Carrinho
+                            <span class="nav-cart-badge" id="navCartBadge" th:text="${carrinho.quantidadeTotal}" th:style="${carrinho.quantidadeTotal > 0 ? '' : 'display: none;'}">0</span>
+                        </a>
+                    </li>
                     <li th:if="${session.usuarioLogado != null}"><a th:href="@{/meus-agendamentos}">Meus Agendamentos</a></li>
                     <li th:if="${session.usuarioLogado != null}"><a th:href="@{/logout}" class="header-link-danger">Sair</a></li>
                     <li th:if="${session.usuarioLogado == null}"><a th:href="@{/login}">Entrar</a></li>
@@ -42,6 +48,48 @@
                 </ul>
             </nav>
             <div class="header-actions header-actions-group">
+                <!-- Mini-Carrinho de Compras -->
+                <div class="mini-cart-container">
+                    <button class="mini-cart-toggle" id="miniCartToggle" title="Ver Carrinho">
+                        <i class="bi bi-cart3"></i>
+                        <span class="cart-badge" id="miniCartBadge" th:text="${carrinho.quantidadeTotal}" th:style="${carrinho.quantidadeTotal > 0 ? '' : 'display: none;'}">0</span>
+                    </button>
+                    <div class="mini-cart-dropdown" id="miniCartDropdown">
+                        <div class="mini-cart-header">
+                            <h4>Seu Carrinho</h4>
+                            <button class="mini-cart-close" id="miniCartClose">&times;</button>
+                        </div>
+                        <div class="mini-cart-items" id="miniCartItems">
+                            <div th:if="${carrinho.quantidadeTotal == 0}" class="empty-cart-message">
+                                <i class="bi bi-cart-x" style="font-size: 24px; color: var(--text-muted);"></i>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: var(--text-muted);">Seu carrinho está vazio.</p>
+                            </div>
+                            <div th:each="item : ${carrinho.listaItens}" class="mini-cart-item" th:data-id="${item.produto.id}">
+                                <img th:src="${item.produto.imagem != null and item.produto.imagem != '' ? item.produto.imagem : '/img/no-image.png'}" th:alt="${item.produto.nome}">
+                                <div class="mini-cart-item-info">
+                                    <h5 th:text="${item.produto.nome}">Nome do Produto</h5>
+                                    <div class="mini-cart-item-meta">
+                                        <span class="mini-qty" th:text="${item.quantidade}">1</span>x R$ <span th:text="${#numbers.formatDecimal(item.produto.preco, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                                    </div>
+                                </div>
+                                <button class="mini-cart-item-remove" th:onclick="'removerDoCarrinho(' + ${item.produto.id} + ')'" title="Remover item">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mini-cart-footer" id="miniCartFooter" th:style="${carrinho.quantidadeTotal > 0 ? '' : 'display: none;'}">
+                            <div class="mini-cart-total">
+                                <span>Total:</span>
+                                <strong id="miniCartTotalVal" th:text="'R$ ' + ${#numbers.formatDecimal(carrinho.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+                            </div>
+                            <div class="mini-cart-buttons">
+                                <a th:href="@{/carrinho}" class="btn-mini-cart btn-mini-cart-secondary">Ver Carrinho</a>
+                                <a th:href="@{/carrinho/checkout}" class="btn-mini-cart btn-mini-cart-primary">Finalizar Compra</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div th:if="${session.usuarioLogado != null}" class="header-user-menu">
                     <span class="header-welcome-text">Olá, <strong th:text="${session.usuarioLogado.nomeUsuario}">Cliente</strong></span>
                     <a th:href="@{/meus-agendamentos}" class="header-link">Meus Agendamentos</a>
@@ -64,7 +112,124 @@
                         nav.classList.toggle("active");
                     });
                 }
+
+                // Comportamento do Mini-Cart
+                const miniCartToggle = document.getElementById("miniCartToggle");
+                const miniCartDropdown = document.getElementById("miniCartDropdown");
+                const miniCartClose = document.getElementById("miniCartClose");
+
+                if (miniCartToggle && miniCartDropdown) {
+                    miniCartToggle.addEventListener("click", function(e) {
+                        e.stopPropagation();
+                        miniCartDropdown.classList.toggle("active");
+                    });
+
+                    if (miniCartClose) {
+                        miniCartClose.addEventListener("click", function(e) {
+                            e.stopPropagation();
+                            miniCartDropdown.classList.remove("active");
+                        });
+                    }
+
+                    document.addEventListener("click", function(e) {
+                        if (!miniCartDropdown.contains(e.target) && e.target !== miniCartToggle && !miniCartToggle.contains(e.target)) {
+                            miniCartDropdown.classList.remove("active");
+                        }
+                    });
+                }
             });
+
+            // Funções AJAX do Carrinho
+            function atualizarMiniCartUI(data) {
+                // Atualizar badges
+                const badges = document.querySelectorAll('#miniCartBadge, #navCartBadge');
+                badges.forEach(badge => {
+                    if (data.quantidadeTotal > 0) {
+                        badge.textContent = data.quantidadeTotal;
+                        badge.style.display = 'inline-flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
+
+                // Atualizar visibilidade do footer
+                const footer = document.getElementById('miniCartFooter');
+                if (footer) {
+                    if (data.quantidadeTotal > 0) {
+                        footer.style.display = 'block';
+                    } else {
+                        footer.style.display = 'none';
+                    }
+                }
+
+                // Atualizar total
+                const totalVal = document.getElementById('miniCartTotalVal');
+                if (totalVal && data.valorTotal !== undefined) {
+                    totalVal.textContent = 'R$ ' + Number(data.valorTotal).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+
+                // Buscar fragmento atualizado
+                fetch('/carrinho/mini-cart-fragment')
+                    .then(r => r.text())
+                    .then(html => {
+                        const oldElement = document.getElementById('miniCartItems');
+                        if (oldElement) {
+                            oldElement.outerHTML = html;
+                        }
+                        
+                        // Recarregar a página se estiver no carrinho
+                        if (window.location.pathname === '/carrinho' || window.location.pathname === '/cart') {
+                            window.location.reload();
+                        }
+                    });
+            }
+
+            function adicionarAoCarrinho(produtoId, quantidade = 1) {
+                const formData = new FormData();
+                formData.append('produtoId', produtoId);
+                formData.append('quantidade', quantidade);
+
+                fetch('/carrinho/adicionar', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        atualizarMiniCartUI(data);
+                        // Abre o mini-cart para dar feedback visual
+                        const miniCartDropdown = document.getElementById("miniCartDropdown");
+                        if (miniCartDropdown) {
+                            miniCartDropdown.classList.add("active");
+                        }
+                    } else {
+                        alert(data.mensagem || 'Erro ao adicionar item.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Erro na requisição. Tente novamente.');
+                });
+            }
+
+            function removerDoCarrinho(produtoId) {
+                const formData = new FormData();
+                formData.append('produtoId', produtoId);
+
+                fetch('/carrinho/remover', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        atualizarMiniCartUI(data);
+                    } else {
+                        alert(data.mensagem || 'Erro ao remover item.');
+                    }
+                })
+                .catch(err => console.error(err));
+            }
         </script>
     </header>
 </body>

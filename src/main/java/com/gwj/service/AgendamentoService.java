@@ -139,7 +139,10 @@ public class AgendamentoService extends GenericService<Agendamento> {
                 }
             }
  
-            // 4. Montar a resposta validando fechamento e colisões
+            // 4. Montar a resposta validando fechamento, colisões e horários no passado
+            LocalDate hoje = LocalDate.now();
+            LocalTime agora = LocalTime.now();
+ 
             for (LocalTime slotStart : startTimes) {
                 String hStr = String.format("%02d:%02d", slotStart.getHour(), slotStart.getMinute());
  
@@ -150,7 +153,10 @@ public class AgendamentoService extends GenericService<Agendamento> {
  
                 boolean disponivel = false;
  
-                if (endMin <= closingMin) {
+                // Impedir horários do passado
+                boolean noPassado = localDate.isBefore(hoje) || (localDate.isEqual(hoje) && slotStart.isBefore(agora));
+ 
+                if (endMin <= closingMin && !noPassado) {
                     LocalTime slotEnd = slotStart.plusMinutes(duracao);
  
                     if (profissionalId != null && profissionalId > 0) {
@@ -206,6 +212,13 @@ public class AgendamentoService extends GenericService<Agendamento> {
         LocalDate data = LocalDate.parse(dataStr);
         LocalTime horaInicio = LocalTime.parse(horaInicioStr);
         LocalTime horaFim = horaInicio.plusMinutes(servico.getDuracao());
+
+        // Regra para impedir agendamento no passado
+        LocalDate hoje = LocalDate.now();
+        LocalTime agora = LocalTime.now();
+        if (data.isBefore(hoje) || (data.isEqual(hoje) && horaInicio.isBefore(agora))) {
+            throw new RuntimeException("Não é possível realizar um agendamento para uma data/hora no passado.");
+        }
  
         GradeHorarios gradeHorarios = null;
         LocalTime diaInicio = null;

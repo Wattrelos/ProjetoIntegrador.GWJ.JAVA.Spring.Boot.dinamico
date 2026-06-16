@@ -109,7 +109,7 @@
                              <span class="has-theme-3-color" th:text="'R$ ' + ${#numbers.formatDecimal(servico.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                          </div>
  
-                         <button type="submit" form="checkoutForm" class="wp-element-button btn-block">Confirmar Reserva</button>
+                         <button type="submit" form="checkoutForm" class="wp-element-button btn-block" th:disabled="${erro != null}">Confirmar Reserva</button>
                      </div>
                  </div>
              </div>
