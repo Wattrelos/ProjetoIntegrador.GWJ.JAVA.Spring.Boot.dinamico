@@ -25,14 +25,13 @@ public class LoginController {
             @RequestParam(value = "sucesso", required = false) String sucesso,
             HttpSession session,
             Model model) {
-        // Se a sessão existir e houver um usuário logado nela, redireciona
-        // imediatamente
+        // Se a sessão existir e houver um usuário logado nela, redireciona imediatamente
         if (session != null && session.getAttribute("usuarioLogado") != null) {
             Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
             if (usuario.getPerfil() != null && usuario.getPerfil().getId() == 4L) {
                 return "redirect:/";
             }
-            return "redirect:/MRYnZpAsC9sp/listar/Cliente";
+            return "redirect:/MRYnZpAsC9sp";
         }
         if (sucesso != null && !sucesso.isBlank()) {
             model.addAttribute("sucesso", "Cadastro realizado com sucesso! Faça login para continuar.");
@@ -115,8 +114,6 @@ public class LoginController {
         filtro.setEmail(email);
 
         IService<Usuario> service = ServiceRegistry.getService("Usuario");
-        // Retorna a lista de usuários baseada no email (o Serviço carrega perfil e
-        // permissões automaticamente)
         List<Usuario> resultados = service.read(filtro);
 
         // Aplica o hash na senha fornecida pelo formulário
@@ -129,37 +126,95 @@ public class LoginController {
             if (usuarioBanco.getSenha() != null && usuarioBanco.getSenha().startsWith("{sha256}")) {
                 senhaValida = usuarioBanco.getSenha().equals(senhaCriptografada);
             } else if (usuarioBanco.getSenha() != null) {
-                // Retrocompatibilidade: Permite logar com senhas antigas que ainda estão em
-                // texto puro
+                // Retrocompatibilidade
                 senhaValida = usuarioBanco.getSenha().equals(senha);
             }
 
-            // Validação exata no Java para contornar o "LIKE" do DAO/Repository
             if (usuarioBanco.getEmail().equalsIgnoreCase(email) && senhaValida) {
-
-                // Login bem-sucedido! Guardamos o objeto completo na sessão
                 HttpSession session = request.getSession();
                 session.setAttribute("usuarioLogado", usuarioBanco);
 
                 if (usuarioBanco.getPerfil() != null && usuarioBanco.getPerfil().getId() == 4L) {
                     return "redirect:/"; // Clientes vão para a home
                 }
-                return "redirect:/MRYnZpAsC9sp/listar/Cliente"; // Redireciona para o painel principal
+                return "redirect:/MRYnZpAsC9sp"; // Administradores vão para o painel principal
             }
         }
 
-        // Se o loop terminar sem sucesso, a senha ou e-mail estão incorretos
         model.addAttribute("erro", "E-mail ou senha inválidos.");
         return "login";
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
-        // Invalida a sessão HTTP, removendo o usuarioLogado
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
         return "redirect:/login";
+    }
+
+    // --- MASCARAMENTO E ROTAS DE LOGIN ADMINISTRATIVO ---
+
+    @GetMapping("/MRYnZpAsC9sp/login")
+    public String showAdminLoginForm(HttpSession session) {
+        if (session != null && session.getAttribute("usuarioLogado") != null) {
+            Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+            if (usuario.getPerfil() != null && usuario.getPerfil().getId() == 4L) {
+                return "redirect:/";
+            }
+            return "redirect:/MRYnZpAsC9sp";
+        }
+        return "admin/login";
+    }
+
+    @PostMapping("/MRYnZpAsC9sp/login")
+    public String processAdminLogin(
+            @RequestParam("email") String email,
+            @RequestParam("senha") String senha,
+            HttpServletRequest request,
+            Model model) {
+
+        Usuario filtro = new Usuario();
+        filtro.setEmail(email);
+
+        IService<Usuario> service = ServiceRegistry.getService("Usuario");
+        List<Usuario> resultados = service.read(filtro);
+
+        String senhaCriptografada = "{sha256}" + PasswordUtil.hash(senha);
+
+        for (Usuario usuarioBanco : resultados) {
+            boolean senhaValida = false;
+
+            if (usuarioBanco.getSenha() != null && usuarioBanco.getSenha().startsWith("{sha256}")) {
+                senhaValida = usuarioBanco.getSenha().equals(senhaCriptografada);
+            } else if (usuarioBanco.getSenha() != null) {
+                senhaValida = usuarioBanco.getSenha().equals(senha);
+            }
+
+            if (usuarioBanco.getEmail().equalsIgnoreCase(email) && senhaValida) {
+                // Impede clientes (Perfil 4) de logarem no painel administrativo
+                if (usuarioBanco.getPerfil() != null && usuarioBanco.getPerfil().getId() == 4L) {
+                    model.addAttribute("erro", "Acesso negado: esta área é restrita a administradores.");
+                    return "admin/login";
+                }
+
+                HttpSession session = request.getSession();
+                session.setAttribute("usuarioLogado", usuarioBanco);
+                return "redirect:/MRYnZpAsC9sp";
+            }
+        }
+
+        model.addAttribute("erro", "E-mail ou senha inválidos.");
+        return "admin/login";
+    }
+
+    @GetMapping("/MRYnZpAsC9sp/logout")
+    public String adminLogout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/MRYnZpAsC9sp/login";
     }
 }

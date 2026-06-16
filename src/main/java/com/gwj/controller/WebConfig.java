@@ -14,6 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(adminInterceptor)
-                .addPathPatterns("/MRYnZpAsC9sp/**"); // Intercepta qualquer URL que comece com /MRYnZpAsC9sp/
+                .addPathPatterns("/MRYnZpAsC9sp/**")
+                .excludePathPatterns("/MRYnZpAsC9sp/login"); // Exclui a rota de login administrativo
     }
 }

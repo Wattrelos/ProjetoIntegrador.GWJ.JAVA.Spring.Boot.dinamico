@@ -24,11 +24,17 @@ public class AdminInterceptor implements HandlerInterceptor {
         
         // Se a sessão não existir ou não tiver o usuário logado, barra o acesso
         if (session == null || session.getAttribute("usuarioLogado") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + "/MRYnZpAsC9sp/login");
             return false; // Interrompe o fluxo (não chega no Controller)
         }
         
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
+
+        // Bloqueia clientes (Perfil 4) de acessarem qualquer rota do painel administrativo
+        if (usuarioLogado.getPerfil() != null && usuarioLogado.getPerfil().getId() == 4L) {
+            response.sendRedirect(request.getContextPath() + "/");
+            return false;
+        }
 
         // O Administrador (Perfil 1) sempre tem acesso total a tudo
         if (usuarioLogado.getPerfil() != null && usuarioLogado.getPerfil().getId() == 1L) {
