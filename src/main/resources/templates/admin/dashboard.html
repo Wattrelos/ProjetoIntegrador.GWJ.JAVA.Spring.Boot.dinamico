@@ -13,11 +13,24 @@
         Isso fará com que o aside suma e o main ocupe 100% da largura. -->
 
     <section layout:fragment="content">
-        <h1>Desenvolvimento de Sistemas</h1>
-        <h2>Página inicial da Locadora</h2>
-        <li th:each="nome : ${entidades}">
-            <a th:href="@{/MRYnZpAsC9sp/listar/{id}(id=${nome})}" th:text="'Abrir lista de ' + ${nome}"></a>
-        </li>
+        <div class="gwj-mb-4">
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Painel de Controle</h1>
+            <p style="color: var(--gwj-text-muted); margin: 0;">Bem-vindo ao painel administrativo. Selecione abaixo a tabela do banco de dados que deseja gerenciar:</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div th:each="nome : ${entidades}" class="gwj-card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="gwj-card-body" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                    <div>
+                        <h3 th:text="${nome}" style="color: var(--gwj-text-dark); margin-bottom: 0.5rem; font-size: 1.35rem;">Nome da Entidade</h3>
+                        <p style="color: var(--gwj-text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5;">Gerencie registros, adicione novos itens ou edite/exclua os registros existentes desta tabela.</p>
+                    </div>
+                    <a th:href="@{/MRYnZpAsC9sp/listar/{id}(id=${nome})}" class="gwj-btn gwj-btn-primary gwj-btn-sm" style="width: 100%;">
+                        <i class="bi bi-arrow-right-circle"></i> Abrir <span th:text="${nome}"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </section>
 
 </body>

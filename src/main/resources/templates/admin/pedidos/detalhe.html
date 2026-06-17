@@ -7,127 +7,129 @@
 </head>
 <body>
     
-    <main layout:fragment="content" class="container-fluid p-4">
+    <main layout:fragment="content" class="gwj-p-4">
         
         <!-- Breadcrumb / Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
             <div>
-                <h1 class="h3 mb-0 text-gray-800" th:text="'Pedido #PED-' + ${pedido.id}">Pedido #PED-1</h1>
-                <p class="text-muted mb-0">Detalhamento e atualização de status do pedido</p>
+                <h1 style="font-size: 1.8rem; margin: 0;" th:text="'Pedido #PED-' + ${pedido.id}">Pedido #PED-1</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Detalhamento e atualização de status do pedido</p>
             </div>
-            <a th:href="@{/MRYnZpAsC9sp/pedidos}" class="btn btn-outline-secondary btn-sm">
+            <a th:href="@{/MRYnZpAsC9sp/pedidos}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
                 <i class="bi bi-arrow-left"></i> Voltar à Lista
             </a>
         </div>
 
-        <div class="row" th:if="${pedido != null}">
+        <div class="gwj-grid-main-side" th:if="${pedido != null}">
             
             <!-- Coluna Esquerda: Detalhes e Itens -->
-            <div class="col-lg-8">
+            <div>
                 
                 <!-- Informações do Pedido e Cliente -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold text-dark mb-3">Informações de Retirada</h5>
+                <div class="gwj-card">
+                    <div class="gwj-card-body">
+                        <h5 class="gwj-card-title gwj-mb-3" style="font-size: 1.2rem;">Informações de Retirada</h5>
                         
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <span class="text-muted d-block small">Data/Hora do Pedido</span>
+                        <div class="gwj-form-row">
+                            <div class="gwj-form-col-6 gwj-form-group">
+                                <span class="gwj-label">Data/Hora do Pedido</span>
                                 <strong th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}">16/06/2026 14:00</strong>
                             </div>
-                            <div class="col-md-6">
-                                <span class="text-muted d-block small">Forma de Pagamento</span>
+                            <div class="gwj-form-col-6 gwj-form-group">
+                                <span class="gwj-label">Forma de Pagamento</span>
                                 <strong th:text="${pedido.formaPagamento}">PIX</strong>
                             </div>
                             
                             <!-- Se for Cliente Cadastrado -->
-                            <div class="col-md-6" th:if="${pedido.cliente != null}">
-                                <span class="text-muted d-block small">Cliente Cadastrado</span>
+                            <div class="gwj-form-col-6 gwj-form-group" th:if="${pedido.cliente != null}">
+                                <span class="gwj-label">Cliente Cadastrado</span>
                                 <strong th:text="${pedido.cliente.nome} + ' ' + ${pedido.cliente.sobrenome}">João Silva</strong>
-                                <small class="d-block text-muted" th:text="'Email: ' + ${pedido.cliente.email}">joao@email.com</small>
+                                <small style="display: block; color: var(--gwj-text-muted);" th:text="'Email: ' + ${pedido.cliente.email}">joao@email.com</small>
                             </div>
                             <!-- Se for Visitante -->
-                            <div class="col-md-6" th:if="${pedido.cliente == null}">
-                                <span class="text-muted d-block small">Visitante</span>
+                            <div class="gwj-form-col-6 gwj-form-group" th:if="${pedido.cliente == null}">
+                                <span class="gwj-label">Visitante</span>
                                 <strong th:text="${pedido.nomeVisitante}">Carlos Visitante</strong>
-                                <small class="d-block text-muted" th:text="'Telefone: ' + ${pedido.telefoneVisitante}">(11) 98888-8888</small>
+                                <small style="display: block; color: var(--gwj-text-muted);" th:text="'Telefone: ' + ${pedido.telefoneVisitante}">(11) 98888-8888</small>
                             </div>
                             
-                            <div class="col-md-6">
-                                <span class="text-muted d-block small">Status de Entrega</span>
-                                <span th:if="${pedido.status == 'Aguardando Retirada'}" class="badge bg-warning text-dark px-3 py-1">Aguardando Retirada</span>
-                                <span th:if="${pedido.status == 'Retirado'}" class="badge bg-success px-3 py-1">Retirado</span>
-                                <span th:if="${pedido.status == 'Cancelado'}" class="badge bg-danger px-3 py-1">Cancelado</span>
+                            <div class="gwj-form-col-6 gwj-form-group">
+                                <span class="gwj-label" style="margin-bottom: 4px;">Status de Entrega</span>
+                                <div>
+                                    <span th:if="${pedido.status == 'Aguardando Retirada'}" class="gwj-badge gwj-badge-warning">Aguardando Retirada</span>
+                                    <span th:if="${pedido.status == 'Retirado'}" class="gwj-badge gwj-badge-success">Retirado</span>
+                                    <span th:if="${pedido.status == 'Cancelado'}" class="gwj-badge gwj-badge-danger">Cancelado</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tabela de Itens Comprados -->
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="card-title mb-0 fw-bold">Produtos Selecionados</h5>
+                <div class="gwj-card">
+                    <div class="gwj-card-header">
+                        <h5 class="gwj-card-title">Produtos Selecionados</h5>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
+                    <div class="gwj-card-body gwj-p-0">
+                        <div class="gwj-table-responsive">
+                            <table class="gwj-table">
+                                <thead>
                                     <tr>
-                                        <th class="px-4 py-3" style="width: 80px;">Imagem</th>
-                                        <th class="py-3">Produto</th>
-                                        <th class="py-3 text-center" style="width: 120px;">Quantidade</th>
-                                        <th class="py-3 text-end" style="width: 140px;">Preço Unitário</th>
-                                        <th class="px-4 py-3 text-end" style="width: 150px;">Subtotal</th>
+                                        <th style="width: 80px;">Imagem</th>
+                                        <th>Produto</th>
+                                        <th class="gwj-text-center" style="width: 120px;">Quantidade</th>
+                                        <th class="gwj-text-end" style="width: 140px;">Preço Unitário</th>
+                                        <th class="gwj-text-end" style="width: 150px; padding-right: 2rem;">Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="item : ${pedido.itens}">
-                                        <td class="px-4">
+                                    <tr class="gwj-table-row" th:each="item : ${pedido.itens}">
+                                        <td>
                                             <img th:src="${item.produto != null and item.produto.imagem != null and item.produto.imagem != '' ? item.produto.imagem : '/img/no-image.png'}" 
                                                  th:alt="${item.nomeProduto}" 
-                                                 style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                                                 style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid var(--gwj-border-color);">
                                         </td>
                                         <td>
-                                            <span class="fw-semibold text-dark" th:text="${item.nomeProduto}">Nome do Produto</span>
-                                            <small class="d-block text-muted" th:text="${item.produto != null ? item.produto.marca : ''}">Marca</small>
+                                            <span style="font-weight: 600; color: var(--gwj-text-dark);" th:text="${item.nomeProduto}">Nome do Produto</span>
+                                            <small style="display: block; color: var(--gwj-text-muted);" th:text="${item.produto != null ? item.produto.marca : ''}">Marca</small>
                                         </td>
-                                        <td class="text-center fw-bold text-dark" th:text="${item.quantidade}">1</td>
-                                        <td class="text-end" th:text="'R$ ' + ${#numbers.formatDecimal(item.precoUnitario, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
-                                        <td class="px-4 text-end fw-bold text-dark" th:text="'R$ ' + ${#numbers.formatDecimal(item.getPrecoTotalItem(), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                                        <td class="gwj-text-center" style="font-weight: bold; color: var(--gwj-text-dark);" th:text="${item.quantidade}">1</td>
+                                        <td class="gwj-text-end" th:text="'R$ ' + ${#numbers.formatDecimal(item.precoUnitario, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                                        <td class="gwj-text-end" style="padding-right: 2rem; font-weight: bold; color: var(--gwj-text-dark);" th:text="'R$ ' + ${#numbers.formatDecimal(item.getPrecoTotalItem(), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <!-- Footer com o valor total -->
-                    <div class="card-footer bg-light py-3 px-4 d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-dark" style="font-size: 1.05rem;">Valor Total do Pedido</span>
-                        <span class="fw-bold text-primary" style="font-size: 1.3rem;" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+                    <div class="gwj-card-footer gwj-d-flex gwj-justify-between gwj-align-center">
+                        <span style="font-weight: bold; color: var(--gwj-text-dark); font-size: 1.05rem;">Valor Total do Pedido</span>
+                        <span style="font-weight: bold; color: var(--gwj-primary-color); font-size: 1.3rem;" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
                     </div>
                 </div>
 
             </div>
 
             <!-- Coluna Direita: Lógica de Status -->
-            <div class="col-lg-4">
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold text-dark mb-3">Atualizar Status</h5>
-                        <p class="text-muted small">Altere o status do pedido de acordo com o andamento da entrega ou desistência do cliente.</p>
+            <div>
+                <div class="gwj-card">
+                    <div class="gwj-card-body">
+                        <h5 class="gwj-card-title gwj-mb-3" style="font-size: 1.2rem;">Atualizar Status</h5>
+                        <p style="color: var(--gwj-text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">Altere o status do pedido de acordo com o andamento da entrega ou desistência do cliente.</p>
                         
-                        <form th:action="@{/MRYnZpAsC9sp/pedidos/atualizar-status}" method="POST">
+                        <form th:action="@{/MRYnZpAsC9sp/pedidos/atualizar-status}" method="POST" class="gwj-flex-column" style="gap: 1.5rem;">
                             <input type="hidden" name="id" th:value="${pedido.id}">
                             
-                            <div class="mb-3">
-                                <label for="statusSelect" class="form-label fw-semibold">Status do Pedido</label>
-                                <select id="statusSelect" name="status" class="form-select">
+                            <div class="gwj-form-group">
+                                <label for="statusSelect" class="gwj-label">Status do Pedido</label>
+                                <select id="statusSelect" name="status" class="gwj-select">
                                     <option value="Aguardando Retirada" th:selected="${pedido.status == 'Aguardando Retirada'}">Aguardando Retirada</option>
                                     <option value="Retirado" th:selected="${pedido.status == 'Retirado'}">Retirado</option>
                                     <option value="Cancelado" th:selected="${pedido.status == 'Cancelado'}">Cancelado</option>
                                 </select>
                             </div>
                             
-                            <button type="submit" class="btn btn-primary w-100">
+                            <button type="submit" class="gwj-btn gwj-btn-primary" style="width: 100%;">
                                 <i class="bi bi-save"></i> Atualizar Status
                             </button>
                         </form>
@@ -138,11 +140,11 @@
         </div>
 
         <!-- Pedido Não Encontrado -->
-        <div class="card shadow-sm border-0 p-5 text-center" th:if="${pedido == null}">
-            <i class="bi bi-exclamation-triangle display-4 text-warning mb-3"></i>
+        <div class="gwj-card gwj-p-5 gwj-text-center" th:if="${pedido == null}">
+            <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: var(--gwj-warning); display: block; margin-bottom: 1.5rem;"></i>
             <h3>Pedido não encontrado!</h3>
-            <p class="text-muted">Não foi possível carregar as informações deste pedido.</p>
-            <a th:href="@{/MRYnZpAsC9sp/pedidos}" class="btn btn-primary mt-2">Voltar para a Lista</a>
+            <p style="color: var(--gwj-text-muted); margin-bottom: 1.5rem;">Não foi possível carregar as informações deste pedido.</p>
+            <a th:href="@{/MRYnZpAsC9sp/pedidos}" class="gwj-btn gwj-btn-primary">Voltar para a Lista</a>
         </div>
 
     </main>

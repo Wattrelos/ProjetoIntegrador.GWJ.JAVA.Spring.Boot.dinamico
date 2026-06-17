@@ -1,73 +1,73 @@
 <!-- Fragmento da Sidebar Administrativa Estilo E-commerce -->
-<aside id="sidebar" class="shadow-sm" th:fragment="sidebar">
-    <h6 class="text-muted text-uppercase mb-3 mt-2">Menu Principal</h6>
-    <ul class="nav flex-column mb-auto">
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/}" class="nav-link text-dark fw-bold">
-                <i class="bi bi-speedometer2 me-2 text-primary"></i> Painel de controle
+<aside id="sidebar" class="gwj-sidebar" th:fragment="sidebar">
+    <h6 class="gwj-sidebar-title">Menu Principal</h6>
+    <ul class="gwj-sidebar-nav">
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.endsWith('/MRYnZpAsC9sp/')} ? 'gwj-active' : ''">
+                <i class="bi bi-speedometer2"></i> Painel de controle
             </a>
         </li>
-        <li class="nav-item mt-3">
-            <h6 class="text-muted text-uppercase mb-2" style="font-size: 0.8rem;">Gerenciar Entidades</h6>
+        <li>
+            <h6 class="gwj-sidebar-title" style="margin-top: 1rem; margin-bottom: 0.5rem;">Gerenciar Entidades</h6>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Cliente}" class="nav-link text-dark">
-                <i class="bi bi-people me-2"></i> Clientes
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Cliente}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Cliente')} ? 'gwj-active' : ''">
+                <i class="bi bi-people"></i> Clientes
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Endereco}" class="nav-link text-dark">
-                <i class="bi bi-geo-alt me-2"></i> Endereços
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Endereco}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Endereco')} ? 'gwj-active' : ''">
+                <i class="bi bi-geo-alt"></i> Endereços
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Agenda}" class="nav-link text-dark">
-                <i class="bi bi-calendar-check me-2"></i> Agendas (Antigo)
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Agenda}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Agenda') and !requestURI.contains('Agendamento')} ? 'gwj-active' : ''">
+                <i class="bi bi-calendar-check"></i> Agendas (Antigo)
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Agendamento}" class="nav-link text-dark">
-                <i class="bi bi-calendar-event me-2 text-success"></i> Agendamentos
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Agendamento}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Agendamento')} ? 'gwj-active' : ''">
+                <i class="bi bi-calendar-event"></i> Agendamentos
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/DiasFuncionamento}" class="nav-link text-dark">
-                <i class="bi bi-calendar-range me-2 text-info"></i> Dias de Funcionamento
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/DiasFuncionamento}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/DiasFuncionamento')} ? 'gwj-active' : ''">
+                <i class="bi bi-calendar-range"></i> Dias de Funcionamento
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/GradeHorarios}" class="nav-link text-dark">
-                <i class="bi bi-clock me-2 text-warning"></i> Grade de Horários
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/GradeHorarios}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/GradeHorarios')} ? 'gwj-active' : ''">
+                <i class="bi bi-clock"></i> Grade de Horários
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Produto}" class="nav-link text-dark">
-                <i class="bi bi-box me-2"></i> Produtos
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Produto}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Produto')} ? 'gwj-active' : ''">
+                <i class="bi bi-box"></i> Produtos
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/pedidos}" class="nav-link text-dark">
-                <i class="bi bi-receipt me-2"></i> Pedidos
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/pedidos}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/pedidos')} ? 'gwj-active' : ''">
+                <i class="bi bi-receipt"></i> Pedidos
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Profissional}" class="nav-link text-dark">
-                <i class="bi bi-person-badge me-2"></i> Profissionais
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Profissional}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Profissional')} ? 'gwj-active' : ''">
+                <i class="bi bi-person-badge"></i> Profissionais
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Servico}" class="nav-link text-dark">
-                <i class="bi bi-scissors me-2"></i> Serviços
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Servico}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Servico')} ? 'gwj-active' : ''">
+                <i class="bi bi-scissors"></i> Serviços
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Usuario}" class="nav-link text-dark">
-                <i class="bi bi-person-circle me-2"></i> Usuários
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Usuario}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Usuario')} ? 'gwj-active' : ''">
+                <i class="bi bi-person-circle"></i> Usuários
             </a>
         </li>
-        <li class="nav-item">
-            <a th:href="@{/MRYnZpAsC9sp/listar/Setting}" class="nav-link text-dark">
-                <i class="bi bi-gear me-2 text-secondary"></i> Configurações
+        <li>
+            <a th:href="@{/MRYnZpAsC9sp/listar/Setting}" class="gwj-sidebar-link" th:classappend="${requestURI != null and requestURI.contains('/listar/Setting')} ? 'gwj-active' : ''">
+                <i class="bi bi-gear"></i> Configurações
             </a>
         </li>
     </ul>
