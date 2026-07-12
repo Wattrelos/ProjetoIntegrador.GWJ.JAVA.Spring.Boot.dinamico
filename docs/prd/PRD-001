@@ -1,0 +1,92 @@
+# 📋 Product Requirement Document (PRD) - GWJ para Tgo's Barbearia
+
+| Informações Gerais | Detalhes |
+| :--- | :--- |
+| **Status** | Em Desenvolvimento |
+| **Versão** | 1.0.0 (Adaptado à Realidade do Projeto Java) |
+| **Autor** | Grupo GWJ / IA Antigravity |
+| **Data** | 12/07/2026 |
+
+---
+
+## 1. Visão Geral do Produto
+O **Sistema GWJ para Tgo's Barbearias** é uma plataforma web responsiva desenvolvida para automatizar o processo de agendamento de serviços de beleza masculina da barbearia. O sistema substitui o controle manual (agenda de papel ou mensagens soltas no WhatsApp) por uma solução integrada, permitindo aos clientes agendarem seus próprios horários e dando aos profissionais e administradores o controle total sobre a agenda e os serviços.
+
+### 1.1 Objetivos de Negócio
+* **Automação de Agendamento:** Eliminar gargalos no agendamento manual, reduzindo em pelo menos 70% o tempo administrativo gasto pelos barbeiros gerenciando horários no WhatsApp.
+* **Experiência do Cliente:** Oferecer um fluxo de reserva intuitivo e rápido, permitindo que o cliente finalize um agendamento de forma autônoma em menos de 1 minuto.
+* **Redução de No-Shows (Faltas):** Minimizar ausências por esquecimento através de notificações de lembrete enviadas de forma automatizada antes do horário marcado.
+* **Gestão Centralizada:** Prover controle de faturamento, serviços, permissões de usuários e estoque de produtos em um único banco de dados.
+
+---
+
+## 2. Personas (Públicos-Alvo)
+
+### 2.1 Persona 1: O Cliente (Lucas, 26 anos)
+* **Perfil:** Jovem profissional, rotina corrida, prefere resolver tudo online sem precisar ligar ou esperar respostas no WhatsApp.
+* **Dor:** Fica frustrado quando quer cortar o cabelo no sábado e precisa esperar horas por uma resposta do barbeiro no WhatsApp. Quer praticidade para ver horários livres e escolher o seu barbeiro preferido de forma imediata.
+
+### 2.2 Persona 2: O Barbeiro/Profissional (Carlos, 32 anos)
+* **Perfil:** Barbeiro especialista em cortes modernos (Fade). Foca na qualidade técnica do serviço, mas se perde na gestão manual de seus agendamentos.
+* **Dor:** Perde tempo produtivo respondendo mensagens no WhatsApp entre um corte e outro. Eventualmente esquece de anotar compromissos ou anota horários errados, gerando double-booking.
+
+### 2.3 Persona 3: O Administrador/Dono da Barbearia (Pedro, 45 anos)
+* **Perfil:** Gestor do negócio. Precisa acompanhar a receita estimada, gerenciar o catálogo de serviços, preços, profissionais cadastrados e estoque de produtos (loções, pomadas, shampoos).
+* **Dor:** Falta de relatórios confiáveis sobre o faturamento diário/semanal e dificuldade para controlar a comissão dos profissionais de forma ágil.
+
+---
+
+## 3. Escopo do MVP (Requisitos do Produto)
+
+### 3.1 Requisitos Funcionais (RF)
+O sistema implementa as seguintes funcionalidades principais estruturadas sob o banco de dados `gwj5`:
+
+* **RF01 - Catálogo Dinâmico de Serviços:** Exibir no frontend os serviços cadastrados na tabela `tab_servico` (Corte de Cabelo, Barba, Combos, etc.), contendo nome, descrição, preço, duração (minutos) e imagem.
+* **RF02 - Motor de Busca e Grade de Horários:** Cruzar a duração do serviço escolhido com a agenda livre do barbeiro selecionado (tabela `tab_profissional`), consultando a tabela `tab_agendamento` para apresentar somente janelas de horários válidas e livres.
+* **RF03 - Fluxo de Agendamento Autônomo (Caminho Feliz):**
+  * **Página Inicial (`home.html`):** Apresentação da marca, destaques de serviços e atalho para agendamento.
+  * **Agendamento (`servicos.html`):** Seleção do serviço, profissional, data (via calendário) e horário livre.
+  * **Checkout (`checkout.html` / `carrinho-checkout.html`):** Identificação do cliente (Nome, Sobrenome, E-mail, WhatsApp) e escolha de método de pagamento (Presencial em Dinheiro/Pix ou Simulação de Cartão).
+  * **Confirmação (`order-confirmation.html` / `compra-confirmada.html`):** Exibição dos detalhes da reserva (número gerado, profissional, data/hora e total) e instruções de tolerância.
+* **RF04 - Cadastro e Autenticação de Usuários:** Cadastro estruturado na tabela `tab_usuario` e `tab_cliente`, separando perfis (Cliente, Barbeiro, Recepcionista, Administrador) na tabela `tab_perfil` para controle de acessos e permissões (`tab_permissao`).
+* **RF05 - Módulo de Lembretes Automáticos:** Robô/Serviço Java integrado que analisa a tabela `tab_agendamento` e dispara lembretes via WhatsApp ou e-mail de forma programada.
+* **RF06 - Painel Administrativo Simplificado:** Interface para os administradores gerenciarem profissionais, serviços, estoque de produtos (`tab_produto`) e visualizarem o faturamento estimado.
+
+### 3.2 Requisitos Não-Funcionais (RNF)
+* **RNF01 - Responsividade (Mobile-First):** O frontend deve ser totalmente adaptável a dispositivos móveis, utilizando um design system customizado em CSS vanilla (`style.css`), com tipografia moderna e visual premium.
+* **RNF02 - Desempenho:** A consulta de grade de horários disponíveis deve carregar na tela em menos de 1.2 segundos.
+* **RNF03 - Consistência e Prevenção de Concorrência:** O banco de dados deve utilizar transações seguras (no motor InnoDB do MySQL) para impedir que a mesma vaga de horário de um profissional seja agendada simultaneamente por dois clientes (double-booking).
+* **RNF04 - Compatibilidade Tecnológica:** Execução limpa em Java 21 com Spring Boot 3.2.5 e MySQL/MariaDB (utilizando driver JDBC mariadb-java-client).
+
+---
+
+## 4. Arquitetura e Engenharia (Realidade Técnica do Projeto)
+
+### 4.1 Stack Tecnológica
+* **Frontend:** HTML5, CSS3, e JavaScript Vanilla estruturado com templates do motor **Thymeleaf** (usando layouts comuns localizados em `/templates/layouts` para cabeçalhos e rodapés reutilizáveis). A paleta de cores, tipografia e espaçamentos seguem o arquivo de estilos [/css/style.css](file:///home/kiruma/Documentos/Projetos_JAVA_SpringBoot/ProjetoIntegrador.GWJ.JAVA.Spring.Boot.dinamico/src/main/resources/static/css/style.css).
+* **Backend:** **Java 21** e **Spring Boot 3.2.5** (Spring MVC). Utiliza arquitetura desacoplada em Controllers (HTTP/JSON), Serviços (Regras de Negócio e Transações) e Repositórios (Contratos de Dados).
+* **Camada de Persistência:** Implementação customizada de **DataAccessObject (DAO)** e **DataMapper** em Java puro usando reflexão e JDBC direto (sem Hibernate), garantindo controle total do ciclo de vida das conexões e transações via **Unit of Work** acoplado a `ThreadLocal`.
+* **Banco de Dados:** MySQL / MariaDB (schema `gwj5` populado via arquivo [gwj5.sql](file:///home/kiruma/Documentos/Projetos_JAVA_SpringBoot/ProjetoIntegrador.GWJ.JAVA.Spring.Boot.dinamico/gwj5.sql)).
+* **Envio de Lembretes:** Serviço programado Java (ex: `@Scheduled`) executando na JVM para disparar as notificações transacionais de forma automatizada.
+
+### 4.2 Principais Tabelas do Banco de Dados (`gwj5`)
+* `tab_usuario`: Armazena credenciais, e-mails, senhas (criptografadas) e associação de perfil.
+* `tab_cliente`: Vinculado a `tab_usuario` para armazenar nome, telefone/WhatsApp e CPF do cliente.
+* `tab_profissional`: Armazena os dados dos barbeiros cadastrados no sistema.
+* `tab_servico`: Catálogo de serviços com preço, duração (minutos) e status ativo/inativo.
+* `tab_agendamento`: Registra os horários reservados, guardando o cliente, profissional, serviço, data, hora de início/fim e o status (Confirmado/Cancelado).
+* `tab_perfil` e `tab_permissao`: Controle granular de autorizações para cada tipo de usuário no painel administrativo, mapeado via tabela associativa N:N `tab_perfil_permissao`.
+* `tab_produto`, `tab_pedidos` e `tab_itens_pedido`: Estrutura do e-commerce/loja de produtos integrado à barbearia para compra de produtos cosméticos masculinos.
+* `tab_dias_funcionamento` e `tab_grade_horarios`: Armazena as faixas horárias e dias da semana em que a barbearia funciona e oferece horários válidos.
+* `tab_endereco`, `tab_cliente_endereco` e `tab_profissional_endereco`: Mapeamento de múltiplos endereços para clientes e profissionais através de tabelas associativas.
+
+---
+
+## 5. Riscos e Dependências
+
+| Risco Identificado | Impacto | Estratégia de Mitigação |
+| :--- | :--- | :--- |
+| **Erros de concorrência em horários próximos** | Alto | Controle rígido de isolamento de transações JDBC usando o padrão `UnitOfWork` no banco de dados para impedir double-booking. |
+| **Cadastro de telefones inválidos pelo cliente** | Médio | Validação com máscara de telefone (regex) no frontend via `masks.js` e validações de integridade no serviço Java. |
+| **Bloqueio de número no envio de notificações** | Médio | Utilização das notificações estritamente para envio transacional (notificação única por cliente) com delays apropriados se necessário. |
+| **Inconsistência entre duração do serviço e slots livres** | Alto | O algoritmo implementado no `AgendamentoService` cruza `tab_servico.duracao` para garantir que o profissional selecionado tem blocos contínuos suficientes na data desejada. |

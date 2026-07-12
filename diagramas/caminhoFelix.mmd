@@ -1,0 +1,45 @@
+stateDiagram-v2
+    direction TB
+    
+    %% Início da Jornada
+    [*] --> AcessarHome: Entrar no site (home.php)
+
+    %% Página Inicial
+    state AcessarHome {
+        [*] --> VisualizarCapa
+        VisualizarCapa --> ClicarAgendar: Botão "Agendar Agora"
+        VisualizarCapa --> ExplorarServicos: Rolar a página
+        ExplorarServicos --> ClicarAgendar: Botão "Agendar" no Card
+    }
+
+    ClicarAgendar --> PaginaAgendamento: Redirecionamento
+
+    %% Página de Serviços/Agendamento
+    state PaginaAgendamento {
+        [*] --> EscolherServico: Selecionar o Corte/Barba
+        EscolherServico --> EscolherProfissional: Selecionar o Barbeiro
+        EscolherProfissional --> EscolherData: Selecionar o dia no calendário
+        EscolherData --> EscolherHorario: Clicar em um horário disponível
+        EscolherHorario --> ClicarConfirmarPagar: Botão "Confirmar e Pagar"
+    }
+
+    ClicarConfirmarPagar --> PaginaCheckout: Redirecionamento
+
+    %% Página de Checkout
+    state PaginaCheckout {
+        [*] --> PreencherDados: Nome, E-mail e Telefone
+        PreencherDados --> ConferirResumo: Conferir valores à direita
+        ConferirResumo --> EscolherPagamento: Cartão de Crédito ou Presencial
+        EscolherPagamento --> ClicarConfirmarReserva: Botão "Confirmar Reserva"
+    }
+
+    ClicarConfirmarReserva --> PaginaConfirmacao: Processando pedido
+
+    %% Página de Confirmação (Sucesso)
+    state PaginaConfirmacao {
+        [*] --> VisualizarRecibo: Ver número do pedido e horário
+        VisualizarRecibo --> LerInstrucoes: Ler regras de tolerância de atraso
+        LerInstrucoes --> VoltarInicio: Botão "Voltar para o Início" (Opcional)
+    }
+
+    LerInstrucoes --> [*]: Fim do Fluxo

@@ -1,0 +1,239 @@
+@startuml EER Diagram - GWJ Tgo's Barbearia
+
+' --- Estilização Visual do EER ---
+skinparam theme cerulean
+skinparam Linetype ortho
+skinparam roundcorner 5
+skinparam Shadowing true
+skinparam packageStyle Frame
+skinparam defaultFontName "Helvetica"
+skinparam defaultFontSize 12
+
+title Diagrama Entidade-Relacionamento Estendido (EER) - GWJ Tgo's Barbearia
+
+' --- Pacote de Domínio / Tabelas ---
+
+package "Autenticação e Acesso" {
+  entity "tab_usuario" as tab_usuario {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    * perfil_id : BIGINT <<FK>>
+    * nome_usuario : VARCHAR(50) <<UNIQUE>>
+    * email : VARCHAR(100) <<UNIQUE>>
+    * senha : VARCHAR(255)
+    * status : TINYINT(1) [DEFAULT 1]
+    token : VARCHAR(255)
+    ip : VARCHAR(45)
+    data_cadastro : DATETIME [DEFAULT CURRENT_TIMESTAMP]
+  }
+
+  entity "tab_perfil" as tab_perfil {
+    * id : INT <<PK>> <<AutoIncrement>>
+    --
+    * nome : VARCHAR(50) <<UNIQUE>>
+  }
+
+  entity "tab_permissao" as tab_permissao {
+    * id : INT <<PK>> <<AutoIncrement>>
+    --
+    * nome : VARCHAR(100) <<UNIQUE>>
+    descricao : VARCHAR(255)
+  }
+
+  entity "tab_perfil_permissao" as tab_perfil_permissao {
+    * perfil_id : INT <<PK>> <<FK>>
+    * permissao_id : INT <<PK>> <<FK>>
+  }
+}
+
+package "Pessoas e Especializações" {
+  entity "tab_cliente" as tab_cliente {
+    * id : BIGINT <<PK>> <<FK>>
+    --
+    * nome : VARCHAR(100)
+    sobrenome : VARCHAR(100)
+    telefone : VARCHAR(20)
+    cpf : VARCHAR(14) <<UNIQUE>>
+    observacao : TEXT
+  }
+
+  entity "tab_profissional" as tab_profissional {
+    * id : BIGINT <<PK>> <<FK>>
+    --
+    * nome : VARCHAR(100)
+    sobrenome : VARCHAR(100)
+    telefone : VARCHAR(20)
+    cpf : VARCHAR(14) <<UNIQUE>>
+    observacao : TEXT
+  }
+
+  entity "tab_endereco" as tab_endereco {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    nome : VARCHAR(100)
+    logradouro : VARCHAR(200)
+    numero : INT
+    complemento : VARCHAR(100)
+    bairro : VARCHAR(100)
+    cidade : VARCHAR(100)
+    estado : CHAR(2)
+    cep : VARCHAR(10)
+    data_cadastro : DATETIME
+    observacao : TEXT
+  }
+
+  entity "tab_cliente_endereco" as tab_cliente_endereco {
+    * cliente_id : BIGINT <<PK>> <<FK>>
+    * endereco_id : BIGINT <<PK>> <<FK>>
+  }
+
+  entity "tab_profissional_endereco" as tab_profissional_endereco {
+    * profissional_id : BIGINT <<PK>> <<FK>>
+    * endereco_id : BIGINT <<PK>> <<FK>>
+  }
+}
+
+package "Agendamentos e Horários" {
+  entity "tab_servico" as tab_servico {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    * nome : VARCHAR(100)
+    descricao : VARCHAR(255)
+    * preco : DECIMAL(10,2)
+    duracao : INT (Minutos)
+    tipo : VARCHAR(50)
+    ativo : TINYINT(1) [DEFAULT 1]
+    imagem : VARCHAR(255)
+  }
+
+  entity "tab_dias_funcionamento" as tab_dias_funcionamento {
+    * id : INT <<PK>> <<AutoIncrement>>
+    --
+    * dia_semana : INT (1-7)
+    * nome : VARCHAR(14)
+    aberto : TINYINT(1) [DEFAULT 1]
+    horario_inicio : TIME
+    horario_fim : TIME
+  }
+
+  entity "tab_grade_horarios" as tab_grade_horarios {
+    * id : INT <<PK>> <<AutoIncrement>>
+    --
+    dia_funcionamento_id : INT <<FK>>
+    * horario_inicio : TIME
+    * horario_fim : TIME
+  }
+
+  entity "tab_agendamento" as tab_agendamento {
+    * id : INT <<PK>> <<AutoIncrement>>
+    --
+    * cliente_nome : VARCHAR(100)
+    cliente_telefone : VARCHAR(20)
+    * profissional_id : INT <<FK>>
+    * servico_id : INT <<FK>>
+    * data_agendamento : DATE
+    * hora_inicio : TIME
+    * hora_fim : TIME
+    status : VARCHAR(20) [DEFAULT 'Confirmado']
+    created_at : TIMESTAMP
+    grade_horarios_id : INT <<FK>>
+  }
+
+  entity "tab_agenda" as tab_agenda {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    nome : VARCHAR(100)
+    data : DATETIME
+    cliente_id : BIGINT <<FK>>
+    profissional_id : BIGINT <<FK>>
+  }
+
+  entity "tab_agenda_servico" as tab_agenda_servico {
+    * agenda_id : BIGINT <<PK>> <<FK>>
+    * servico_id : BIGINT <<PK>> <<FK>>
+  }
+}
+
+package "E-Commerce / Loja" {
+  entity "tab_produto" as tab_produto {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    * nome : VARCHAR(150)
+    descricao : TEXT
+    * preco : DECIMAL(10,2)
+    estoque : INT [DEFAULT 0]
+    marca : VARCHAR(100)
+    categoria : VARCHAR(50)
+    data_cadastro : DATETIME
+    imagem : VARCHAR(255)
+  }
+
+  entity "tab_pedidos" as tab_pedidos {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    cliente_id : BIGINT <<FK>>
+    nome_visitante : VARCHAR(100)
+    telefone_visitante : VARCHAR(20)
+    data_pedido : TIMESTAMP
+    forma_pagamento : VARCHAR(50)
+    status : VARCHAR(50)
+    * valor_total : DECIMAL(10,2)
+  }
+
+  entity "tab_itens_pedido" as tab_itens_pedido {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    * pedido_id : BIGINT <<FK>>
+    * produto_id : BIGINT <<FK>>
+    * nome_produto : VARCHAR(150)
+    * quantidade : INT
+    * preco_unitario : DECIMAL(10,2)
+    * preco_total_item : DECIMAL(10,2)
+  }
+}
+
+package "Configurações Globais" {
+  entity "tab_setting" as tab_setting {
+    * id : BIGINT <<PK>> <<AutoIncrement>>
+    --
+    * chave : VARCHAR(255) <<UNIQUE>>
+    valor : TEXT
+  }
+}
+
+' --- Relacionamentos e Herança (EER) ---
+
+' Herança (Joined Inheritance)
+tab_usuario <|-- tab_cliente : "Especialização (id)"
+tab_usuario <|-- tab_profissional : "Especialização (id)"
+
+' Acesso e Perfis
+tab_perfil ||--o{ tab_usuario : "perfil_id"
+tab_perfil ||--|{ tab_perfil_permissao : "perfil_id"
+tab_permissao ||--|{ tab_perfil_permissao : "permissao_id"
+
+' Endereços N:M
+tab_cliente ||--|{ tab_cliente_endereco : "cliente_id"
+tab_endereco ||--|{ tab_cliente_endereco : "endereco_id"
+
+tab_profissional ||--|{ tab_profissional_endereco : "profissional_id"
+tab_endereco ||--|{ tab_profissional_endereco : "endereco_id"
+
+' Agendamento e Grade
+tab_dias_funcionamento ||--o{ tab_grade_horarios : "dia_funcionamento_id"
+tab_grade_horarios ||--o{ tab_agendamento : "grade_horarios_id"
+tab_profissional ||--o{ tab_agendamento : "profissional_id"
+tab_servico ||--o{ tab_agendamento : "servico_id"
+
+' Agenda Histórica / de Controle
+tab_cliente ||--o{ tab_agenda : "cliente_id"
+tab_profissional ||--o{ tab_agenda : "profissional_id"
+tab_agenda ||--|{ tab_agenda_servico : "agenda_id"
+tab_servico ||--|{ tab_agenda_servico : "servico_id"
+
+' Pedidos e Itens (E-Commerce)
+tab_cliente ||--o{ tab_pedidos : "cliente_id"
+tab_pedidos ||--|{ tab_itens_pedido : "pedido_id"
+tab_produto ||--o{ tab_itens_pedido : "produto_id"
+
+@enduml
