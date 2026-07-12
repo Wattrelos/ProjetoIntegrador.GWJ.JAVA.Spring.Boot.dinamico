@@ -8,6 +8,7 @@ import com.gwj.model.domain.entities.Setting;
 import com.gwj.model.domain.Carrinho;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,14 @@ public class GlobalAttributesAdvice {
 
     @Autowired
     private HttpSession session;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @ModelAttribute("requestURI")
+    public String getRequestURI() {
+        return request.getRequestURI();
+    }
 
     @ModelAttribute("carrinho")
     public Carrinho getCarrinho() {

@@ -1,118 +1,92 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://ultraq.net.nz" layout:decorate="~{layouts/main-layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - Barbearia GWJ</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Script de máscaras e script de validação customizado -->
     <script th:src="@{/js/masks.js}" defer></script>
-    <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/validation.js}" defer></script>
 </head>
+
 <body>
+    <section layout:fragment="content">
+        <div class="cadastro-container">
+            <div class="cadastro-card">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h2 class="logo-title" style="font-weight: bold; color: var(--text-main); margin-bottom: 0.25rem; font-size: 1.8rem;">Tgo's <span>Barbearia</span></h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">Crie a sua conta de cliente</p>
+                </div>
 
-    <div class="cadastro-container">
-        <div class="cadastro-card">
-            <div class="text-center mb-4">
-                <h2 class="logo-title fw-bold text-dark mb-1">Tgo's <span>Barbearia</span></h2>
-                <p class="text-muted">Crie a sua conta de cliente</p>
-            </div>
+                <!-- Exibe o alerta de erro se houver algum problema -->
+                <div th:if="${erro != null}" class="custom-alert-danger" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 0.8rem; border-radius: 6px; text-align: center; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    <span th:text="${erro}">Erro ao cadastrar.</span>
+                </div>
 
-            <!-- Exibe o alerta de erro se houver algum problema -->
-            <div th:if="${erro != null}" class="alert alert-danger text-center py-2" role="alert">
-                <span th:text="${erro}">Erro ao cadastrar.</span>
-            </div>
+                <!-- Alerta de senhas diferentes no frontend -->
+                <div id="passwordAlert" class="custom-alert-danger d-none" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 0.8rem; border-radius: 6px; text-align: center; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    As senhas informadas não coincidem.
+                </div>
 
-            <!-- Alerta de senhas diferentes no frontend -->
-            <div id="passwordAlert" class="alert alert-danger text-center py-2 d-none" role="alert">
-                As senhas informadas não coincidem.
-            </div>
+                <!-- Formulário de Cadastro -->
+                <form id="cadastroForm" th:action="@{/cadastro}" method="post" class="flex-col gap-1-5 needs-validation" novalidate>
 
-            <!-- Formulário de Cadastro -->
-            <form id="cadastroForm" th:action="@{/cadastro}" method="post" class="needs-validation" novalidate>
-                
-                <div class="row">
-                    <!-- Campo Nome -->
-                    <div class="col-md-6 mb-3">
-                        <label for="nome" class="form-label fw-semibold">Nome</label>
-                        <input type="text" class="form-control" id="nome" name="nome" th:value="${nome}" placeholder="João" required>
+                    <div class="custom-form-row">
+                        <!-- Campo Nome -->
+                        <div class="custom-form-group" style="flex: 1; min-width: 200px;">
+                            <label for="nome" class="custom-label">Nome</label>
+                            <input type="text" class="custom-input" id="nome" name="nome" th:value="${nome}"
+                                placeholder="João" required>
+                        </div>
+
+                        <!-- Campo Sobrenome -->
+                        <div class="custom-form-group" style="flex: 1; min-width: 200px;">
+                            <label for="sobrenome" class="custom-label">Sobrenome</label>
+                            <input type="text" class="custom-input" id="sobrenome" name="sobrenome"
+                                th:value="${sobrenome}" placeholder="Silva" required>
+                        </div>
                     </div>
-                    
-                    <!-- Campo Sobrenome -->
-                    <div class="col-md-6 mb-3">
-                        <label for="sobrenome" class="form-label fw-semibold">Sobrenome</label>
-                        <input type="text" class="form-control" id="sobrenome" name="sobrenome" th:value="${sobrenome}" placeholder="Silva" required>
+
+                    <!-- Campo E-mail -->
+                    <div class="custom-form-group">
+                        <label for="email" class="custom-label">E-mail</label>
+                        <input type="email" class="custom-input" id="email" name="email" th:value="${email}"
+                            placeholder="seu@email.com" required>
                     </div>
-                </div>
 
-                <!-- Campo E-mail -->
-                <div class="mb-3">
-                    <label for="email" class="form-label fw-semibold">E-mail</label>
-                    <input type="email" class="form-control" id="email" name="email" th:value="${email}" placeholder="seu@email.com" required>
-                </div>
-                
-                <!-- Campo Telefone -->
-                <div class="mb-3">
-                    <label for="telefone" class="form-label fw-semibold">Telefone / WhatsApp</label>
-                    <input type="tel" class="form-control" id="telefone" name="telefone" th:value="${telefone}" placeholder="(11) 99999-9999" required>
-                </div>
+                    <!-- Campo Telefone -->
+                    <div class="custom-form-group">
+                        <label for="telefone" class="custom-label">Telefone / WhatsApp</label>
+                        <input type="tel" class="custom-input" id="telefone" name="telefone" th:value="${telefone}"
+                            placeholder="(11) 99999-9999" required>
+                    </div>
 
-                <!-- Campo Senha -->
-                <div class="mb-3">
-                    <label for="senha" class="form-label fw-semibold">Senha</label>
-                    <input type="password" class="form-control" id="senha" name="senha" placeholder="Crie uma senha forte" required>
-                </div>
+                    <!-- Campo Senha -->
+                    <div class="custom-form-group">
+                        <label for="senha" class="custom-label">Senha</label>
+                        <input type="password" class="custom-input" id="senha" name="senha"
+                            placeholder="Crie uma senha forte" required>
+                    </div>
 
-                <!-- Campo Confirmar Senha -->
-                <div class="mb-4">
-                    <label for="confirmarSenha" class="form-label fw-semibold">Confirmar Senha</label>
-                    <input type="password" class="form-control" id="confirmarSenha" placeholder="Repita a senha criada" required>
-                </div>
-                
-                <!-- Botão de Enviar -->
-                <div class="d-grid mb-3">
-                    <button type="submit" class="btn btn-theme btn-lg py-2">Criar Conta</button>
-                </div>
+                    <!-- Campo Confirmar Senha -->
+                    <div class="custom-form-group">
+                        <label for="confirmarSenha" class="custom-label">Confirmar Senha</label>
+                        <input type="password" class="custom-input" id="confirmarSenha"
+                            placeholder="Repita a senha criada" required>
+                    </div>
 
-                <div class="text-center mt-3">
-                    <span class="text-muted">Já tem uma conta?</span>
-                    <a th:href="@{/login}" class="fw-bold text-decoration-none text-dark" style="border-bottom: 2px solid #d4af37;">Fazer Login</a>
-                </div>
-                
-            </form>
+                    <!-- Botão de Enviar -->
+                    <div style="margin-top: 0.5rem;">
+                        <button type="submit" class="btn btn-theme" style="width: 100%; border: none; cursor: pointer; padding: 1rem; font-size: 1.05rem;">Criar Conta</button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 0.5rem; font-size: 0.95rem;">
+                        <span style="color: var(--text-muted);">Já tem uma conta?</span>
+                        <a th:href="@{/login}" style="font-weight: bold; text-decoration: none; color: var(--text-main); border-bottom: 2px solid var(--primary-color);">Fazer Login</a>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <!-- Script de validação local do formulário -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('cadastroForm');
-            const senha = document.getElementById('senha');
-            const confirmarSenha = document.getElementById('confirmarSenha');
-            const passwordAlert = document.getElementById('passwordAlert');
-
-            form.addEventListener('submit', (event) => {
-                let valid = true;
-                
-                // Valida se as senhas coincidem
-                if (senha.value !== confirmarSenha.value) {
-                    passwordAlert.classList.remove('d-none');
-                    confirmarSenha.classList.add('is-invalid');
-                    valid = false;
-                } else {
-                    passwordAlert.classList.add('d-none');
-                    confirmarSenha.classList.remove('is-invalid');
-                }
-
-                if (!form.checkValidity() || !valid) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                form.classList.add('was-validated');
-            }, false);
-        });
-    </script>
+    </section>
 </body>
+
 </html>

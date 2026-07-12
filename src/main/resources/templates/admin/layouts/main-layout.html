@@ -2,9 +2,6 @@
 <html xmlns:th="http://thymeleaf.org" 
     xmlns:layout="http://ultraq.net.nz">
 <head>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    
     <!-- 1. CSS de uso geral (carrega primeiro) -->
     <link rel="stylesheet" th:href="@{/css/styles-admin.css}">
     
@@ -13,24 +10,20 @@
     
     <!-- Ícones do Bootstrap (para a Sidebar) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
 </head>
 <body>
     <!-- Chama o HTML do header aqui no BODY -->
     <div th:replace="~{admin/fragments/header :: header}"></div>
         
-    <div class="content-wrapper"> 
+    <div class="gwj-content-wrapper"> 
 
         <!-- Chama o fragmento da Sidebar -->
         <th:block th:replace="~{admin/fragments/sidebar :: sidebar}"></th:block>
 
         <!-- Área principal onde o conteúdo será injetado pelo Thymeleaf Layout -->
-        <main class="main-content bg-light shadow-inner" layout:fragment="content">
+        <main class="gwj-main-content" layout:fragment="content">
             <!-- Conteúdo principal sempre aparece -->
         </main>
     </div>
-
-    <!-- Bootstrap Bundle with Popper (JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

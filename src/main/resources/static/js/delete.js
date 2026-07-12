@@ -6,8 +6,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Se o modal não existir na página, encerra a execução do script
     if (!deleteModalElement) return;
     
-    // Instancia o modal usando a API do Bootstrap 5
-    const deleteModal = new bootstrap.Modal(deleteModalElement);
+    // Funções de controle do Modal Customizado
+    function showModal() {
+        deleteModalElement.classList.add('gwj-modal-show');
+    }
+    
+    function hideModal() {
+        deleteModalElement.classList.remove('gwj-modal-show');
+    }
+    
+    // Fecha o modal ao clicar em elementos com data-gwj-dismiss="modal"
+    const closeButtons = deleteModalElement.querySelectorAll('[data-gwj-dismiss="modal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', hideModal);
+    });
     
     // Variáveis para armazenar o ID e a Entidade temporariamente
     let currentId = null;
@@ -26,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentEntity = this.getAttribute('data-entity');
             
             // Abre o modal
-            deleteModal.show();
+            showModal();
         });
     });
     
@@ -48,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.reload();
             } else {
                 alert('Erro ao tentar excluir o registro. Ele pode estar sendo utilizado em outra tabela.');
-                deleteModal.hide();
+                hideModal();
                 confirmDeleteBtn.disabled = false;
                 confirmDeleteBtn.innerText = "Sim, Excluir";
             }

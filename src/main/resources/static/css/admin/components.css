@@ -1,0 +1,417 @@
+/* Header Administrativo */
+.gwj-header {
+    background-color: var(--gwj-bg-dark);
+    height: 70px;
+    border-bottom: 1px solid var(--gwj-bg-dark-secondary);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.gwj-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.gwj-header-logo img {
+    max-height: 40px;
+    object-fit: contain;
+}
+
+.gwj-header-logo a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #ffffff;
+}
+
+.gwj-header-logo span {
+    color: var(--gwj-primary-color);
+}
+
+.gwj-navbar {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.gwj-navbar a {
+    color: #e5e0d8;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.gwj-navbar a:hover {
+    color: var(--gwj-primary-color);
+}
+
+/* Sidebar Administrativa */
+.gwj-sidebar {
+    width: 260px;
+    background-color: var(--gwj-bg-dark);
+    border-right: 1px solid var(--gwj-bg-dark-secondary);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    min-height: calc(100vh - 70px);
+}
+
+.gwj-sidebar-title {
+    color: var(--gwj-text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+}
+
+.gwj-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.gwj-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.75rem 1rem;
+    color: #a0a5b5;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.gwj-sidebar-link i {
+    font-size: 1.1rem;
+}
+
+.gwj-sidebar-link:hover {
+    color: #ffffff;
+    background-color: var(--gwj-bg-dark-secondary);
+}
+
+.gwj-sidebar-link.gwj-active {
+    color: #ffffff;
+    background-color: var(--gwj-bg-dark-secondary);
+    border-left: 4px solid var(--gwj-primary-color);
+    border-radius: 0 6px 6px 0;
+}
+
+/* Cards */
+.gwj-card {
+    background-color: var(--gwj-card-bg);
+    border: 1px solid var(--gwj-border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.gwj-card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--gwj-border-color);
+    padding: 1.2rem 1.5rem;
+}
+
+.gwj-card-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.gwj-card-body {
+    padding: 1.5rem;
+}
+
+.gwj-card-footer {
+    background-color: var(--gwj-bg-light);
+    border-top: 1px solid var(--gwj-border-color);
+    padding: 1.2rem 1.5rem;
+}
+
+/* Tabelas */
+.gwj-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--gwj-border-color);
+}
+
+.gwj-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    min-width: 800px;
+}
+
+.gwj-table th {
+    background-color: #ffffff;
+    color: var(--gwj-text-dark);
+    font-weight: 700;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid var(--gwj-border-color);
+    font-size: 0.95rem;
+}
+
+.gwj-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gwj-border-color);
+    color: #444;
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.gwj-table-row:nth-child(even) {
+    background-color: #faf9f6;
+}
+
+.gwj-table-row:hover {
+    background-color: #f1ebd9;
+    transition: background-color 0.15s ease;
+}
+
+/* Formulários e Inputs */
+.gwj-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.gwj-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gwj-text-dark);
+}
+
+.gwj-input,
+.gwj-select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background-color: #ffffff;
+    color: var(--gwj-text-dark);
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.gwj-input:focus,
+.gwj-select:focus {
+    outline: none;
+    border-color: var(--gwj-primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gwj-primary-color) 20%, transparent);
+}
+
+.gwj-input:disabled,
+.gwj-select:disabled,
+.gwj-input-readonly {
+    background-color: #f1eff5;
+    color: var(--gwj-text-muted);
+    border-color: #e5e0d8;
+    cursor: not-allowed;
+}
+
+/* Botões */
+.gwj-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+}
+
+.gwj-btn:hover {
+    transform: translateY(-1px);
+}
+
+.gwj-btn-primary {
+    background-color: var(--gwj-primary-color);
+    color: #ffffff;
+}
+
+.gwj-btn-primary:hover {
+    background-color: var(--gwj-primary-color-hover);
+    color: #ffffff;
+}
+
+.gwj-btn-secondary {
+    background-color: var(--gwj-secondary);
+    color: #ffffff;
+}
+
+.gwj-btn-secondary:hover {
+    background-color: #4b5563;
+    color: #ffffff;
+}
+
+.gwj-btn-success {
+    background-color: var(--gwj-success);
+    color: #ffffff;
+}
+
+.gwj-btn-success:hover {
+    background-color: #059669;
+    color: #ffffff;
+}
+
+.gwj-btn-warning {
+    background-color: var(--gwj-warning);
+    color: var(--gwj-text-dark);
+}
+
+.gwj-btn-warning:hover {
+    background-color: #d97706;
+}
+
+.gwj-btn-danger {
+    background-color: var(--gwj-danger);
+    color: #ffffff;
+}
+
+.gwj-btn-danger:hover {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.gwj-btn-outline-secondary {
+    background-color: transparent;
+    border: 1px solid var(--gwj-border-color);
+    color: var(--gwj-text-dark);
+}
+
+.gwj-btn-outline-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.gwj-btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+/* Badges */
+.gwj-badge {
+    display: inline-flex;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 50rem;
+    color: #ffffff;
+}
+
+.gwj-badge-success { background-color: var(--gwj-success); }
+.gwj-badge-secondary { background-color: var(--gwj-secondary); }
+.gwj-badge-warning { background-color: var(--gwj-warning); color: var(--gwj-text-dark); }
+.gwj-badge-danger { background-color: var(--gwj-danger); }
+
+/* Modais Customizados */
+.gwj-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1100;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.gwj-modal.gwj-modal-show {
+    display: flex;
+    opacity: 1;
+}
+
+.gwj-modal-dialog {
+    width: 90%;
+    max-width: 500px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    transform: translateY(-20px);
+    transition: transform 0.25s ease;
+}
+
+.gwj-modal.gwj-modal-show .gwj-modal-dialog {
+    transform: translateY(0);
+}
+
+.gwj-modal-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.gwj-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--gwj-border-color);
+}
+
+.gwj-modal-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.gwj-btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--gwj-text-muted);
+}
+
+.gwj-btn-close:hover {
+    color: var(--gwj-text-dark);
+}
+
+.gwj-modal-body {
+    padding: 1.5rem;
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.gwj-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid var(--gwj-border-color);
+    background-color: var(--gwj-bg-light);
+}
+
+/* Outros elementos */
+.gwj-logo {
+    height: 40px;
+    object-fit: contain;
+}

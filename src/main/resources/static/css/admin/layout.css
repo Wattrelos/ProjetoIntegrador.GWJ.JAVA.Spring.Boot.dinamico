@@ -1,0 +1,89 @@
+/* Estrutura de Layout do Dashboard */
+.gwj-content-wrapper {
+    display: flex;
+    min-height: calc(100vh - 70px); /* Desconta o Header */
+    position: relative;
+}
+
+.gwj-main-content {
+    flex-grow: 1;
+    padding: 2.5rem;
+    background-color: var(--gwj-bg-light);
+    overflow-x: hidden;
+}
+
+/* Flexbox e Utilities de Grid */
+.gwj-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.gwj-d-flex {
+    display: flex;
+}
+
+.gwj-flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.gwj-justify-between {
+    justify-content: space-between;
+}
+
+.gwj-align-center {
+    align-items: center;
+}
+
+.gwj-flex-wrap {
+    flex-wrap: wrap;
+}
+
+/* Grids Semânticos para Páginas e Formulários */
+.gwj-grid-main-side {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 992px) {
+    .gwj-grid-main-side {
+        grid-template-columns: 1fr;
+    }
+}
+
+.gwj-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.gwj-form-col-6 {
+    flex: 1 1 calc(50% - 0.75rem);
+    min-width: 280px;
+}
+
+.gwj-form-col-12 {
+    flex: 1 1 100%;
+}
+
+/* Spacers e Margens */
+.gwj-mb-1 { margin-bottom: 0.25rem !important; }
+.gwj-mb-2 { margin-bottom: 0.5rem !important; }
+.gwj-mb-3 { margin-bottom: 1rem !important; }
+.gwj-mb-4 { margin-bottom: 1.5rem !important; }
+.gwj-mb-5 { margin-bottom: 3rem !important; }
+
+.gwj-mt-1 { margin-top: 0.25rem !important; }
+.gwj-mt-2 { margin-top: 0.5rem !important; }
+.gwj-mt-3 { margin-top: 1rem !important; }
+.gwj-mt-4 { margin-top: 1.5rem !important; }
+.gwj-mt-5 { margin-top: 3rem !important; }
+
+.gwj-p-0 { padding: 0 !important; }
+.gwj-p-4 { padding: 1.5rem !important; }
+
+.gwj-text-end { text-align: right !important; }
+.gwj-text-center { text-align: center !important; }
