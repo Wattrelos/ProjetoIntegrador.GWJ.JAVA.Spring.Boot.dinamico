@@ -1,0 +1,81 @@
+@startuml Diagrama de Atividades - Atendimento Presencial e Execução
+
+' --- Configurações Visuais ---
+skinparam theme cerulean
+skinparam Handwritten false
+skinparam Monochrome false
+skinparam Shadowing true
+skinparam defaultTextAlignment center
+
+title Diagrama de Atividades - Atendimento Presencial, Execução e Conclusão do Serviço
+
+|#E8F4F8|Barbeiro / Recepção|
+|#FFF3E0|Painel Web (Admin / Agenda)|
+|#E8F8F5|Backend (Spring Boot / Services)|
+|#FBEEE6|Banco de Dados (MySQL / gwj5)|
+
+|Barbeiro / Recepção|
+start
+:Acessa o Painel de Agendas (/admin/agenda ou /admin);
+
+|Painel Web (Admin / Agenda)|
+:Carrega a lista de agendamentos do dia agrupados por profissional e horário;
+
+|Barbeiro / Recepção|
+:Cliente chega na barbearia;
+:Realiza o Check-in presencial do cliente;
+
+|Painel Web (Admin / Agenda)|
+:Atualiza status visual para "Aguardando Atendimento";
+
+|Barbeiro / Recepção|
+:Chama o cliente e clica em "Iniciar Atendimento";
+
+|Backend (Spring Boot / Services)|
+:Atualiza status do agendamento para **'Em Atendimento'** (**tab_agendamento**);
+
+|Barbeiro / Recepção|
+:Executa os serviços contratados (Corte, Barba, Pigmentação, etc.);
+
+if (Cliente solicitou serviços adicionais ou produtos cosméticos?) then (Sim)
+    :Adiciona item extra na comanda do atendimento (ex: Pomada Modeladora, Sobrancelha);
+    
+    |Painel Web (Admin / Agenda)|
+    :Atualiza resumo da comanda e valor total a pagar;
+else (Não)
+endif
+
+|Barbeiro / Recepção|
+:Finaliza o atendimento na cadeira;
+:Encaminha o cliente ao caixa/recepção para acerto;
+:Clica em "Finalizar Atendimento";
+
+|Painel Web (Admin / Agenda)|
+:Exibe tela de fechamento de comanda com opções de pagamento:
+- Dinheiro
+- PIX
+- Cartão de Débito/Crédito;
+
+|Barbeiro / Recepção|
+:Seleciona a forma de pagamento utilizada pelo cliente;
+:Confirma o recebimento do valor;
+
+|Backend (Spring Boot / Services)|
+:Inicia transação atômica via **UnitOfWork**;
+:Atualiza status do agendamento para **'Concluído'** (**tab_agendamento**);
+if (Houve produtos vendidos na comanda?) then (Sim)
+    :Decrementa o estoque físico dos produtos (**tab_produto**);
+    :Registra itens no pedido do cliente (**tab_itens_pedido**);
+else (Não)
+endif
+:Calcula comissão do barbeiro e registra no faturamento diário;
+:Confirma transação (Commit no MySQL);
+
+|Painel Web (Admin / Agenda)|
+:Emite comprovante/recibo e atualiza agenda liberando o profissional para o próximo cliente;
+
+|Barbeiro / Recepção|
+:Atendimento concluído com sucesso;
+stop
+
+@enduml

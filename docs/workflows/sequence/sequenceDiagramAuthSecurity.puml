@@ -1,0 +1,124 @@
+@startuml Diagrama de Sequência - Autenticação e Segurança (Login & Interceptor)
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Usuário / Admin" as User
+box "Frontend & Sessão" #LightYellow
+    participant "Navegador (HTML)" as UI
+    participant "HttpSession" as Session
+end box
+
+box "Segurança & Controladores (Spring Boot)" #LightBlue
+    participant "AdminInterceptor" as Interceptor
+    participant "LoginController" as LoginCtrl
+    participant "PasswordUtil" as PassUtil
+    participant "ServiceRegistry" as Registry
+    participant "GenericService<Usuario>" as UserService
+    participant "UnitOfWork" as UoW
+end box
+
+box "Camada de Persistência (JDBC & Mapper)" #LightGreen
+    participant "GenericRepository" as Repo
+    participant "DataMapper" as Mapper
+end box
+
+database "MySQL (gwj5)" as DB
+
+== Passo 1: Processo de Login ==
+
+User -> UI : Preenche e-mail e senha no formulário (/login ou /MRYnZpAsC9sp/login)
+activate UI
+
+UI -> LoginCtrl : POST /login (email, senha)
+activate LoginCtrl
+
+LoginCtrl -> PassUtil : hash(senha)
+activate PassUtil
+PassUtil --> LoginCtrl : "{sha256}" + hashCalculado
+deactivate PassUtil
+
+LoginCtrl -> Registry : getService("Usuario")
+activate Registry
+Registry --> LoginCtrl : GenericService<Usuario>
+deactivate Registry
+
+LoginCtrl -> UserService : read(filtroEmail)
+activate UserService
+
+UserService -> UoW : new UnitOfWork()
+activate UoW
+UserService -> Repo : query(filtroEmail)
+activate Repo
+
+Repo -> Mapper : getTableName() / getColumnName()
+activate Mapper
+Mapper --> Repo : Metadados SQL (tab_usuario, tab_perfil)
+deactivate Mapper
+
+Repo -> DB : SELECT * FROM tab_usuario WHERE email = ?
+activate DB
+DB --> Repo : Dados do Usuário (Senha criptografada, Perfil, Permissões)
+deactivate DB
+
+Repo --> UserService : List<Usuario>
+deactivate Repo
+UserService --> LoginCtrl : List<Usuario>
+deactivate UserService
+deactivate UoW
+
+Note over LoginCtrl : Compara senha digitada com a armazenada no banco
+
+alt Credenciais Válidas
+    LoginCtrl -> Session : setAttribute("usuarioLogado", usuarioBanco)
+    activate Session
+    deactivate Session
+    
+    alt Usuário é Cliente (Perfil 4)
+        LoginCtrl --> UI : Redireciona para Home ("/")
+    else Usuário é Administrador/Equipe (Perfil 1, 2, 3)
+        LoginCtrl --> UI : Redireciona para Painel Admin ("/MRYnZpAsC9sp")
+    end
+else Credenciais Inválidas
+    LoginCtrl --> UI : Retorna /login com mensagem de erro ("E-mail ou senha inválidos")
+end
+deactivate LoginCtrl
+
+UI --> User : Renderiza página correspondente
+deactivate UI
+
+== Passo 2: Interceptação e Controle de Acesso (AdminInterceptor) ==
+
+User -> UI : Tenta acessar rota restrita (ex: /MRYnZpAsC9sp/listar/Servico)
+activate UI
+
+UI -> Interceptor : Requisição HTTP GET /MRYnZpAsC9sp/listar/Servico
+activate Interceptor
+
+Interceptor -> Session : getAttribute("usuarioLogado")
+activate Session
+Session --> Interceptor : usuarioLogado (ou null)
+deactivate Session
+
+alt Sessão Inexistente / Não Autenticado
+    Interceptor --> UI : Redireciona para /MRYnZpAsC9sp/login (Acesso Negado)
+else Usuário é Cliente Comum (Perfil 4)
+    Interceptor --> UI : Redireciona para Home "/" (Bloqueado de rotas admin)
+else Administrador Total (Perfil 1)
+    Interceptor --> UI : preHandle = true (Permite acesso irrestrito ao Controller)
+else Funcionário com Perfil Específico (Perfil 2 / 3)
+    Note over Interceptor : Mapeia entidade da URL ("Servico") para a permissão ("GERENCIAR_SERVICOS")
+    
+    alt Possui a Permissão Requerida
+        Interceptor --> UI : preHandle = true (Executa Controller normalmente)
+    else Não Possui a Permissão Requerida
+        Interceptor -> Session : Adiciona FlashMessage ("Acesso Negado: Sem permissão")
+        Interceptor --> UI : Redireciona para /MRYnZpAsC9sp (Painel Geral)
+    end
+end
+deactivate Interceptor
+
+UI --> User : Renderiza página permitida ou mensagem de bloqueio
+deactivate UI
+
+@enduml

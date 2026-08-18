@@ -1,0 +1,84 @@
+@startuml Diagrama de Sequência - Lembretes Automáticos (Scheduler Job)
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+box "Agendamento em Background (Spring Boot)" #LightYellow
+    participant "TaskScheduler (@Scheduled)" as Cron
+    participant "NotificationService" as NotifService
+    participant "AgendamentoService" as AgendService
+    participant "UnitOfWork" as UoW
+end box
+
+box "Camada de Dados & Persistência" #LightGreen
+    participant "GenericRepository" as Repo
+    participant "DataMapper" as Mapper
+    database "MySQL (gwj5)" as DB
+end box
+
+box "Serviços Externos & Destinatário" #LightPink
+    participant "WhatsApp / Email Gateway" as Gateway
+    actor "Cliente" as Cliente
+end box
+
+== Ciclo de Execução Periódica do Scheduler ==
+
+Cron -> NotifService : dispararLembretesProgramados() (ex: a cada 30 min)
+activate NotifService
+
+NotifService -> AgendService : buscarAgendamentosPendentesDeLembrete()
+activate AgendService
+
+AgendService -> UoW : new UnitOfWork()
+activate UoW
+AgendService -> Repo : queryPendentes()
+activate Repo
+
+Repo -> Mapper : getTableName() / getColumnName()
+activate Mapper
+Mapper --> Repo : Metadados SQL
+deactivate Mapper
+
+Repo -> DB : SELECT a.*, c.nome, c.telefone, c.email, s.nome as servico_nome, p.nome as prof_nome\nFROM tab_agendamento a\nJOIN tab_cliente c ON ...\nWHERE a.status = 'Confirmado' AND a.lembrete_enviado = 0\nAND a.data_agendamento BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+activate DB
+DB --> Repo : Lista de Agendamentos Próximos
+deactivate DB
+
+Repo --> AgendService : List<AgendamentoComCliente>
+deactivate Repo
+AgendService --> NotifService : List<AgendamentoComCliente>
+deactivate AgendService
+
+loop Para cada agendamento retornado
+    NotifService -> NotifService : formatarMensagemPersonalizada(agendamento)\n(Nome, Serviço, Barbeiro, Data, Hora, Link de Ação)
+    
+    NotifService -> Gateway : enviarNotificacao(telefone, email, mensagem)
+    activate Gateway
+    Gateway -> Cliente : Envia mensagem no WhatsApp / Notificação por E-mail
+    Gateway --> NotifService : HTTP 200 OK (Mensagem Entregue)
+    deactivate Gateway
+    
+    NotifService -> AgendService : marcarLembreteComoEnviado(agendamentoId)
+    activate AgendService
+    
+    AgendService -> UoW : beginTransaction()
+    AgendService -> Repo : updateLembreteEnviado(agendamentoId, true)
+    activate Repo
+    Repo -> DB : UPDATE tab_agendamento SET lembrete_enviado = 1, lembrete_data_envio = NOW() WHERE id = ?
+    activate DB
+    DB --> Repo : Linha atualizada
+    deactivate DB
+    deactivate Repo
+    
+    AgendService -> UoW : commit()
+    AgendService --> NotifService : Confirmação
+    deactivate AgendService
+end loop
+
+UoW --> NotifService : close()
+deactivate UoW
+
+NotifService --> Cron : Execução concluída com sucesso (Aguardando próximo ciclo)
+deactivate NotifService
+
+@enduml

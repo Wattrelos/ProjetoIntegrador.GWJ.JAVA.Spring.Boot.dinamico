@@ -1,0 +1,101 @@
+@startuml Diagrama de Atividades - Compra de Produtos na Loja
+
+' --- Configurações Visuais ---
+skinparam theme cerulean
+skinparam Handwritten false
+skinparam Monochrome false
+skinparam Shadowing true
+skinparam defaultTextAlignment center
+
+title Diagrama de Atividades - Fluxo de Compra de Produtos Cosméticos e Kits (E-Commerce)
+
+|#E8F4F8|Cliente|
+|#FFF3E0|Frontend (Thymeleaf / JS)|
+|#E8F8F5|Backend (Spring Boot / Carrinho & Pedidos)|
+|#FBEEE6|Banco de Dados (MySQL / gwj5)|
+
+|Cliente|
+start
+:Acessa a loja online da barbearia (/shop);
+
+|Frontend (Thymeleaf / JS)|
+:Carrega catálogo de produtos ativos com fotos, preços e estoque disponível (**tab_produto**);
+
+|Cliente|
+:Navega pelo catálogo e visualiza detalhes do produto/kit (/single-product);
+:Clica em "Adicionar ao Carrinho";
+
+|Frontend (Thymeleaf / JS)|
+:Envia requisição assíncrona **POST /carrinho/adicionar**;
+
+|Backend (Spring Boot / Carrinho & Pedidos)|
+:Valida se o produto existe e se quantidade solicitada <= estoque atual (**tab_produto**);
+
+if (Estoque disponível?) then (Sim)
+    :Adiciona item à sessão do carrinho (**Carrinho** / **CarrinhoItem**);
+    :Recalcula subtotal e total do carrinho;
+    
+    |Frontend (Thymeleaf / JS)|
+    :Atualiza badge do carrinho no cabeçalho com a nova contagem;
+    :Exibe notificação flutuante: "Produto adicionado ao carrinho!";
+else (Não / Sem Estoque)
+    |Frontend (Thymeleaf / JS)|
+    :Exibe alerta: "Desculpe, quantidade indisponível em estoque.";
+endif
+
+|Cliente|
+if (Deseja continuar comprando?) then (Sim)
+    :Retorna à vitrine e escolhe outros itens;
+    detach
+else (Não / Fechar Compra)
+    :Acessa a página do carrinho (/carrinho);
+    
+    |Frontend (Thymeleaf / JS)|
+    :Exibe itens, quantidades, preços unitários e subtotal;
+    
+    |Cliente|
+    :Revisa o pedido e clica em "Finalizar Compra";
+    
+    |Frontend (Thymeleaf / JS)|
+    :Redireciona para o checkout (/carrinho-checkout);
+    
+    |Cliente|
+    :Preenche dados de entrega/retirada e contato:
+    - Nome, CPF, Telefone
+    - Endereço de entrega (ou opção Retirar na Barbearia);
+    :Seleciona forma de pagamento (PIX / Cartão / Dinheiro na retirada);
+    :Clica em "Confirmar Pedido";
+    
+    |Frontend (Thymeleaf / JS)|
+    :Envia formulário de checkout para o backend;
+    
+    |Backend (Spring Boot / Carrinho & Pedidos)|
+    :Inicia transação atômica via **UnitOfWork**;
+    :Verifica novamente a disponibilidade de estoque de todos os itens com trava de concorrência;
+    
+    if (Todos os itens têm estoque suficiente?) then (Sim)
+        :Cria registro do pedido na **tab_pedidos** (Status = 'Pendente' ou 'Aprovado');
+        :Insere cada item na **tab_itens_pedido**;
+        :Decrementa o estoque dos produtos na **tab_produto**;
+        :Limpa o carrinho da sessão;
+        :Confirma transação (Commit no MySQL);
+        
+        |Frontend (Thymeleaf / JS)|
+        :Redireciona para tela de confirmação (/compra-confirmada);
+        
+        |Cliente|
+        :Visualiza número do pedido, itens comprados, instruções de retirada/rastreio e QR Code PIX (se aplicável);
+        stop
+    else (Item Esgotado durante o checkout)
+        :Desfaz transação (Rollback);
+        
+        |Frontend (Thymeleaf / JS)|
+        :Exibe aviso de produto esgotado e solicita atualização do carrinho;
+        
+        |Cliente|
+        :Ajusta itens do carrinho e tenta novamente;
+        detach
+    endif
+endif
+
+@enduml

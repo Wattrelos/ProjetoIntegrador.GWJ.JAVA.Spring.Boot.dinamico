@@ -1,0 +1,77 @@
+@startuml Diagrama de Atividades - Disparo de Lembretes Automáticos
+
+' --- Configurações Visuais ---
+skinparam theme cerulean
+skinparam Handwritten false
+skinparam Monochrome false
+skinparam Shadowing true
+skinparam defaultTextAlignment center
+
+title Diagrama de Atividades - Módulo de Lembretes e Notificações Automáticas (RF05)
+
+|#E8F4F8|Scheduler / Robô (Spring Boot @Scheduled)|
+|#E8F8F5|Agendamento & Notification Service|
+|#FBEEE6|Banco de Dados (MySQL / gwj5)|
+|#FFF3E0|Gateway Externo (WhatsApp / E-mail)|
+|#FADBD8|Cliente (Destinatário)|
+
+|Scheduler / Robô (Spring Boot @Scheduled)|
+start
+:Cron Trigger é acionado periodicamente (ex: a cada 30 minutos);
+:Inicia rotina de varredura de lembretes;
+
+|Agendamento & Notification Service|
+:Inicia sessão de leitura no **UnitOfWork**;
+
+|Banco de Dados (MySQL / gwj5)|
+:Executa query de busca:
+**SELECT a.*, s.nome, p.nome FROM tab_agendamento a ...**
+WHERE status = 'Confirmado'
+AND data_agendamento = CURDATE() ou CURDATE() + 1
+AND lembrete_enviado = false;
+
+|Agendamento & Notification Service|
+if (Existem agendamentos pendentes de lembrete?) then (Sim)
+    repeat :Para cada agendamento retornado;
+        :Obtém dados do cliente (Nome, Telefone, WhatsApp, E-mail);
+        :Calcula a antecedência até o horário do atendimento (ex: 24h ou 2h antes);
+        
+        if (Janela de disparo atingida?) then (Sim)
+            :Monta mensagem personalizada:
+            - Nome do cliente
+            - Serviço e Barbeiro
+            - Data e Horário marcado
+            - Endereço da Barbearia
+            - Link para confirmação ou cancelamento rápido;
+            
+            |Gateway Externo (WhatsApp / E-mail)|
+            :Envia requisição para API de mensageria / Servidor SMTP;
+            
+            if (Notificação entregue com sucesso?) then (Sucesso)
+                |Agendamento & Notification Service|
+                :Marca flag **lembrete_enviado = true** e timestamp no agendamento;
+                
+                |Banco de Dados (MySQL / gwj5)|
+                :Atualiza registro na **tab_agendamento**;
+                
+                |Cliente (Destinatário)|
+                :Recebe mensagem no WhatsApp / E-mail com o lembrete;
+            else (Falha / Timeout)
+                |Agendamento & Notification Service|
+                :Registra log de erro de envio para retentativa posterior;
+            endif
+        else (Ainda fora da janela de disparo)
+            :Ignora e aguarda o próximo ciclo do cron;
+        endif
+    repeat while (Existem mais agendamentos na fila?) is (Sim)
+    -> Não;
+
+else (Não / Fila Vazia)
+    :Registra log: "Nenhum agendamento pendente de notificação";
+endif
+
+|Scheduler / Robô (Spring Boot @Scheduled)|
+:Finaliza ciclo de execução e aguarda o próximo agendamento do cron;
+stop
+
+@enduml

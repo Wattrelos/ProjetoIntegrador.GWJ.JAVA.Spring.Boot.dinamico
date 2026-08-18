@@ -1,0 +1,157 @@
+@startuml Diagrama de Sequência - Compra de Produtos (E-Commerce)
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Cliente" as Cliente
+box "Frontend & Sessão" #LightYellow
+    participant "Navegador (HTML/JS)" as UI
+    participant "HttpSession" as Session
+end box
+
+box "Controladores e Serviços (Spring Boot)" #LightBlue
+    participant "CarrinhoController" as CartCtrl
+    participant "ServiceRegistry" as Registry
+    participant "GenericService<Produto>" as ProdService
+    participant "GenericService<Pedido>" as PedidoService
+    participant "UnitOfWork" as UoW
+end box
+
+box "Camada de Persistência (JDBC & Mapper)" #LightGreen
+    participant "GenericRepository" as Repo
+    participant "DataMapper" as Mapper
+end box
+
+database "MySQL (gwj5)" as DB
+
+== Passo 1: Adicionar Produto ao Carrinho ==
+
+Cliente -> UI : Clica em "Adicionar ao Carrinho" no produto (ID, Qtd)
+activate UI
+
+UI -> CartCtrl : POST /carrinho/adicionar (produtoId, quantidade)
+activate CartCtrl
+
+CartCtrl -> Registry : getService("Produto")
+activate Registry
+Registry --> CartCtrl : GenericService<Produto>
+deactivate Registry
+
+CartCtrl -> ProdService : read(filtroProduto)
+activate ProdService
+
+ProdService -> UoW : new UnitOfWork()
+activate UoW
+ProdService -> Repo : query(filtro)
+activate Repo
+Repo -> Mapper : getTableName() / getColumnName()
+activate Mapper
+Mapper --> Repo : Metadados SQL (tab_produto)
+deactivate Mapper
+
+Repo -> DB : SELECT * FROM tab_produto WHERE id = ?
+activate DB
+DB --> Repo : Dados do Produto (Preço, Estoque, Imagem)
+deactivate DB
+
+Repo --> ProdService : List<Produto>
+deactivate Repo
+ProdService --> CartCtrl : Produto encontrado
+deactivate ProdService
+deactivate UoW
+
+CartCtrl -> Session : getAttribute("carrinho")
+activate Session
+Session --> CartCtrl : Carrinho existente (ou novo)
+
+CartCtrl -> CartCtrl : carrinho.adicionarItem(produto, quantidade)
+CartCtrl -> Session : setAttribute("carrinho", carrinho)
+deactivate Session
+
+CartCtrl --> UI : JSON { sucesso: true, quantidadeTotal: N, valorTotal: R$ }
+deactivate CartCtrl
+
+UI --> Cliente : Exibe Toast: "Produto adicionado ao carrinho!" e atualiza Badge
+deactivate UI
+
+== Passo 2: Checkout e Finalização do Pedido ==
+
+Cliente -> UI : Acessa /carrinho/checkout e clica em "Confirmar Pedido"
+activate UI
+
+UI -> CartCtrl : POST /carrinho/checkout/confirmar (nome, telefone, formaPagamento)
+activate CartCtrl
+
+CartCtrl -> Session : getAttribute("carrinho")
+activate Session
+Session --> CartCtrl : Carrinho com itens
+deactivate Session
+
+CartCtrl -> CartCtrl : Instancia Pedido com data, formaPagamento e status "Aguardando Retirada"
+
+loop Para cada item no carrinho
+    CartCtrl -> CartCtrl : Cria ItemPedido(produto, quantidade)\npedido.adicionarItem(itemPedido)
+end loop
+
+CartCtrl -> CartCtrl : pedido.calcularValorTotal()
+
+CartCtrl -> Registry : getService("Pedido")
+activate Registry
+Registry --> CartCtrl : GenericService<Pedido>
+deactivate Registry
+
+CartCtrl -> PedidoService : create(pedido)
+activate PedidoService
+
+PedidoService -> UoW : new UnitOfWork()
+activate UoW
+PedidoService -> UoW : beginTransaction()
+
+PedidoService -> Repo : save(pedido)
+activate Repo
+
+Repo -> Mapper : getTableName() / getColumnName()
+activate Mapper
+Mapper --> Repo : Metadados SQL (tab_pedidos)
+deactivate Mapper
+
+Repo -> DB : INSERT INTO tab_pedidos (cliente_id, valor_total, forma_pagamento, status, ...)
+activate DB
+DB --> Repo : ID do Pedido gerado
+deactivate DB
+
+Repo --> PedidoService : Pedido persistido
+deactivate Repo
+
+loop Para cada ItemPedido do pedido
+    PedidoService -> Repo : save(itemPedido)
+    activate Repo
+    Repo -> DB : INSERT INTO tab_itens_pedido (pedido_id, produto_id, quantidade, preco_unitario)
+    activate DB
+    DB --> Repo : Sucesso
+    deactivate DB
+    
+    Repo -> DB : UPDATE tab_produto SET estoque = estoque - ? WHERE id = ?
+    activate DB
+    DB --> Repo : Estoque atualizado
+    deactivate DB
+    deactivate Repo
+end loop
+
+PedidoService -> UoW : commit()
+deactivate UoW
+
+PedidoService --> CartCtrl : Pedido salvo com sucesso
+deactivate PedidoService
+
+CartCtrl -> Session : carrinho.limpar()
+activate Session
+deactivate Session
+
+CartCtrl --> UI : Redireciona para /compra-confirmada?id={pedidoId}
+deactivate CartCtrl
+
+UI --> Cliente : Exibe tela de confirmação de compra com resumo dos itens e protocolo
+deactivate UI
+
+@enduml

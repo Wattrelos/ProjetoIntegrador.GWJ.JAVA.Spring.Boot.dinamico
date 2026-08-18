@@ -1,0 +1,107 @@
+@startuml Diagrama de Atividades - Cancelamento e Reagendamento
+
+' --- Configurações Visuais ---
+skinparam theme cerulean
+skinparam Handwritten false
+skinparam Monochrome false
+skinparam Shadowing true
+skinparam defaultTextAlignment center
+
+title Diagrama de Atividades - Fluxo de Cancelamento e Reagendamento de Horário
+
+|#E8F4F8|Cliente / Recepção|
+|#FFF3E0|Frontend (Thymeleaf / JS)|
+|#E8F8F5|Backend (Spring Boot / AgendamentoService)|
+|#FBEEE6|Banco de Dados (MySQL / gwj5)|
+
+|Cliente / Recepção|
+start
+:Acessa histórico de agendamentos ou link recebido por WhatsApp/E-mail;
+
+|Frontend (Thymeleaf / JS)|
+:Carrega dados do agendamento atual (Código, Serviço, Profissional, Data, Hora, Status);
+
+|Cliente / Recepção|
+if (Qual ação deseja realizar?) then (Cancelar Agendamento)
+    :Clica no botão "Cancelar Agendamento";
+    
+    |Frontend (Thymeleaf / JS)|
+    :Exibe modal de confirmação com política de antecedência mínima (ex: 2 horas);
+    
+    |Cliente / Recepção|
+    :Confirma a solicitação de cancelamento;
+    
+    |Frontend (Thymeleaf / JS)|
+    :Envia requisição **POST /api/agendamentos/{id}/cancelar**;
+    
+    |Backend (Spring Boot / AgendamentoService)|
+    :Inicia transação via **UnitOfWork**;
+    :Busca registro do agendamento por ID (**tab_agendamento**);
+    
+    if (Agendamento existe e status atual é 'Confirmado'?) then (Sim)
+        :Verifica regra de antecedência de cancelamento;
+        
+        if (Tempo restante >= Prazo Mínimo Permitido?) then (Dentro do Prazo)
+            :Atualiza status do registro para **'Cancelado'** (**tab_agendamento**);
+            :Registra motivo do cancelamento e timestamp;
+            :Confirma transação (Commit no MySQL);
+            :Libera o slot e profissionais para a grade pública;
+            
+            |Frontend (Thymeleaf / JS)|
+            :Exibe mensagem de sucesso: "Agendamento cancelado com sucesso!";
+            :Atualiza status visual para Cancelado;
+            
+            |Cliente / Recepção|
+            :Recebe confirmação de cancelamento e liberação da agenda;
+            stop
+        else (Fora do Prazo / Tolerância Excedida)
+            :Lança aviso de cancelamento tardio;
+            :Requer contato direto com a gerência/recepção da barbearia;
+            
+            |Frontend (Thymeleaf / JS)|
+            :Exibe alerta: "Cancelamento fora do prazo limite. Entre em contato por WhatsApp.";
+            stop
+        endif
+    else (Não / Inexistente ou Já Cancelado)
+        :Retorna erro de agendamento inválido;
+        stop
+    endif
+
+else (Reagendar Horário)
+    :Clica no botão "Reagendar Horário";
+    
+    |Frontend (Thymeleaf / JS)|
+    :Redireciona para tela de seleção com serviço e barbeiro pré-selecionados;
+    
+    |Cliente / Recepção|
+    :Seleciona a nova data e o novo horário disponível;
+    :Clica em "Confirmar Novo Horário";
+    
+    |Frontend (Thymeleaf / JS)|
+    :Envia requisição **POST /api/agendamentos/{id}/reagendar** com nova data/hora;
+    
+    |Backend (Spring Boot / AgendamentoService)|
+    :Inicia transação atômica via **UnitOfWork**;
+    :Valida disponibilidade da nova data/horário para o profissional;
+    
+    if (Novo horário está disponível?) then (Sim)
+        :Atualiza o agendamento antigo com nova data_agendamento, hora_inicio e hora_fim;
+        :Mantém status como **'Confirmado'**;
+        :Confirma transação (Commit);
+        
+        |Frontend (Thymeleaf / JS)|
+        :Exibe tela com os novos detalhes do agendamento reagendado;
+        
+        |Cliente / Recepção|
+        :Visualiza comprovante do novo horário atualizado;
+        stop
+    else (Conflito de Horário)
+        :Desfaz transação (Rollback);
+        
+        |Frontend (Thymeleaf / JS)|
+        :Exibe alerta de indisponibilidade e solicita nova escolha;
+        detach
+    endif
+endif
+
+@enduml

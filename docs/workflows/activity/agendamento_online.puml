@@ -1,0 +1,117 @@
+@startuml Diagrama de Atividades - Agendamento Online Autônomo (US01)
+
+' --- Configurações Visuais ---
+skinparam theme cerulean
+skinparam Handwritten false
+skinparam Monochrome false
+skinparam Shadowing true
+skinparam defaultTextAlignment center
+
+title Diagrama de Atividades - Fluxo de Agendamento Online Autônomo (US01 / RF03)
+
+|#E8F4F8|Cliente|
+|#FFF3E0|Frontend (Thymeleaf / JS)|
+|#E8F8F5|Backend (Spring Boot / AgendamentoService)|
+|#FBEEE6|Banco de Dados (MySQL / gwj5)|
+
+|Cliente|
+start
+:Acessa a página de agendamento (/servicos ou /servico);
+
+|Frontend (Thymeleaf / JS)|
+:Carrega catálogo de serviços ativos e lista de barbeiros;
+
+|Cliente|
+:Seleciona o Serviço desejado (ex: Barba Terapia, Corte Fade);
+:Seleciona o Profissional (ou opção "Qualquer Profissional");
+:Seleciona a Data pretendida no calendário;
+
+|Frontend (Thymeleaf / JS)|
+:Envia requisição assíncrona (Fetch/AJAX)
+**GET /api/agendamentos/disponibilidade**
+{ servicoId, profissionalId, data };
+
+|Backend (Spring Boot / AgendamentoService)|
+:Recebe parâmetros da requisição;
+:Inicia UnitOfWork e obtém conexão JDBC;
+:Consulta duração do serviço selecionado (**tab_servico**);
+:Consulta funcionamento da barbearia no dia da semana (**tab_dias_funcionamento**);
+
+if (Barbearia está aberta na data selecionada?) then (Sim)
+    :Busca a grade de horários cadastrada (**tab_grade_horarios**);
+    :Busca agendamentos confirmados na data para os profissionais (**tab_agendamento**);
+    
+    repeat :Para cada slot inicial da grade de horários;
+        :Calcula horário final esperado (Horário Inicial + Duração do Serviço);
+        
+        if (Horário Final <= Horário de Fechamento da Barbearia AND Não é no passado?) then (Válido)
+            if (Existe profissional livre para todos os blocos contínuos?) then (Livre)
+                :Marca slot como **Disponível = true**;
+            else (Conflito)
+                :Marca slot como **Disponível = false**;
+            endif
+        else (Ultrapassa Fechamento / Passado)
+            :Marca slot como **Disponível = false**;
+        endif
+    repeat while (Existem mais slots a verificar?) is (Sim)
+    -> Não;
+    
+    :Retorna lista de slots JSON [{horario: "10:00", disponivel: true}, ...];
+else (Não / Fechado)
+    :Retorna mensagem de barbearia fechada ou lista vazia;
+endif
+
+|Frontend (Thymeleaf / JS)|
+:Renderiza na tela os horários livres (destacados) e ocupados (desabilitados);
+
+|Cliente|
+if (Existem horários livres satisfatórios?) then (Sim)
+    :Clica sobre o horário livre desejado;
+    :Avança para a etapa de Identificação e Checkout;
+    :Preenche formulário com dados pessoais:
+    - Nome e Sobrenome
+    - Telefone / WhatsApp
+    - E-mail;
+    :Escolhe a forma de pagamento (Presencial no local ou Online);
+    :Clica no botão "Confirmar Agendamento";
+    
+    |Frontend (Thymeleaf / JS)|
+    :Valida campos obrigatórios e máscara de telefone via JS;
+    :Envia requisição **POST /api/agendamentos** ou form submit;
+    
+    |Backend (Spring Boot / AgendamentoService)|
+    :Inicia transação atômica via **UnitOfWork**;
+    :Revalida se a data/hora não estão no passado;
+    :Executa query de verificação de concorrência com bloqueio (Anti Double-Booking):
+    **SELECT COUNT(*) FROM tab_agendamento WHERE ...**;
+    
+    if (Profissional ainda está 100% livre no intervalo?) then (Sim)
+        :Persiste novo registro na **tab_agendamento**
+        Status = 'Confirmado';
+        :Confirma transação (Commit no MySQL);
+        :Encerra UnitOfWork;
+        
+        |Frontend (Thymeleaf / JS)|
+        :Redireciona para tela de confirmação (/order-confirmation);
+        
+        |Cliente|
+        :Visualiza comprovante com protocolo, profissional, data, horário e orientações de tolerância;
+        stop
+    else (Não / Concorrência Detectada)
+        :Desfaz transação (Rollback);
+        :Lança exceção de conflito de horário;
+        
+        |Frontend (Thymeleaf / JS)|
+        :Exibe alerta: "Desculpe, este horário acabou de ser reservado por outro cliente.";
+        :Atualiza automaticamente a grade de horários;
+        
+        |Cliente|
+        :Escolhe um novo horário disponível;
+        detach
+    endif
+else (Não)
+    :Altera a data no calendário ou troca de profissional;
+    detach
+endif
+
+@enduml

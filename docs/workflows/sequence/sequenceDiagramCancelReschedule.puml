@@ -1,0 +1,133 @@
+@startuml Diagrama de Sequência - Cancelamento e Reagendamento de Horários
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Cliente / Barbeiro" as User
+box "Frontend & Interface" #LightYellow
+    participant "Navegador (HTML/JS)" as UI
+end box
+
+box "Controladores e Serviços (Spring Boot)" #LightBlue
+    participant "AgendaController" as AgendaCtrl
+    participant "ServiceRegistry" as Registry
+    participant "AgendamentoService" as AgendService
+    participant "UnitOfWork" as UoW
+end box
+
+box "Camada de Persistência (JDBC & Mapper)" #LightGreen
+    participant "GenericRepository" as Repo
+    participant "DataMapper" as Mapper
+end box
+
+database "MySQL (gwj5)" as DB
+
+== Cenário 1: Cancelamento de Agendamento ==
+
+User -> UI : Clica em "Cancelar Agendamento" (idAgendamento)
+activate UI
+
+UI -> AgendaCtrl : POST /api/agendamentos/cancelar (id)
+activate AgendaCtrl
+
+AgendaCtrl -> Registry : getService("Agendamento")
+activate Registry
+Registry --> AgendaCtrl : AgendamentoService
+deactivate Registry
+
+AgendaCtrl -> AgendService : cancelarAgendamento(id)
+activate AgendService
+
+AgendService -> UoW : new UnitOfWork()
+activate UoW
+AgendService -> UoW : beginTransaction()
+
+AgendService -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM tab_agendamento WHERE id = ?
+activate DB
+DB --> Repo : Dados do Agendamento (Data, Hora, Status)
+deactivate DB
+Repo --> AgendService : Agendamento
+deactivate Repo
+
+Note over AgendService : Valida se o status é 'Confirmado' e se respeita o prazo mínimo de antecedência
+
+alt Dentro do Prazo Permitido
+    AgendService -> Repo : updateStatus(id, "Cancelado")
+    activate Repo
+    Repo -> DB : UPDATE tab_agendamento SET status = 'Cancelado' WHERE id = ?
+    activate DB
+    DB --> Repo : Linha atualizada
+    deactivate DB
+    Repo --> AgendService : Sucesso
+    deactivate Repo
+    
+    AgendService -> UoW : commit()
+    deactivate UoW
+    
+    AgendService --> AgendaCtrl : Agendamento cancelado com sucesso
+    AgendaCtrl --> UI : JSON { sucesso: true, mensagem: "Agendamento cancelado com sucesso" }
+    UI --> User : Exibe mensagem de confirmação e atualiza grade de horários
+else Fora do Prazo / Cancelamento Tardio
+    AgendService -> UoW : rollback()
+    deactivate UoW
+    AgendService --> AgendaCtrl : Lança Exceção ("Prazo de cancelamento online expirado")
+    AgendaCtrl --> UI : JSON { sucesso: false, erro: "Prazo expirado. Contate a barbearia." }
+    UI --> User : Exibe mensagem de contato via WhatsApp
+end
+
+deactivate AgendService
+deactivate AgendaCtrl
+deactivate UI
+
+== Cenário 2: Reagendamento de Horário ==
+
+User -> UI : Seleciona nova data/hora e clica em "Reagendar"
+activate UI
+
+UI -> AgendaCtrl : POST /api/agendamentos/reagendar (id, novaData, novoHorario)
+activate AgendaCtrl
+
+AgendaCtrl -> AgendService : reagendarAgendamento(id, novaData, novoHorario)
+activate AgendService
+
+AgendService -> UoW : new UnitOfWork()
+activate UoW
+AgendService -> UoW : beginTransaction()
+
+AgendService -> DB : SELECT COUNT(*) FROM tab_agendamento WHERE profissional_id = ? AND data = ? AND horario_overlap...
+activate DB
+DB --> AgendService : count (0 = livre, >0 = ocupado)
+deactivate DB
+
+alt Novo Horário está Livre
+    AgendService -> Repo : updateDataHora(id, novaData, novoHorario)
+    activate Repo
+    Repo -> DB : UPDATE tab_agendamento SET data_agendamento = ?, hora_inicio = ?, hora_fim = ? WHERE id = ?
+    activate DB
+    DB --> Repo : Sucesso
+    deactivate DB
+    Repo --> AgendService : Registro atualizado
+    deactivate Repo
+    
+    AgendService -> UoW : commit()
+    deactivate UoW
+    
+    AgendService --> AgendaCtrl : Reagendamento efetuado
+    AgendaCtrl --> UI : JSON { sucesso: true, mensagem: "Horário reagendado com sucesso!" }
+    UI --> User : Exibe novos dados do agendamento
+else Novo Horário Conflitante / Ocupado
+    AgendService -> UoW : rollback()
+    deactivate UoW
+    
+    AgendService --> AgendaCtrl : Lança Exceção ("Horário indisponível")
+    AgendaCtrl --> UI : JSON { sucesso: false, erro: "Horário ocupado por outro cliente" }
+    UI --> User : Alerta de indisponibilidade
+end
+
+deactivate AgendService
+deactivate AgendaCtrl
+deactivate UI
+
+@enduml
