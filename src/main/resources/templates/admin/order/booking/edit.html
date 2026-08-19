@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title th:text="'Editar Agendamento #' + ${agendamento.id} + ' - Admin'">Editar Agendamento - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Breadcrumb -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;" th:text="'Editar Agendamento #' + ${agendamento.id}">Editar Agendamento</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Atualize as informações do agendamento</p>
+            </div>
+            <a th:href="@{/MRYnZpAsC9sp/agendamentos}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                <i class="bi bi-arrow-left"></i> Voltar à Lista
+            </a>
+        </div>
+
+        <!-- Form Card -->
+        <div class="gwj-card" style="max-width: 850px;">
+            <div class="gwj-card-header">
+                <h5 class="gwj-card-title">Dados do Agendamento</h5>
+            </div>
+            <div class="gwj-card-body">
+                <form th:action="@{/MRYnZpAsC9sp/agendamentos/salvar}" method="POST">
+                    <input type="hidden" name="id" th:value="${agendamento.id}">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="clienteNome">Nome do Cliente *</label>
+                            <input type="text" id="clienteNome" name="clienteNome" class="gwj-input" th:value="${agendamento.clienteNome}" required placeholder="Ex: João da Silva">
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="clienteTelefone">Telefone / WhatsApp</label>
+                            <input type="text" id="clienteTelefone" name="clienteTelefone" class="gwj-input" th:value="${agendamento.clienteTelefone}" placeholder="(11) 99999-9999">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="servicoId">Serviço *</label>
+                            <select id="servicoId" name="servicoId" class="gwj-select" required>
+                                <option value="">-- Selecione o Serviço --</option>
+                                <option th:each="serv : ${servicos}" 
+                                        th:value="${serv.id}" 
+                                        th:text="${serv.nome + (serv.preco != null ? ' (R$ ' + #numbers.formatDecimal(serv.preco, 1, 'POINT', 2, 'COMMA') + ' - ' + serv.duracao + ' min)' : '')}"
+                                        th:selected="${agendamento.servico != null && agendamento.servico.id == serv.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="profissionalId">Profissional / Barbeiro *</label>
+                            <select id="profissionalId" name="profissionalId" class="gwj-select" required>
+                                <option value="">-- Selecione o Profissional --</option>
+                                <option th:each="prof : ${profissionais}" 
+                                        th:value="${prof.id}" 
+                                        th:text="${prof.nome + (prof.sobrenome != null ? ' ' + prof.sobrenome : '')}"
+                                        th:selected="${agendamento.profissional != null && agendamento.profissional.id == prof.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="dataAgendamento">Data *</label>
+                            <input type="date" id="dataAgendamento" name="dataAgendamento" class="gwj-input" th:value="${agendamento.dataAgendamento}" required>
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="horaInicio">Hora Início *</label>
+                            <input type="time" id="horaInicio" name="horaInicio" class="gwj-input" th:value="${agendamento.horaInicio}" required>
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="horaFim">Hora Término</label>
+                            <input type="time" id="horaFim" name="horaFim" class="gwj-input" th:value="${agendamento.horaFim}">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="gradeHorariosId">Grade de Horário (Opcional)</label>
+                            <select id="gradeHorariosId" name="gradeHorariosId" class="gwj-select">
+                                <option value="">-- Nenhuma grade específica --</option>
+                                <option th:each="gh : ${gradesHorarios}" 
+                                        th:value="${gh.id}" 
+                                        th:text="${gh.descricao != null ? gh.descricao : gh.toString()}"
+                                        th:selected="${agendamento.gradeHorarios != null && agendamento.gradeHorarios.id == gh.id}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="status">Status do Agendamento</label>
+                            <select id="status" name="status" class="gwj-select">
+                                <option value="Confirmado" th:selected="${agendamento.status == 'Confirmado'}">Confirmado</option>
+                                <option value="Agendado" th:selected="${agendamento.status == 'Agendado'}">Agendado</option>
+                                <option value="Concluido" th:selected="${agendamento.status == 'Concluido'}">Concluído</option>
+                                <option value="Cancelado" th:selected="${agendamento.status == 'Cancelado'}">Cancelado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="gwj-d-flex gwj-justify-end gwj-gap-2 gwj-mt-4">
+                        <a th:href="@{/MRYnZpAsC9sp/agendamentos}" class="gwj-btn gwj-btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="gwj-btn gwj-btn-primary">
+                            <i class="bi bi-check-lg"></i> Atualizar Agendamento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

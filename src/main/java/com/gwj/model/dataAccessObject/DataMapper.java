@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class DataMapper {
@@ -102,6 +103,22 @@ public class DataMapper {
                 && method.getParameterCount() == 0
                 && !name.equals("getClass")
                 && Modifier.isPublic(method.getModifiers());
+    }
+
+    public static boolean isPersistentGetter(Class<?> clazz, Method method) {
+        if (!isGetter(method)) return false;
+        if (Collection.class.isAssignableFrom(method.getReturnType())) return false;
+        if (method.getName().equalsIgnoreCase("getId")) return false;
+        if (method.isAnnotationPresent(jakarta.persistence.Transient.class)) return false;
+
+        String propName = method.getName().startsWith("is") ? method.getName().substring(2) : method.getName().substring(3);
+        if (propName.isEmpty()) return false;
+        String fieldName = propName.substring(0, 1).toLowerCase() + propName.substring(1);
+        Field field = getFieldInHierarchy(clazz, fieldName);
+        if (field == null) return false;
+        if (field.isAnnotationPresent(jakarta.persistence.Transient.class) || Modifier.isTransient(field.getModifiers())) return false;
+
+        return true;
     }
 
     @SuppressWarnings("unchecked")

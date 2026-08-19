@@ -66,9 +66,19 @@ public class GradeHorarios implements IEntity {
         this.horarioFim = horarioFim;
     }
 
+    @Transient
+    public String getDescricao() {
+        String dia = (diaFuncionamento != null && diaFuncionamento.getNome() != null) ? diaFuncionamento.getNome() : "Dia";
+        String inicio = horarioInicio != null ? horarioInicio.toString() : "";
+        String fim = horarioFim != null ? horarioFim.toString() : "";
+        if (!inicio.isBlank() && !fim.isBlank()) {
+            return dia + " (" + inicio + " às " + fim + ")";
+        }
+        return dia + " #" + (id != null ? id : "");
+    }
+
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
-        return diaFuncionamento.getNome() + " - " + horarioInicio + " - " + horarioFim;
+        return getDescricao();
     }
 }

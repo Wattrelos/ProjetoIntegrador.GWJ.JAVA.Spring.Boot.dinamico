@@ -30,7 +30,7 @@ public class AdminProfissionalController {
         Profissional prof = new Profissional();
         prof.setStatus(true);
         model.addAttribute("profissional", prof);
-        return "admin/staff/form";
+        return "admin/staff/create";
     }
 
     @GetMapping("/editar/{id}")
@@ -41,7 +41,7 @@ public class AdminProfissionalController {
         List<Profissional> resultados = service.read(filtro);
         if (!resultados.isEmpty()) {
             model.addAttribute("profissional", resultados.get(0));
-            return "admin/staff/form";
+            return "admin/staff/edit";
         }
         return "redirect:/MRYnZpAsC9sp/profissionais";
     }

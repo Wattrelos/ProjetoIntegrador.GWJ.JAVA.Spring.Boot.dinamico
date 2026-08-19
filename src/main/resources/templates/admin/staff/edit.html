@@ -3,7 +3,7 @@
       xmlns:layout="http://ultraq.net.nz" 
       layout:decorate="~{admin/layouts/main-layout}">
 <head>
-    <title th:text="${profissional.id != null ? 'Editar Profissional - Admin' : 'Novo Profissional - Admin'}">Profissional - Admin</title>
+    <title th:text="'Editar Profissional #' + ${profissional.id} + ' - Admin'">Editar Profissional - Admin</title>
 </head>
 <body>
     
@@ -12,8 +12,8 @@
         <!-- Header / Breadcrumb -->
         <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
             <div>
-                <h1 style="font-size: 1.8rem; margin: 0;" th:text="${profissional.id != null ? 'Editar Profissional #' + profissional.id : 'Cadastrar Novo Profissional'}">Novo Profissional</h1>
-                <p style="color: var(--gwj-text-muted); margin: 0;">Preencha os dados do barbeiro ou funcionário</p>
+                <h1 style="font-size: 1.8rem; margin: 0;" th:text="'Editar Profissional #' + ${profissional.id}">Editar Profissional</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Atualize as informações do barbeiro ou funcionário</p>
             </div>
             <a th:href="@{/MRYnZpAsC9sp/profissionais}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
                 <i class="bi bi-arrow-left"></i> Voltar à Lista
@@ -29,9 +29,15 @@
                 <form th:action="@{/MRYnZpAsC9sp/profissionais/salvar}" method="POST">
                     <input type="hidden" name="id" th:value="${profissional.id}">
 
-                    <div class="gwj-form-group">
-                        <label class="gwj-label" for="nome">Nome Completo *</label>
-                        <input type="text" id="nome" name="nome" class="gwj-input" th:value="${profissional.nome}" required placeholder="Ex: Thiago Ramos">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="nome">Nome *</label>
+                            <input type="text" id="nome" name="nome" class="gwj-input" th:value="${profissional.nome}" required placeholder="Ex: Thiago">
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="sobrenome">Sobrenome</label>
+                            <input type="text" id="sobrenome" name="sobrenome" class="gwj-input" th:value="${profissional.sobrenome}" placeholder="Ex: Ramos">
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
@@ -45,6 +51,17 @@
                         </div>
                     </div>
 
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="cpf">CPF</label>
+                            <input type="text" id="cpf" name="cpf" class="gwj-input" th:value="${profissional.cpf}" placeholder="000.000.000-00">
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="observacao">Observação / Especialidade</label>
+                            <input type="text" id="observacao" name="observacao" class="gwj-input" th:value="${profissional.observacao}" placeholder="Ex: Especialista em Barba Terapia e Degradê">
+                        </div>
+                    </div>
+
                     <div class="gwj-form-group" style="margin-top: 1rem;">
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" name="status" value="true" th:checked="${profissional.status == null || profissional.status}">
@@ -55,7 +72,7 @@
                     <div class="gwj-d-flex gwj-justify-end gwj-gap-2 gwj-mt-4">
                         <a th:href="@{/MRYnZpAsC9sp/profissionais}" class="gwj-btn gwj-btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="gwj-btn gwj-btn-primary">
-                            <i class="bi bi-check-lg"></i> Salvar Profissional
+                            <i class="bi bi-check-lg"></i> Atualizar Profissional
                         </button>
                     </div>
                 </form>

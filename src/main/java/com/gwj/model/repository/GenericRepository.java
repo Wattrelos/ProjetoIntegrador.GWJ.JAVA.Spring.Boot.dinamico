@@ -54,20 +54,17 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
 
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
-            if (method.getName().startsWith("get") && !method.getName().equals("getClass") && method.getParameterCount() == 0) {
-                if (!Collection.class.isAssignableFrom(method.getReturnType())) {
-                    if (method.getName().equalsIgnoreCase("getId")) continue;
-                    Object value = method.invoke(entity);
-                    if (value == null) continue;
-                    boolean isEntity = value instanceof IEntity;
-                    String colName = DataMapper.getColumnName(clazz, method, isEntity);
-                    if (isEntity) {
-                        value = ((IEntity) value).getId();
-                    }
-                    columns.add(colName);
-                    placeholders.add("?");
-                    values.add(value);
+            if (DataMapper.isPersistentGetter(clazz, method)) {
+                Object value = method.invoke(entity);
+                if (value == null) continue;
+                boolean isEntity = value instanceof IEntity;
+                String colName = DataMapper.getColumnName(clazz, method, isEntity);
+                if (isEntity) {
+                    value = ((IEntity) value).getId();
                 }
+                columns.add(colName);
+                placeholders.add("?");
+                values.add(value);
             }
         }
 
@@ -217,18 +214,16 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
         Method[] methods = clazz.getDeclaredMethods();
 
         for (Method method : methods) {
-            if (method.getName().startsWith("get") && !method.getName().equals("getClass") && method.getParameterCount() == 0) {
-                if (!Collection.class.isAssignableFrom(method.getReturnType()) && !method.getName().equalsIgnoreCase("getId")) {
-                    Object value = method.invoke(entity);
-                    if (value != null) {
-                        boolean isEntity = value instanceof IEntity;
-                        String colName = DataMapper.getColumnName(clazz, method, isEntity);
-                        if (isEntity) {
-                            value = ((IEntity) value).getId();
-                        }
-                        setClauses.add(colName + " = ?");
-                        values.add(value);
+            if (DataMapper.isPersistentGetter(clazz, method)) {
+                Object value = method.invoke(entity);
+                if (value != null) {
+                    boolean isEntity = value instanceof IEntity;
+                    String colName = DataMapper.getColumnName(clazz, method, isEntity);
+                    if (isEntity) {
+                        value = ((IEntity) value).getId();
                     }
+                    setClauses.add(colName + " = ?");
+                    values.add(value);
                 }
             }
         }
@@ -424,7 +419,7 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
         Method[] methods = clazz.getDeclaredMethods();
 
         for (Method method : methods) {
-            if (DataMapper.isGetter(method)) {
+            if (DataMapper.isPersistentGetter(clazz, method)) {
                 try {
                     Object value = method.invoke(entity);
                     if (isValidValue(value)) {

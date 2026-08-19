@@ -15,9 +15,14 @@
                 <h1 style="font-size: 1.8rem; margin: 0;">Gestão de Agendamentos</h1>
                 <p style="color: var(--gwj-text-muted); margin: 0;">Acompanhe todos os horários marcados na barbearia</p>
             </div>
-            <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
-                <i class="bi bi-arrow-left"></i> Painel
-            </a>
+            <div class="gwj-d-flex gwj-gap-2">
+                <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                    <i class="bi bi-arrow-left"></i> Painel
+                </a>
+                <a th:href="@{/MRYnZpAsC9sp/agendamentos/novo}" class="gwj-btn gwj-btn-primary gwj-btn-sm">
+                    <i class="bi bi-plus-lg"></i> Novo Agendamento
+                </a>
+            </div>
         </div>
 
         <!-- Tabela Card -->
@@ -37,29 +42,44 @@
                                 <th>Serviço</th>
                                 <th>Profissional</th>
                                 <th>Status</th>
-                                <th class="gwj-text-end" style="width: 140px; padding-right: 2rem;">Ações</th>
+                                <th class="gwj-text-end" style="width: 180px; padding-right: 2rem;">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="gwj-table-row" th:each="ag : ${agendamentos}">
                                 <td th:text="'#' + ${ag.id}">#1</td>
-                                <td style="font-weight: 600; color: var(--gwj-primary-color);" th:text="${ag.dataHora != null ? #temporals.format(ag.dataHora, 'dd/MM/yyyy HH:mm') : '—'}">19/08/2026 14:00</td>
+                                <td style="font-weight: 600; color: var(--gwj-primary-color);">
+                                    <span th:text="${ag.dataAgendamento != null ? #temporals.format(ag.dataAgendamento, 'dd/MM/yyyy') : '—'}">19/08/2026</span>
+                                    <small th:if="${ag.horaInicio != null}" style="display: block; color: var(--gwj-text-muted);" 
+                                           th:text="${#strings.substring(ag.horaInicio.toString(), 0, 5) + (ag.horaFim != null ? ' às ' + #strings.substring(ag.horaFim.toString(), 0, 5) : '')}">14:00</small>
+                                </td>
                                 <td>
-                                    <span style="font-weight: 600; color: var(--gwj-text-dark);" th:text="${ag.cliente != null ? ag.cliente.nome + ' ' + (ag.cliente.sobrenome != null ? ag.cliente.sobrenome : '') : 'Cliente Avulso'}">João Silva</span>
+                                    <span style="font-weight: 600; color: var(--gwj-text-dark);" th:text="${ag.clienteNome != null && !ag.clienteNome.isBlank() ? ag.clienteNome : 'Cliente Avulso'}">João Silva</span>
+                                    <small th:if="${ag.clienteTelefone != null && !ag.clienteTelefone.isBlank()}" style="display: block; color: var(--gwj-text-muted);" th:text="${ag.clienteTelefone}">(11) 99999-9999</small>
                                 </td>
                                 <td th:text="${ag.servico != null ? ag.servico.nome : '—'}">Corte Masculino</td>
-                                <td th:text="${ag.profissional != null ? ag.profissional.nome : 'Qualquer profissional'}">Thiago Ramos</td>
+                                <td th:text="${ag.profissional != null ? (ag.profissional.nome + (ag.profissional.sobrenome != null ? ' ' + ag.profissional.sobrenome : '')) : 'Qualquer profissional'}">Thiago Ramos</td>
                                 <td>
-                                    <span th:if="${ag.status == 'CONFIRMADO' or ag.status == 'AGENDADO'}" class="gwj-badge gwj-badge-success" th:text="${ag.status}">CONFIRMADO</span>
-                                    <span th:if="${ag.status == 'CONCLUIDO'}" class="gwj-badge gwj-badge-info" th:text="${ag.status}">CONCLUIDO</span>
-                                    <span th:if="${ag.status == 'CANCELADO'}" class="gwj-badge gwj-badge-danger" th:text="${ag.status}">CANCELADO</span>
-                                    <span th:if="${ag.status != 'CONFIRMADO' and ag.status != 'AGENDADO' and ag.status != 'CONCLUIDO' and ag.status != 'CANCELADO'}" class="gwj-badge gwj-badge-warning" th:text="${ag.status != null ? ag.status : 'PENDENTE'}">PENDENTE</span>
+                                    <span th:if="${ag.status != null and (ag.status.equalsIgnoreCase('Confirmado') or ag.status.equalsIgnoreCase('Agendado'))}" class="gwj-badge gwj-badge-success" th:text="${ag.status}">Confirmado</span>
+                                    <span th:if="${ag.status != null and ag.status.equalsIgnoreCase('Concluido')}" class="gwj-badge gwj-badge-info" th:text="${ag.status}">Concluido</span>
+                                    <span th:if="${ag.status != null and ag.status.equalsIgnoreCase('Cancelado')}" class="gwj-badge gwj-badge-danger" th:text="${ag.status}">Cancelado</span>
+                                    <span th:if="${ag.status == null or (!ag.status.equalsIgnoreCase('Confirmado') and !ag.status.equalsIgnoreCase('Agendado') and !ag.status.equalsIgnoreCase('Concluido') and !ag.status.equalsIgnoreCase('Cancelado'))}" class="gwj-badge gwj-badge-warning" th:text="${ag.status != null ? ag.status : 'Pendente'}">Pendente</span>
                                 </td>
                                 <td class="gwj-text-end" style="padding-right: 2rem;">
-                                    <a th:href="@{/MRYnZpAsC9sp/agendamentos/cancelar/{id}(id=${ag.id})}" 
+                                    <a th:href="@{/MRYnZpAsC9sp/agendamentos/editar/{id}(id=${ag.id})}" 
+                                       class="gwj-btn gwj-btn-outline-primary gwj-btn-sm" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:if="${ag.status == null || !ag.status.equalsIgnoreCase('Cancelado')}"
+                                       th:href="@{/MRYnZpAsC9sp/agendamentos/cancelar/{id}(id=${ag.id})}" 
                                        onclick="return confirm('Deseja cancelar este agendamento?');"
-                                       class="gwj-btn gwj-btn-outline-danger gwj-btn-sm" title="Cancelar">
+                                       class="gwj-btn gwj-btn-outline-warning gwj-btn-sm" title="Cancelar">
                                         <i class="bi bi-x-circle"></i>
+                                    </a>
+                                    <a th:href="@{/MRYnZpAsC9sp/agendamentos/excluir/{id}(id=${ag.id})}" 
+                                       onclick="return confirm('Deseja realmente excluir este agendamento?');"
+                                       class="gwj-btn gwj-btn-outline-danger gwj-btn-sm" title="Excluir">
+                                        <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
                             </tr>
