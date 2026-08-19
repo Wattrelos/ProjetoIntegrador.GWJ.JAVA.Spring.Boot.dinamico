@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Gestão de Agendamentos - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Ações -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;">Gestão de Agendamentos</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Acompanhe todos os horários marcados na barbearia</p>
+            </div>
+            <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                <i class="bi bi-arrow-left"></i> Painel
+            </a>
+        </div>
+
+        <!-- Tabela Card -->
+        <div class="gwj-card">
+            <div class="gwj-card-header gwj-d-flex gwj-justify-between gwj-align-center">
+                <h5 class="gwj-card-title">Agendamentos</h5>
+                <span class="gwj-badge gwj-badge-info" th:text="${agendamentos != null ? agendamentos.size() + ' agendamento(s)' : '0 agendamentos'}">0 agendamentos</span>
+            </div>
+            <div class="gwj-card-body gwj-p-0">
+                <div class="gwj-table-responsive">
+                    <table class="gwj-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Data e Hora</th>
+                                <th>Cliente</th>
+                                <th>Serviço</th>
+                                <th>Profissional</th>
+                                <th>Status</th>
+                                <th class="gwj-text-end" style="width: 140px; padding-right: 2rem;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="gwj-table-row" th:each="ag : ${agendamentos}">
+                                <td th:text="'#' + ${ag.id}">#1</td>
+                                <td style="font-weight: 600; color: var(--gwj-primary-color);" th:text="${ag.dataHora != null ? #temporals.format(ag.dataHora, 'dd/MM/yyyy HH:mm') : '—'}">19/08/2026 14:00</td>
+                                <td>
+                                    <span style="font-weight: 600; color: var(--gwj-text-dark);" th:text="${ag.cliente != null ? ag.cliente.nome + ' ' + (ag.cliente.sobrenome != null ? ag.cliente.sobrenome : '') : 'Cliente Avulso'}">João Silva</span>
+                                </td>
+                                <td th:text="${ag.servico != null ? ag.servico.nome : '—'}">Corte Masculino</td>
+                                <td th:text="${ag.profissional != null ? ag.profissional.nome : 'Qualquer profissional'}">Thiago Ramos</td>
+                                <td>
+                                    <span th:if="${ag.status == 'CONFIRMADO' or ag.status == 'AGENDADO'}" class="gwj-badge gwj-badge-success" th:text="${ag.status}">CONFIRMADO</span>
+                                    <span th:if="${ag.status == 'CONCLUIDO'}" class="gwj-badge gwj-badge-info" th:text="${ag.status}">CONCLUIDO</span>
+                                    <span th:if="${ag.status == 'CANCELADO'}" class="gwj-badge gwj-badge-danger" th:text="${ag.status}">CANCELADO</span>
+                                    <span th:if="${ag.status != 'CONFIRMADO' and ag.status != 'AGENDADO' and ag.status != 'CONCLUIDO' and ag.status != 'CANCELADO'}" class="gwj-badge gwj-badge-warning" th:text="${ag.status != null ? ag.status : 'PENDENTE'}">PENDENTE</span>
+                                </td>
+                                <td class="gwj-text-end" style="padding-right: 2rem;">
+                                    <a th:href="@{/MRYnZpAsC9sp/agendamentos/cancelar/{id}(id=${ag.id})}" 
+                                       onclick="return confirm('Deseja cancelar este agendamento?');"
+                                       class="gwj-btn gwj-btn-outline-danger gwj-btn-sm" title="Cancelar">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${agendamentos == null or #lists.isEmpty(agendamentos)}">
+                                <td colspan="7" class="gwj-text-center gwj-p-4" style="color: var(--gwj-text-muted);">
+                                    Nenhum agendamento encontrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

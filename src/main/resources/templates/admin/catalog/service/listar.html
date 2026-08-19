@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Gestão de Serviços - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Ações -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;">Gestão de Serviços</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Serviços oferecidos pela barbearia (cortes, barba, combos, etc.)</p>
+            </div>
+            <div class="gwj-d-flex gwj-gap-2">
+                <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                    <i class="bi bi-arrow-left"></i> Painel
+                </a>
+                <a th:href="@{/MRYnZpAsC9sp/servicos/novo}" class="gwj-btn gwj-btn-primary gwj-btn-sm">
+                    <i class="bi bi-plus-lg"></i> Novo Serviço
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabela Card -->
+        <div class="gwj-card">
+            <div class="gwj-card-header gwj-d-flex gwj-justify-between gwj-align-center">
+                <h5 class="gwj-card-title">Lista de Serviços Cadastrados</h5>
+                <span class="gwj-badge gwj-badge-info" th:text="${servicos != null ? servicos.size() + ' serviço(s)' : '0 serviços'}">0 serviços</span>
+            </div>
+            <div class="gwj-card-body gwj-p-0">
+                <div class="gwj-table-responsive">
+                    <table class="gwj-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Serviço</th>
+                                <th>Preço</th>
+                                <th>Duração</th>
+                                <th>Status</th>
+                                <th class="gwj-text-end" style="width: 160px; padding-right: 2rem;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="gwj-table-row" th:each="servico : ${servicos}">
+                                <td th:text="'#' + ${servico.id}">#1</td>
+                                <td>
+                                    <div class="gwj-d-flex gwj-align-center gwj-gap-3">
+                                        <img th:if="${servico.imagem != null && !servico.imagem.isBlank()}" 
+                                             th:src="${servico.imagem}" 
+                                             alt="Imagem do Serviço" 
+                                             style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--gwj-border-color);">
+                                        <div>
+                                            <span style="font-weight: 600; color: var(--gwj-text-dark); display: block;" th:text="${servico.nome}">Corte Masculino</span>
+                                            <small style="color: var(--gwj-text-muted);" th:text="${servico.descricao != null and #strings.length(servico.descricao) > 40 ? #strings.substring(servico.descricao, 0, 40) + '...' : servico.descricao}">Descrição...</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="font-weight: 600; color: var(--gwj-primary-color);" 
+                                    th:text="'R$ ' + ${#numbers.formatDecimal(servico.preco, 1, 'POINT', 2, 'COMMA')}">R$ 50,00</td>
+                                <td>
+                                    <span th:text="${servico.duracao != null ? servico.duracao + ' min' : '30 min'}">30 min</span>
+                                </td>
+                                <td>
+                                    <span th:if="${servico.ativo}" class="gwj-badge gwj-badge-success">Ativo</span>
+                                    <span th:unless="${servico.ativo}" class="gwj-badge gwj-badge-danger">Inativo</span>
+                                </td>
+                                <td class="gwj-text-end" style="padding-right: 2rem;">
+                                    <a th:href="@{/MRYnZpAsC9sp/servicos/editar/{id}(id=${servico.id})}" 
+                                       class="gwj-btn gwj-btn-outline-primary gwj-btn-sm" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/MRYnZpAsC9sp/servicos/excluir/{id}(id=${servico.id})}" 
+                                       onclick="return confirm('Deseja realmente excluir este serviço?');"
+                                       class="gwj-btn gwj-btn-outline-danger gwj-btn-sm" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${servicos == null or #lists.isEmpty(servicos)}">
+                                <td colspan="6" class="gwj-text-center gwj-p-4" style="color: var(--gwj-text-muted);">
+                                    Nenhum serviço cadastrado até o momento.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

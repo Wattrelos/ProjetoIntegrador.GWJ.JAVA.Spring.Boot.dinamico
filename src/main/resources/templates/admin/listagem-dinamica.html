@@ -22,8 +22,7 @@
             th:with="permissao=${
             entidadeNome == 'Cliente' ? 'GERENCIAR_CLIENTES' : 
             (entidadeNome == 'Servico' ? 'GERENCIAR_SERVICOS' : 
-            (entidadeNome == 'Agenda' ? 'AGENDAR_HORARIO' : 
-            (entidadeNome == 'Agendamento' or entidadeNome == 'DiasFuncionamento' or entidadeNome == 'GradeHorarios' ? 'GERENCIAR_TODAS_AGENDAS' : 'ADMIN_ONLY')))}">
+            (entidadeNome == 'Agendamento' or entidadeNome == 'DiasFuncionamento' or entidadeNome == 'GradeHorarios' ? 'GERENCIAR_TODAS_AGENDAS' : 'ADMIN_ONLY'))}">
             
             <div class="gwj-card-header gwj-d-flex gwj-justify-between gwj-align-center">
                 <h3 class="gwj-card-title" th:text="'Listagem de ' + ${entidadeNome}">Listagem</h3>

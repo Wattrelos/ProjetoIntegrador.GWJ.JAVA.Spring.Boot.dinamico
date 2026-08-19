@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{site/fragments/header :: head}"></head>
+
+<body>
+
+    <!-- Substitui o antigo PHP include para inserir o header completo -->
+    <div th:replace="~{site/fragments/header :: header}"></div>
+
+    <main class="wp-block-group alignfull page-main-bg">
+        <div class="alignwide">
+            <h1 class="text-center mb-20">Agende seu Horário</h1>
+            <p class="page-header-subtitle">Escolha o serviço, o profissional e o melhor horário para você.</p>
+
+            <div class="layout-grid">
+
+                <!-- Coluna Esquerda: Escolha de Serviço e Data -->
+                <div class="card-panel flex-col gap-2">
+
+                    <div class="custom-form-group">
+                        <label class="custom-label">1. Qual serviço deseja?</label>
+                        <select class="custom-input" id="selectServico" name="servicoId">
+                            <!-- Serviços do Banco -->
+                            <option th:each="s : ${servicos}" th:if="${s.ativo}" th:value="${s.id}"
+                                th:text="${s.nome} + ' - R$ ' + ${#numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="custom-form-group">
+                        <label class="custom-label">2. Profissional de preferência</label>
+                        <select class="custom-input" id="selectProfissional" name="profissionalId">
+                            <option value="0">Qualquer profissional livre</option>
+                            <!-- Profissionais do Banco -->
+                            <option th:each="p : ${profissionais}" th:value="${p.id}"
+                                th:text="${p.nome} + ' ' + ${p.sobrenome} + (${p.observacao != null && !p.observacao.isBlank()} ? ' (' + ${p.observacao} + ')' : '')">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="custom-form-group">
+                        <label class="custom-label">3. Escolha a Data</label>
+                        <!-- Um campo de data que o navegador renderizará como um mini-calendário -->
+                        <input type="date" id="inputData" class="custom-input">
+                    </div>
+
+                </div>
+
+                <!-- Coluna Direita: Grade de Horários -->
+                <div class="card-panel">
+                    <h3 class="panel-title">4. Horários Disponíveis</h3>
+                    <p class="panel-subtitle" id="labelDataFormatada">Carregando data...</p>
+
+                    <div class="time-slots-grid" id="slotsGrid">
+                        <!-- Inserido dinamicamente via JS -->
+                    </div>
+
+                    <!-- Legenda explicativa dos estados dos slots -->
+                    <div class="slots-legend">
+                        <span class="legend-item"><span class="legend-dot available"></span> Disponível</span>
+                        <span class="legend-item"><span class="legend-dot occupied"></span> Ocupado / Travado</span>
+                        <span class="legend-item"><span class="legend-dot selected"></span> Selecionado</span>
+                    </div>
+
+                    <button type="button" id="btnConfirmar" class="wp-element-button btn-block" disabled>Confirmar e Pagar</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Substitui o antigo PHP include para inserir o footer completo -->
+    <div th:replace="~{site/fragments/footer :: footer}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const selectServico = document.getElementById("selectServico");
+            const selectProfissional = document.getElementById("selectProfissional");
+            const inputData = document.getElementById("inputData");
+            const labelDataFormatada = document.getElementById("labelDataFormatada");
+            const slotsGrid = document.getElementById("slotsGrid");
+            const btnConfirmar = document.getElementById("btnConfirmar");
+
+            let selectedTime = null;
+
+            // 1. Inicializar data com Hoje (fuso local)
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const dataHoje = `${ano}-${mes}-${dia}`;
+            inputData.value = dataHoje;
+            inputData.min = dataHoje;
+
+            // 2. Função para formatar data em português
+            function formatarDataLonga(dataStr) {
+                const partes = dataStr.split('-');
+                if (partes.length !== 3) return dataStr;
+                const dataObj = new Date(partes[0], partes[1] - 1, partes[2]);
+                const opcoes = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                let formatada = dataObj.toLocaleDateString('pt-BR', opcoes);
+                return formatada.charAt(0).toUpperCase() + formatada.slice(1);
+            }
+
+            // 3. Atualizar slots disponíveis via API REST
+            function buscarHorariosDisponiveis() {
+                const servicoId = selectServico.value;
+                const profissionalId = selectProfissional.value;
+                const data = inputData.value;
+
+                if (!data) return;
+
+                labelDataFormatada.textContent = formatarDataLonga(data);
+                btnConfirmar.disabled = true;
+                selectedTime = null;
+
+                // Exibir indicador de carregamento
+                slotsGrid.innerHTML = '<div class="loading-slots">Carregando horários...</div>';
+
+                const url = `/api/agenda/horarios-disponiveis?servicoId=${servicoId}&profissionalId=${profissionalId}&data=${data}`;
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Erro na rede");
+                        return response.json();
+                    })
+                    .then(slots => {
+                        slotsGrid.innerHTML = "";
+                        if (slots.length === 0) {
+                            slotsGrid.innerHTML = '<div class="no-slots">Nenhum horário disponível para esta data.</div>';
+                            return;
+                        }
+
+                        slots.forEach(slot => {
+                            const btn = document.createElement("button");
+                            btn.type = "button";
+                            btn.className = "wp-element-button time-slot-btn";
+                            btn.textContent = slot.horario;
+                            
+                            if (!slot.disponivel) {
+                                btn.disabled = true;
+                                btn.classList.add("is-disabled");
+                            } else {
+                                btn.addEventListener("click", function() {
+                                    // Remove seleção anterior
+                                    const anterior = slotsGrid.querySelector(".is-selected");
+                                    if (anterior) {
+                                        anterior.classList.remove("is-selected");
+                                    }
+                                    
+                                    // Ativa seleção atual
+                                    btn.classList.add("is-selected");
+                                    selectedTime = slot.horario;
+                                    
+                                    // Habilita botão confirmar
+                                    btnConfirmar.disabled = false;
+                                });
+                            }
+                            slotsGrid.appendChild(btn);
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        slotsGrid.innerHTML = '<div class="error-slots">Não foi possível carregar os horários. Tente novamente.</div>';
+                    });
+            }
+
+            // 4. Escutadores de Eventos
+            selectServico.addEventListener("change", buscarHorariosDisponiveis);
+            selectProfissional.addEventListener("change", buscarHorariosDisponiveis);
+            inputData.addEventListener("change", buscarHorariosDisponiveis);
+
+            // Ação de confirmação
+            btnConfirmar.addEventListener("click", function() {
+                if (!selectedTime) return;
+                const servicoId = selectServico.value;
+                const profissionalId = selectProfissional.value;
+                const data = inputData.value;
+                const dataHora = `${data}T${selectedTime}:00`;
+                
+                let checkoutUrl = `/checkout?servicoId=${servicoId}&dataHora=${dataHora}`;
+                if (profissionalId && profissionalId !== "0") {
+                    checkoutUrl += `&profissionalId=${profissionalId}`;
+                }
+                window.location.href = checkoutUrl;
+            });
+
+            // Checar se há servicoId na URL e pre-selecionar
+            const urlParams = new URLSearchParams(window.location.search);
+            const servicoIdParam = urlParams.get('servicoId');
+            if (servicoIdParam) {
+                if (Array.from(selectServico.options).some(option => option.value === servicoIdParam)) {
+                    selectServico.value = servicoIdParam;
+                }
+            }
+
+            // Carregar horários inicialmente
+            buscarHorariosDisponiveis();
+        });
+    </script>
+</body>
+
+</html>

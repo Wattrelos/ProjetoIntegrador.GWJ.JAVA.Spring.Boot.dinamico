@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Configurações da Barbearia - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Breadcrumb -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;">Configurações do Sistema</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Parâmetros gerais, dados da barbearia e funcionamento</p>
+            </div>
+            <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                <i class="bi bi-arrow-left"></i> Voltar ao Painel
+            </a>
+        </div>
+
+        <!-- Settings List Card -->
+        <div class="gwj-card" style="max-width: 900px;">
+            <div class="gwj-card-header">
+                <h5 class="gwj-card-title">Parâmetros Ativos</h5>
+            </div>
+            <div class="gwj-card-body gwj-p-0">
+                <div class="gwj-table-responsive">
+                    <table class="gwj-table">
+                        <thead>
+                            <tr>
+                                <th>Chave / Parâmetro</th>
+                                <th>Valor Atual</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="gwj-table-row" th:each="cfg : ${settings}">
+                                <td style="font-weight: 600; color: var(--gwj-primary-color);" th:text="${cfg.chave}">nome_empresa</td>
+                                <td style="font-weight: 500; color: var(--gwj-text-dark);" th:text="${cfg.valor}">Tgo's Barbearia</td>
+                                <td style="color: var(--gwj-text-muted);" th:text="${cfg.descricao}">Nome exibido no cabeçalho</td>
+                            </tr>
+                            <tr th:if="${settings == null or #lists.isEmpty(settings)}">
+                                <td colspan="3" class="gwj-text-center gwj-p-4" style="color: var(--gwj-text-muted);">
+                                    Nenhuma configuração cadastrada.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

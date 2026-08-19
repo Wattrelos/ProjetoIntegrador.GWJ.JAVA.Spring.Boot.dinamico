@@ -26,7 +26,7 @@ public class AdminPedidoController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "admin/pedidos/listar";
+        return "admin/order/order/listar";
     }
 
     @GetMapping("/MRYnZpAsC9sp/pedidos/detalhe")
@@ -42,7 +42,7 @@ public class AdminPedidoController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "admin/pedidos/detalhe";
+        return "admin/order/order/detalhe";
     }
 
     @PostMapping("/MRYnZpAsC9sp/pedidos/atualizar-status")

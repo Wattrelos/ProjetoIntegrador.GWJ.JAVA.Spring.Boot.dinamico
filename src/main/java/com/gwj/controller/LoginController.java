@@ -36,7 +36,7 @@ public class LoginController {
         if (sucesso != null && !sucesso.isBlank()) {
             model.addAttribute("sucesso", "Cadastro realizado com sucesso! Faça login para continuar.");
         }
-        return "login"; // Deve existir um arquivo login.html na pasta templates
+        return "site/auth/login"; // Deve existir um arquivo login.html na pasta templates
     }
 
     @GetMapping("/cadastro")
@@ -44,7 +44,7 @@ public class LoginController {
         if (session != null && session.getAttribute("usuarioLogado") != null) {
             return "redirect:/";
         }
-        return "cadastro";
+        return "site/auth/cadastro";
     }
 
     @PostMapping("/cadastro")
@@ -72,7 +72,7 @@ public class LoginController {
                     model.addAttribute("sobrenome", sobrenome);
                     model.addAttribute("email", email);
                     model.addAttribute("telefone", telefone);
-                    return "cadastro";
+                    return "site/auth/cadastro";
                 }
             }
 
@@ -100,7 +100,7 @@ public class LoginController {
             model.addAttribute("sobrenome", sobrenome);
             model.addAttribute("email", email);
             model.addAttribute("telefone", telefone);
-            return "cadastro";
+            return "site/auth/cadastro";
         }
     }
 
@@ -142,7 +142,7 @@ public class LoginController {
         }
 
         model.addAttribute("erro", "E-mail ou senha inválidos.");
-        return "login";
+        return "site/auth/login";
     }
 
     @GetMapping("/logout")
@@ -165,7 +165,7 @@ public class LoginController {
             }
             return "redirect:/MRYnZpAsC9sp";
         }
-        return "admin/login";
+        return "admin/auth/login";
     }
 
     @PostMapping("/MRYnZpAsC9sp/login")
@@ -196,7 +196,7 @@ public class LoginController {
                 // Impede clientes (Perfil 4) de logarem no painel administrativo
                 if (usuarioBanco.getPerfil() != null && usuarioBanco.getPerfil().getId() == 4L) {
                     model.addAttribute("erro", "Acesso negado: esta área é restrita a administradores.");
-                    return "admin/login";
+                    return "admin/auth/login";
                 }
 
                 HttpSession session = request.getSession();
@@ -206,7 +206,7 @@ public class LoginController {
         }
 
         model.addAttribute("erro", "E-mail ou senha inválidos.");
-        return "admin/login";
+        return "admin/auth/login";
     }
 
     @GetMapping("/MRYnZpAsC9sp/logout")

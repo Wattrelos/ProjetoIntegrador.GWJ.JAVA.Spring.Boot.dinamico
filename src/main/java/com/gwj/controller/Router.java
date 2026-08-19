@@ -28,7 +28,7 @@ public class Router {
         IService<IEntity> service = ServiceRegistry.getService("Servico");
         List<IEntity> servicos = service.read(servicoBase);
         model.addAttribute("servicos", servicos);
-        return "home";
+        return "site/pages/home";
     }
 
     @GetMapping("/servicos")
@@ -43,22 +43,22 @@ public class Router {
         List<IEntity> profissionais = profService.read(profissionalBase);
         model.addAttribute("profissionais", profissionais);
 
-        return "servicos";
+        return "site/booking/servicos";
     }
 
     @GetMapping("/sobre-nos")
     public String sobre() {
-        return "sobre";
+        return "site/pages/sobre";
     }
 
     @GetMapping("/contato")
     public String contato() {
-        return "contato";
+        return "site/pages/contato";
     }
 
     @GetMapping({ "/cart", "/carrinho" })
     public String carrinho() {
-        return "carrinho";
+        return "site/cart/carrinho";
     }
 
     @GetMapping("/checkout")
@@ -132,7 +132,7 @@ public class Router {
             e.printStackTrace();
         }
 
-        return "checkout";
+        return "site/cart/checkout";
     }
 
     @GetMapping("/order-confirmation")
@@ -159,7 +159,7 @@ public class Router {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "order-confirmation";
+        return "site/cart/order-confirmation";
     }
 
     @GetMapping("/compra-confirmada")
@@ -177,7 +177,7 @@ public class Router {
                 e.printStackTrace();
             }
         }
-        return "compra-confirmada";
+        return "site/cart/compra-confirmada";
     }
 
     @GetMapping("/loja")
@@ -186,7 +186,7 @@ public class Router {
         IService<IEntity> service = ServiceRegistry.getService("Produto");
         List<IEntity> produtos = service.read(produtoBase);
         model.addAttribute("produtos", produtos);
-        return "loja";
+        return "site/catalog/loja";
     }
 
     @GetMapping("/single-product")
@@ -201,7 +201,7 @@ public class Router {
                 model.addAttribute("produto", resultados.get(0));
             }
         }
-        return "single-product";
+        return "site/catalog/single-product";
     }
 
     @GetMapping({ "/pedidos", "/meus-agendamentos" })
@@ -247,6 +247,6 @@ public class Router {
             e.printStackTrace();
         }
 
-        return "meus-agendamentos";
+        return "site/booking/meus-agendamentos";
     }
 }

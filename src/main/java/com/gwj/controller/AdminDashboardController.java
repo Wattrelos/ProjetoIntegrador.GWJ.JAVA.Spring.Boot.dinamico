@@ -50,7 +50,7 @@ public class AdminDashboardController {
             }
         }
         model.addAttribute("entidades", nomesClasses);
-        return "admin/dashboard";
+        return "admin/dashboard/index";
     }
 
 }

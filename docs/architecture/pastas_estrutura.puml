@@ -1,0 +1,86 @@
+@startfiles
+.
+├── .agents/
+│   └── skills/
+│       └── persistencia-contexto/
+├── .gemini/
+├── .mvn/
+│   └── wrapper/
+├── changelog/
+├── docs/
+│   ├── UserStory/
+│   ├── adr/
+│   ├── architecture/
+│   ├── business/
+│   ├── diagramas/
+│   ├── prd/
+│   ├── requirements/
+│   │   ├── functional/
+│   │   └── non_functional/
+│   ├── ssd/
+│   └── workflows/
+│       ├── activity/
+│       ├── activity_diagrams/
+│       └── sequence/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── gwj/
+│   │   │           ├── controller/
+│   │   │           ├── model/
+│   │   │           │   ├── dataAccessObject/
+│   │   │           │   ├── dataTransferObject/
+│   │   │           │   │   └── dto/
+│   │   │           │   ├── domain/
+│   │   │           │   │   ├── entities/
+│   │   │           │   │   └── factory/
+│   │   │           │   └── repository/
+│   │   │           └── service/
+│   │   │               └── transaction/
+│   │   └── resources/
+│   │       ├── static/
+│   │       │   ├── .well-known/
+│   │       │   ├── assets/
+│   │       │   │   └── fonts/
+│   │       │   ├── css/
+│   │       │   ├── fonts/
+│   │       │   ├── img/
+│   │       │   └── js/
+│   │       └── templates/
+│   │           ├── admin/                          # 🗄️ Templates do Painel de Controle (Backoffice)
+│   │           │   ├── auth/                       # 🔐 Login e Autenticação administrativa
+│   │           │   ├── catalog/                    # 🛍️ Catálogo
+│   │           │   │   ├── category/               # 🏷️ Categorias de produtos e serviços
+│   │           │   │   ├── product/                # 🧴 Gestão de produtos oferecidos pela barbearia
+│   │           │   │   └── service/                # ✂️ Gestão de serviços (corte de cabelo, barba, etc.)
+│   │           │   ├── customer/                   # 👥 Gestão de clientes
+│   │           │   │   ├── address/                # 📍 Gestão de endereços
+│   │           │   │   └── customer/               # 👤 Gestão de dados dos clientes
+│   │           │   ├── dashboard/                  # 📊 Dashboard principal e métricas
+│   │           │   ├── fragments/                  # 🧩 Componentes reutilizáveis do admin (sidebar, topbar, cards)
+│   │           │   ├── layouts/                    # 📐 Layout base do admin (main-layout.html)
+│   │           │   ├── order/                      # 📦 Gestão de pedidos e agendamentos
+│   │           │   │   ├── booking/                # 📅 Gestão de agendamentos de serviços
+│   │           │   │   └── order/                  # 🛒 Gestão de pedidos de compras/produtos
+│   │           │   ├── setting/                    # ⚙️ Configurações gerais do sistema
+│   │           │   │   └── store-setting/          # 💈 Configurações da barbearia e horários
+│   │           │   └── staff/                      # 💈 Gestão de profissionais e funcionários
+│   │           └── site/                           # 🖥️ Templates da Área Pública / Cliente
+│   │               ├── auth/                       # 🔐 Login, Cadastro e Recuperação de conta
+│   │               ├── booking/                    # 📅 Agendamento de horários e Meus Agendamentos
+│   │               ├── cart/                       # 🛒 Carrinho, Checkout e Confirmação de Pedido
+│   │               ├── catalog/                    # 🛍️ Vitrine de produtos e detalhes do produto
+│   │               ├── errors/                     # 🔧 Páginas de erro (error, 404, 500)
+│   │               ├── fragments/                  # 🧩 Fragmentos públicos (header, footer, cards)
+│   │               ├── layouts/                    # 📐 Layout base público (main-layout.html)
+│   │               ├── pages/                      # ℹ️ Páginas institucionais (home, sobre-nós, contato)
+│   │               └── user/                       # 👤 Área do cliente (perfil, endereços)
+│   └── test/
+│       └── java/
+│           └── com/
+│               └── gwj/
+│                   └── service/
+└── tests/
+    └── scripts_uteis/
+@endfiles

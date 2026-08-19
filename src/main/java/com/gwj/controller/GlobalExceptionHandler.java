@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", "Desculpe, a página que você está procurando não existe ou foi movida.");
         model.addAttribute("path", request.getRequestURI());
         
-        return "error"; // Renderiza templates/error.html
+        return "site/errors/error"; // Renderiza templates/site/errors/error.html
     }
 
     // Captura o erro 404 específico para arquivos/recursos estáticos não encontrados (Spring 3.2+)
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", "O recurso (CSS, JS, Imagem, etc.) que o navegador tentou carregar não existe.");
         model.addAttribute("path", request.getRequestURI());
         
-        return "error";
+        return "site/errors/error";
     }
 
     // Captura qualquer outra exceção genérica (Erro 500)
@@ -45,6 +45,6 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", "Ocorreu um erro inesperado em nossos servidores. Nossa equipe foi notificada.");
         model.addAttribute("path", request.getRequestURI());
         
-        return "error"; // Renderiza templates/error.html
+        return "site/errors/error"; // Renderiza templates/site/errors/error.html
     }
 }

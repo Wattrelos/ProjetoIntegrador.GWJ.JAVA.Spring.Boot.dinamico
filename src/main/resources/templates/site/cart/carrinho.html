@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{site/layouts/main-layout}">
+<head>
+    <title>Carrinho - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull page-main-bg">
+            <div class="alignwide">
+                <h1 class="mb-40">Seu Carrinho</h1>
+                
+                <!-- Carrinho Ativo -->
+                <div th:if="${carrinho.quantidadeTotal > 0}">
+                    <!-- Tabela de Produtos Dinâmicos -->
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th class="py-1-0">Produto</th>
+                                    <th>Preço</th>
+                                    <th>Quantidade</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${carrinho.listaItens}" th:data-id="${item.produto.id}">
+                                    <td class="product-cell">
+                                        <img th:src="${item.produto.imagem != null and item.produto.imagem != '' ? item.produto.imagem : '/img/no-image.png'}" th:alt="${item.produto.nome}" class="product-img-sm">
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span class="product-title-sm" th:text="${item.produto.nome}">Nome do Produto</span>
+                                            <button class="btn-remove-item" th:onclick="'removerItemPagina(' + ${item.produto.id} + ')'" style="background: none; border: none; color: #ff6666; font-size: 0.85rem; text-align: left; padding: 0; margin-top: 5px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                                <i class="bi bi-trash"></i> Remover
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td th:text="'R$ ' + ${#numbers.formatDecimal(item.produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                                    <td>
+                                        <input type="number" th:value="${item.quantidade}" min="1" class="qty-input" th:onchange="'atualizarQuantidadePagina(' + ${item.produto.id} + ', this.value)'">
+                                    </td>
+                                    <td class="text-right"><strong th:text="'R$ ' + ${#numbers.formatDecimal(item.getSubtotal(), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Resumo da Compra / Checkout -->
+                    <div class="cart-summary-wrapper">
+                        <div class="cart-summary-panel">
+                            <h3 class="summary-header">Resumo do Pedido</h3>
+                            <div class="summary-row">
+                                <span>Total:</span>
+                                <strong style="color: var(--primary-color);" th:text="'R$ ' + ${#numbers.formatDecimal(carrinho.valorTotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+                            </div>
+                            <a th:href="@{/carrinho/checkout}" class="wp-element-button btn-checkout" style="width: 100%; border: none; cursor: pointer; text-align: center; display: block; font-weight: bold; border-radius: 6px; text-decoration: none;">
+                                Finalizar Compra
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carrinho Vazio -->
+                <div th:if="${carrinho.quantidadeTotal == 0}" class="empty-cart-container" style="text-align: center; padding: 4rem 1rem;">
+                    <i class="bi bi-cart-x" style="font-size: 80px; color: var(--text-muted); display: block; margin-bottom: 1.5rem;"></i>
+                    <h2 style="margin-bottom: 0.5rem; font-weight: 600;">Seu carrinho está vazio!</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Adicione produtos da nossa loja para continuar.</p>
+                    <a th:href="@{/loja}" class="wp-element-button" style="background-color: var(--text-main); color: var(--card-bg); text-decoration: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: bold; display: inline-block;">Ir para a Loja</a>
+                </div>
+
+            </div>
+        </main>
+    </section>
+
+    <!-- Scripts da Página do Carrinho -->
+    <th:block layout:fragment="scripts">
+        <script>
+            function atualizarQuantidadePagina(produtoId, quantidade) {
+                const qtyVal = parseInt(quantidade);
+                if (qtyVal <= 0) {
+                    removerItemPagina(produtoId);
+                    return;
+                }
+                const formData = new FormData();
+                formData.append('produtoId', produtoId);
+                formData.append('quantidade', qtyVal);
+
+                fetch('/carrinho/atualizar', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        atualizarMiniCartUI(data);
+                    } else {
+                        alert(data.mensagem || 'Erro ao atualizar quantidade.');
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+
+            function removerItemPagina(produtoId) {
+                const formData = new FormData();
+                formData.append('produtoId', produtoId);
+
+                fetch('/carrinho/remover', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        atualizarMiniCartUI(data);
+                    } else {
+                        alert(data.mensagem || 'Erro ao remover item.');
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        </script>
+    </th:block>
+
+</body>
+</html>

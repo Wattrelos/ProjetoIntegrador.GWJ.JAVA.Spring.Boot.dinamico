@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+    xmlns:layout="http://ultraq.net.nz"
+    layout:decorate="~{site/layouts/main-layout}">
+<head>
+    <title th:text="${produto != null ? produto.nome + ' - Nossa Loja' : 'Produto Não Encontrado'}">Detalhes do Produto</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull single-product-main">
+            <div class="alignwide">
+                <!-- Breadcrumbs Dinâmico -->
+                <div class="breadcrumbs">
+                    <a th:href="@{/}">Início</a> &gt; <a th:href="@{/loja}">Loja</a> &gt; <span th:text="${produto != null ? produto.nome : 'Erro'}">Produto</span>
+                </div>
+
+                <!-- Produto: 2 Colunas (Apenas se o produto existir) -->
+                <div th:if="${produto != null}" class="single-product-container">
+                    
+                    <!-- Coluna Esquerda: Imagem -->
+                    <div class="single-product-image-col">
+                        <img th:src="${produto.imagem != null and produto.imagem != '' ? produto.imagem : '/img/no-image.png'}" th:alt="${produto.nome}">
+                    </div>
+
+                    <!-- Coluna Direita: Informações -->
+                    <div class="single-product-info-col">
+                        <h1 class="single-product-title" th:text="${produto.nome}">Nome do Produto</h1>
+                        <strong class="single-product-price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+                        
+                        <p class="single-product-description" th:text="${produto.descricao}">
+                            Descrição do produto...
+                        </p>
+
+                        <!-- Seletor de Quantidade e Botão Adicionar -->
+                        <div class="single-product-actions">
+                            <input type="number" id="productQty" value="1" min="1" th:max="${produto.estoque}" class="single-product-qty">
+                            <button th:onclick="'adicionarAoCarrinhoDoDetalhe(' + ${produto.id} + ')'" class="wp-element-button single-product-add-btn">
+                                <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+
+                        <!-- Detalhes do Produto Dinâmicos -->
+                        <div class="single-product-details">
+                            <h3>Especificações</h3>
+                            <ul>
+                                <li><strong>Marca:</strong> <span th:text="${produto.marca}"></span></li>
+                                <li><strong>Categoria:</strong> <span th:text="${produto.categoria}"></span></li>
+                                <li><strong>Estoque disponível:</strong> <span th:text="${produto.estoque}"></span> unidades</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensagem de erro caso não encontre -->
+                <div th:if="${produto == null}" class="product-not-found">
+                    <h2>Produto não encontrado!</h2>
+                    <p>O produto que você está procurando não existe ou foi removido.</p>
+                    <a th:href="@{/loja}" class="wp-element-button">Voltar para a Loja</a>
+                </div>
+            </div>
+        </main>
+        
+        <script>
+            function adicionarAoCarrinhoDoDetalhe(produtoId) {
+                const qtyInput = document.getElementById("productQty");
+                const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+                if (typeof adicionarAoCarrinho === 'function') {
+                    adicionarAoCarrinho(produtoId, qty);
+                } else {
+                    console.error('Função adicionarAoCarrinho não carregada.');
+                }
+            }
+        </script>
+    </section>
+</body>
+</html>

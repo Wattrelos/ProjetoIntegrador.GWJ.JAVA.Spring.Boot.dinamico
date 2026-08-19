@@ -79,14 +79,6 @@
                 -imagem: String
             }
 
-            class Agenda {
-                -id: Long
-                -nome: String
-                -data: LocalDateTime
-                -profissional: Profissional
-                -cliente: Cliente
-                -listaServico: List<Servico>
-            }
 
             class Agendamento {
                 -id: Long
@@ -137,7 +129,6 @@
     IEntity <|.. Permissao
     IEntity <|.. Endereco
     IEntity <|.. Servico
-    IEntity <|.. Agenda
     IEntity <|.. Agendamento
     IEntity <|.. DiasFuncionamento
     IEntity <|.. GradeHorarios
@@ -151,9 +142,6 @@
     Perfil "0..*" o--> "0..*" Permissao : @ManyToMany (permissoes)
     Cliente "0..*" o--> "0..*" Endereco : @ManyToMany (listaEndereco)
     Profissional "0..*" o--> "0..*" Endereco : @ManyToMany (listaEndereco)
-    Agenda "0..*" --> "1" Profissional : profissional
-    Agenda "0..*" --> "1" Cliente : cliente
-    Agenda "0..*" o--> "0..*" Servico : @ManyToMany (listaServico)
 
     Agendamento "0..*" --> "1" Profissional : profissional
     Agendamento "0..*" --> "1" Servico : servico

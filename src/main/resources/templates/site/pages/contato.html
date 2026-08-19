@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{site/fragments/header :: head}"></head>
+<body>
+    <div th:replace="~{site/fragments/header :: header}"></div>
+
+    <main class="wp-block-group alignfull" style="margin-top:0; padding: var(--wp--preset--spacing--50) 0;">
+        <div class="alignwide">
+            <h1 class="page-title">Entre em Contato</h1>
+            <p class="page-subtitle">Tem alguma dúvida ou sugestão? Preencha o formulário abaixo ou utilize um de nossos canais de atendimento.</p>
+
+            <div class="contact-page-grid">
+                <!-- Coluna de Informações -->
+                <div class="contact-info">
+                    <h3>Nossas Informações</h3>
+                    <p>Estamos sempre prontos para te atender. Seja para agendar um horário ou para tirar dúvidas, nossa equipe está à disposição.</p>
+                    
+                    <div class="info-item">
+                        <h4><span class="icon">📍</span> Endereço</h4>
+                        <p style="white-space: pre-line;" th:text="${empresa.endereco_completo}">Rua Principal, 123, Centro<br>Cidade, Estado - CEP 12345-678</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4><span class="icon">📞</span> Telefone e WhatsApp</h4>
+                        <p th:text="${empresa.telefone}">(11) 99999-9999</p>
+                    </div>
+
+                    <div class="info-item">
+                        <h4><span class="icon">✉️</span> E-mail</h4>
+                        <p th:text="${empresa.email}">contato@tgosbarbearia.com</p>
+                    </div>
+
+                    <div class="info-item">
+                        <h4><span class="icon">⏰</span> Horário de Funcionamento</h4>
+                        <p style="white-space: pre-line;" th:text="${empresa.horarios}">Segunda a Sábado<br>Das 09:00 às 20:00</p>
+                    </div>
+                </div>
+
+                <!-- Coluna do Formulário -->
+                <div class="contact-form-container">
+                    <h3>Envie uma Mensagem</h3>
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <label for="nome">Seu Nome</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Seu E-mail</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="assunto">Assunto</label>
+                            <input type="text" id="assunto" name="assunto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mensagem">Sua Mensagem</label>
+                            <textarea id="mensagem" name="mensagem" rows="6" required></textarea>
+                        </div>
+                        <button type="submit" class="wp-element-button">Enviar Mensagem</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{site/fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz"
+      layout:decorate="~{site/layouts/main-layout}">
+<head>
+    <title th:text="'Sobre Nós - ' + ${empresa.nome}">Sobre Nós - Barbearia</title>
+</head>
+<body>
+
+    <section layout:fragment="content">
+        <main class="wp-block-group alignfull sobre-main">
+            <div class="alignwide">
+                <div class="sobre-container">
+                    <!-- Coluna da Imagem -->
+                    <div class="sobre-col">
+                        <img th:src="${empresa.sobre_imagem}" th:alt="'Interior - ' + ${empresa.nome}" class="sobre-img">
+                    </div>
+                    
+                    <!-- Coluna de Texto -->
+                    <div class="sobre-col">
+                        <h1 class="sobre-title" th:text="${empresa.sobre_titulo}">Tradição e Estilo</h1>
+                        <p class="sobre-text-1" th:text="${empresa.sobre_texto1}">
+                            Fundada com o propósito de resgatar a clássica experiência de ir ao barbeiro, nossa Barbearia une o ambiente nostálgico com as mais modernas técnicas de visagismo masculino.
+                        </p>
+                        <p class="sobre-text-2" th:text="${empresa.sobre_texto2}">
+                            Acreditamos que um bom corte de cabelo e uma barba bem feita são fundamentais para a autoestima do homem contemporâneo. Aqui, cada cliente é tratado como um amigo. Sente-se, tome um café ou uma cerveja gelada e deixe o visual por nossa conta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>

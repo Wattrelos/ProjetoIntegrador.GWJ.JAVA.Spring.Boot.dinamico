@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Gestão de Clientes - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Ações -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;">Gestão de Clientes</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Base de clientes cadastrados na barbearia</p>
+            </div>
+            <div class="gwj-d-flex gwj-gap-2">
+                <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                    <i class="bi bi-arrow-left"></i> Painel
+                </a>
+                <a th:href="@{/MRYnZpAsC9sp/clientes/novo}" class="gwj-btn gwj-btn-primary gwj-btn-sm">
+                    <i class="bi bi-plus-lg"></i> Novo Cliente
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabela Card -->
+        <div class="gwj-card">
+            <div class="gwj-card-header gwj-d-flex gwj-justify-between gwj-align-center">
+                <h5 class="gwj-card-title">Lista de Clientes Cadastrados</h5>
+                <span class="gwj-badge gwj-badge-info" th:text="${clientes != null ? clientes.size() + ' cliente(s)' : '0 clientes'}">0 clientes</span>
+            </div>
+            <div class="gwj-card-body gwj-p-0">
+                <div class="gwj-table-responsive">
+                    <table class="gwj-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Nome</th>
+                                <th>Sobrenome</th>
+                                <th>CPF</th>
+                                <th>Telefone</th>
+                                <th class="gwj-text-end" style="width: 160px; padding-right: 2rem;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="gwj-table-row" th:each="cli : ${clientes}">
+                                <td th:text="'#' + ${cli.id}">#1</td>
+                                <td style="font-weight: 600; color: var(--gwj-text-dark);" th:text="${cli.nome}">João</td>
+                                <td th:text="${cli.sobrenome != null ? cli.sobrenome : '—'}">Silva</td>
+                                <td th:text="${cli.cpf != null ? cli.cpf : '—'}">123.456.789-00</td>
+                                <td th:text="${cli.telefone != null ? cli.telefone : '—'}">(11) 99999-9999</td>
+                                <td class="gwj-text-end" style="padding-right: 2rem;">
+                                    <a th:href="@{/MRYnZpAsC9sp/clientes/editar/{id}(id=${cli.id})}" 
+                                       class="gwj-btn gwj-btn-outline-primary gwj-btn-sm" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/MRYnZpAsC9sp/clientes/excluir/{id}(id=${cli.id})}" 
+                                       onclick="return confirm('Deseja realmente excluir este cliente?');"
+                                       class="gwj-btn gwj-btn-outline-danger gwj-btn-sm" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${clientes == null or #lists.isEmpty(clientes)}">
+                                <td colspan="6" class="gwj-text-center gwj-p-4" style="color: var(--gwj-text-muted);">
+                                    Nenhum cliente cadastrado até o momento.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

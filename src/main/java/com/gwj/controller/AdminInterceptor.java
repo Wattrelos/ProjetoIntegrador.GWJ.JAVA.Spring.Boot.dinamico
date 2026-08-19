@@ -53,7 +53,6 @@ public class AdminInterceptor implements HandlerInterceptor {
             String permissaoNecessaria = "ADMIN_ONLY"; // Bloqueio padrão para classes não mapeadas
             if ("Cliente".equalsIgnoreCase(entidade)) permissaoNecessaria = "GERENCIAR_CLIENTES";
             else if ("Servico".equalsIgnoreCase(entidade)) permissaoNecessaria = "GERENCIAR_SERVICOS";
-            else if ("Agenda".equalsIgnoreCase(entidade)) permissaoNecessaria = "AGENDAR_HORARIO";
 
             // Se o usuário não possuir a permissão estipulada, barra e redireciona ao painel principal
             if (!usuarioLogado.hasPermissao(permissaoNecessaria)) {

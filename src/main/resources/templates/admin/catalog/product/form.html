@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title th:text="${produto.id != null ? 'Editar Produto - Admin' : 'Novo Produto - Admin'}">Produto - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Breadcrumb -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;" th:text="${produto.id != null ? 'Editar Produto #' + produto.id : 'Cadastrar Novo Produto'}">Novo Produto</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Preencha os dados do produto para disponibilizar no catálogo</p>
+            </div>
+            <a th:href="@{/MRYnZpAsC9sp/produtos}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                <i class="bi bi-arrow-left"></i> Voltar à Lista
+            </a>
+        </div>
+
+        <!-- Form Card -->
+        <div class="gwj-card" style="max-width: 800px;">
+            <div class="gwj-card-header">
+                <h5 class="gwj-card-title">Informações do Produto</h5>
+            </div>
+            <div class="gwj-card-body">
+                <form th:action="@{/MRYnZpAsC9sp/produtos/salvar}" method="POST">
+                    <input type="hidden" name="id" th:value="${produto.id}">
+
+                    <div class="gwj-form-group">
+                        <label class="gwj-label" for="nome">Nome do Produto *</label>
+                        <input type="text" id="nome" name="nome" class="gwj-input" th:value="${produto.nome}" required placeholder="Ex: Pomada Efeito Matte 150g">
+                    </div>
+
+                    <div class="gwj-form-group">
+                        <label class="gwj-label" for="descricao">Descrição</label>
+                        <textarea id="descricao" name="descricao" class="gwj-input" rows="3" th:text="${produto.descricao}" placeholder="Descrição detalhada do produto..."></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="preco">Preço (R$) *</label>
+                            <input type="number" step="0.01" id="preco" name="preco" class="gwj-input" th:value="${produto.preco}" required placeholder="0.00">
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="estoque">Quantidade em Estoque *</label>
+                            <input type="number" id="estoque" name="estoque" class="gwj-input" th:value="${produto.estoque != null ? produto.estoque : 0}" required placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="gwj-form-group">
+                        <label class="gwj-label" for="imagem">URL da Imagem</label>
+                        <input type="text" id="imagem" name="imagem" class="gwj-input" th:value="${produto.imagem}" placeholder="https://exemplo.com/imagem.png ou /img/produtos/pomada.png">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="categoria">Categoria</label>
+                            <input type="text" id="categoria" name="categoria" class="gwj-input" th:value="${produto.categoria}" placeholder="Ex: Cabelo, Barba, Acessórios">
+                        </div>
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="marca">Marca</label>
+                            <input type="text" id="marca" name="marca" class="gwj-input" th:value="${produto.marca}" placeholder="Ex: BarberPro">
+                        </div>
+                    </div>
+
+                    <div class="gwj-d-flex gwj-justify-end gwj-gap-2 gwj-mt-4">
+                        <a th:href="@{/MRYnZpAsC9sp/produtos}" class="gwj-btn gwj-btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="gwj-btn gwj-btn-primary">
+                            <i class="bi bi-check-lg"></i> Salvar Produto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

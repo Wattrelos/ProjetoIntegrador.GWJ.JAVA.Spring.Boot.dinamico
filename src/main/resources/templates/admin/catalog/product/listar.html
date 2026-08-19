@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" 
+      xmlns:layout="http://ultraq.net.nz" 
+      layout:decorate="~{admin/layouts/main-layout}">
+<head>
+    <title>Gestão de Produtos - Admin</title>
+</head>
+<body>
+    
+    <main layout:fragment="content" class="gwj-p-4">
+        
+        <!-- Header / Ações -->
+        <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
+            <div>
+                <h1 style="font-size: 1.8rem; margin: 0;">Gestão de Produtos</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Catálogo de produtos vendidos no mini-shopping da barbearia</p>
+            </div>
+            <div class="gwj-d-flex gwj-gap-2">
+                <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
+                    <i class="bi bi-arrow-left"></i> Painel
+                </a>
+                <a th:href="@{/MRYnZpAsC9sp/produtos/novo}" class="gwj-btn gwj-btn-primary gwj-btn-sm">
+                    <i class="bi bi-plus-lg"></i> Novo Produto
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabela Card -->
+        <div class="gwj-card">
+            <div class="gwj-card-header gwj-d-flex gwj-justify-between gwj-align-center">
+                <h5 class="gwj-card-title">Lista de Produtos Cadastrados</h5>
+                <span class="gwj-badge gwj-badge-info" th:text="${produtos != null ? produtos.size() + ' produto(s)' : '0 produtos'}">0 produtos</span>
+            </div>
+            <div class="gwj-card-body gwj-p-0">
+                <div class="gwj-table-responsive">
+                    <table class="gwj-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Categoria</th>
+                                <th class="gwj-text-end" style="width: 160px; padding-right: 2rem;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="gwj-table-row" th:each="produto : ${produtos}">
+                                <td th:text="'#' + ${produto.id}">#1</td>
+                                <td>
+                                    <div class="gwj-d-flex gwj-align-center gwj-gap-3">
+                                        <img th:if="${produto.imagem != null && !produto.imagem.isBlank()}" 
+                                             th:src="${produto.imagem}" 
+                                             alt="Imagem do Produto" 
+                                             style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--gwj-border-color);">
+                                        <div>
+                                            <span style="font-weight: 600; color: var(--gwj-text-dark); display: block;" th:text="${produto.nome}">Pomada Modeladora</span>
+                                            <small style="color: var(--gwj-text-muted);" th:text="${produto.descricao != null and #strings.length(produto.descricao) > 40 ? #strings.substring(produto.descricao, 0, 40) + '...' : produto.descricao}">Descrição...</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="font-weight: 600; color: var(--gwj-primary-color);" 
+                                    th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 1, 'POINT', 2, 'COMMA')}">R$ 45,00</td>
+                                <td>
+                                    <span th:text="${produto.estoque != null ? produto.estoque : 0}">10</span>
+                                </td>
+                                <td>
+                                    <span class="gwj-badge gwj-badge-info" th:text="${produto.categoria != null and !produto.categoria.isBlank() ? produto.categoria : (produto.marca != null ? produto.marca : 'Geral')}">Geral</span>
+                                </td>
+                                <td class="gwj-text-end" style="padding-right: 2rem;">
+                                    <a th:href="@{/MRYnZpAsC9sp/produtos/editar/{id}(id=${produto.id})}" 
+                                       class="gwj-btn gwj-btn-outline-primary gwj-btn-sm" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/MRYnZpAsC9sp/produtos/excluir/{id}(id=${produto.id})}" 
+                                       onclick="return confirm('Deseja realmente excluir este produto?');"
+                                       class="gwj-btn gwj-btn-outline-danger gwj-btn-sm" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${produtos == null or #lists.isEmpty(produtos)}">
+                                <td colspan="6" class="gwj-text-center gwj-p-4" style="color: var(--gwj-text-muted);">
+                                    Nenhum produto cadastrado até o momento.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

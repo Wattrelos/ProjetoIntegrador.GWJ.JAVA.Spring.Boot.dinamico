@@ -116,7 +116,7 @@ public class GenericViewController {
             return "admin/create";
         }
 
-        return "error"; // Ou redirecionamento para lista
+        return "site/errors/error"; // Ou redirecionamento para lista
     }
 
     @GetMapping("/MRYnZpAsC9sp/listar/{entity}")
@@ -177,7 +177,7 @@ public class GenericViewController {
             return "admin/detalhe";
         }
 
-        return "error"; // Ou redirecionamento para lista
+        return "site/errors/error"; // Ou redirecionamento para lista
     }
 
     @GetMapping("MRYnZpAsC9sp/editar/{entity}")
@@ -232,6 +232,6 @@ public class GenericViewController {
             return "admin/edit";
         }
 
-        return "error"; // Ou redirecionamento para lista
+        return "site/errors/error"; // Ou redirecionamento para lista
     }
 }

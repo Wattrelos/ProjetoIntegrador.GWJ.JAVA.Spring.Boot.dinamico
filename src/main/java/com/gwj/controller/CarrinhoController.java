@@ -149,7 +149,7 @@ public class CarrinhoController {
                 e.printStackTrace();
             }
         }
-        return "carrinho-checkout";
+        return "site/cart/carrinho-checkout";
     }
 
     @PostMapping("/carrinho/checkout/confirmar")

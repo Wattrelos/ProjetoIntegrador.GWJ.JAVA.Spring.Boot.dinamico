@@ -51,29 +51,7 @@ INSERT IGNORE INTO `permissoes` (`id`, `nome`, `descricao`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Estrutura para tabela `tab_agenda`
---
 
-CREATE TABLE IF NOT EXISTS `tab_agenda` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) DEFAULT NULL,
-  `data` datetime NOT NULL DEFAULT current_timestamp(),
-  `cliente_id` bigint(20) DEFAULT NULL,
-  `profissional_id` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_agenda_cliente` (`cliente_id`),
-  KEY `fk_agenda_profissional` (`profissional_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Despejando dados para a tabela `tab_agenda`
---
-
-INSERT IGNORE INTO `tab_agenda` (`id`, `nome`, `data`, `cliente_id`, `profissional_id`) VALUES
-(1, 'Corte Semanal', '2023-10-27 14:00:00', 3, 2);
-
--- --------------------------------------------------------
 
 --
 -- Estrutura para tabela `tab_agendamento`
@@ -125,26 +103,7 @@ INSERT IGNORE INTO `tab_agendamento` (`id`, `cliente_nome`, `cliente_telefone`, 
 
 -- --------------------------------------------------------
 
---
--- Estrutura para tabela `tab_agenda_servico`
---
 
-CREATE TABLE IF NOT EXISTS `tab_agenda_servico` (
-  `agenda_id` bigint(20) NOT NULL,
-  `servico_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`agenda_id`,`servico_id`),
-  KEY `fk_link_servico` (`servico_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Despejando dados para a tabela `tab_agenda_servico`
---
-
-INSERT IGNORE INTO `tab_agenda_servico` (`agenda_id`, `servico_id`) VALUES
-(1, 1),
-(1, 2);
-
--- --------------------------------------------------------
 
 --
 -- Estrutura para tabela `tab_cliente`
@@ -773,12 +732,7 @@ INSERT IGNORE INTO `tab_usuario` (`id`, `perfil_id`, `nome_usuario`, `email`, `s
 -- Restrições para tabelas despejadas
 --
 
---
--- Restrições para tabelas `tab_agenda`
---
-ALTER TABLE `tab_agenda`
-  ADD CONSTRAINT `fk_agenda_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `tab_cliente` (`id`),
-  ADD CONSTRAINT `fk_agenda_profissional` FOREIGN KEY (`profissional_id`) REFERENCES `tab_profissional` (`id`);
+
 
 --
 -- Restrições para tabelas `tab_agendamento`
@@ -786,12 +740,7 @@ ALTER TABLE `tab_agenda`
 ALTER TABLE `tab_agendamento`
   ADD CONSTRAINT `fk_agendamento_grade_horarios` FOREIGN KEY (`grade_horarios_id`) REFERENCES `tab_grade_horarios` (`id`) ON DELETE SET NULL;
 
---
--- Restrições para tabelas `tab_agenda_servico`
---
-ALTER TABLE `tab_agenda_servico`
-  ADD CONSTRAINT `fk_link_agenda` FOREIGN KEY (`agenda_id`) REFERENCES `tab_agenda` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_link_servico` FOREIGN KEY (`servico_id`) REFERENCES `tab_servico` (`id`) ON DELETE CASCADE;
+
 
 --
 -- Restrições para tabelas `tab_cliente`
