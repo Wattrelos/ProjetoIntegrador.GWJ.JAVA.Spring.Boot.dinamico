@@ -41,36 +41,46 @@ public class AdminInterceptor implements HandlerInterceptor {
             return true; 
         }
 
-        // O Spring Boot salva as variáveis de rota (como o {entity}) neste atributo especial
-        @SuppressWarnings("unchecked")
-        Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        // Identifica a permissão necessária com base na URL do módulo acessado
+        String uri = request.getRequestURI();
+        String modulo = null;
+        String permissaoNecessaria = null;
 
-        // Verifica se a URL acessada exigia uma entidade específica (como nas rotas /listar, /create, /editar)
-        if (pathVariables != null && pathVariables.containsKey("entity")) {
-            String entidade = pathVariables.get("entity");
-            
-            // Mapeia qual permissão é necessária para a entidade acessada
-            String permissaoNecessaria = "ADMIN_ONLY"; // Bloqueio padrão para classes não mapeadas
-            if ("Cliente".equalsIgnoreCase(entidade)) permissaoNecessaria = "GERENCIAR_CLIENTES";
-            else if ("Servico".equalsIgnoreCase(entidade)) permissaoNecessaria = "GERENCIAR_SERVICOS";
-
-            // Se o usuário não possuir a permissão estipulada, barra e redireciona ao painel principal
-            if (!usuarioLogado.hasPermissao(permissaoNecessaria)) {
-                
-                // Cria uma mensagem Flash (disponível apenas na próxima requisição e some ao atualizar a página)
-                FlashMap flashMap = new FlashMap();
-                flashMap.put("mensagemErro", "Acesso Negado: Você não possui permissão para gerenciar " + entidade + ".");
-                FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(request);
-                if (flashMapManager != null) {
-                    flashMapManager.saveOutputFlashMap(flashMap, request, response);
-                }
-
-                // Corrigido o caminho do redirecionamento
-                response.sendRedirect(request.getContextPath() + "/MRYnZpAsC9sp");
-                return false; // Interrompe a requisição (O Controller nem chega a ser acionado)
+        if (uri.contains("/MRYnZpAsC9sp/clientes")) {
+            modulo = "Clientes";
+            permissaoNecessaria = "GERENCIAR_CLIENTES";
+        } else if (uri.contains("/MRYnZpAsC9sp/servicos")) {
+            modulo = "Serviços";
+            permissaoNecessaria = "GERENCIAR_SERVICOS";
+        } else if (uri.contains("/MRYnZpAsC9sp/produtos")) {
+            modulo = "Produtos / Estoque";
+            permissaoNecessaria = "GERENCIAR_ESTOQUE";
+        } else if (uri.contains("/MRYnZpAsC9sp/agendamentos")) {
+            modulo = "Agendamentos";
+            // Permite quem tem permissão de gerenciar agendas ou agendar horário
+            if (!usuarioLogado.hasPermissao("GERENCIAR_TODAS_AGENDAS") 
+                    && !usuarioLogado.hasPermissao("AGENDAR_HORARIO")
+                    && !usuarioLogado.hasPermissao("VISUALIZAR_PROPRIA_AGENDA")) {
+                permissaoNecessaria = "GERENCIAR_TODAS_AGENDAS";
             }
+        } else if (uri.contains("/MRYnZpAsC9sp/profissionais") || uri.contains("/MRYnZpAsC9sp/configuracoes")) {
+            modulo = "Administração / Configurações";
+            permissaoNecessaria = "ADMIN_ONLY";
         }
 
-        return true; // Usuário logado, permite continuar o acesso
+        // Se uma permissão específica for requerida e o usuário não a possuir, bloqueia o acesso
+        if (permissaoNecessaria != null && !usuarioLogado.hasPermissao(permissaoNecessaria)) {
+            FlashMap flashMap = new FlashMap();
+            flashMap.put("mensagemErro", "Acesso Negado: Você não possui permissão para gerenciar " + (modulo != null ? modulo : "este módulo") + ".");
+            FlashMapManager flashMapManager = RequestContextUtils.getFlashMapManager(request);
+            if (flashMapManager != null) {
+                flashMapManager.saveOutputFlashMap(flashMap, request, response);
+            }
+
+            response.sendRedirect(request.getContextPath() + "/MRYnZpAsC9sp");
+            return false;
+        }
+
+        return true; // Usuário logado e autorizado
     }
 }

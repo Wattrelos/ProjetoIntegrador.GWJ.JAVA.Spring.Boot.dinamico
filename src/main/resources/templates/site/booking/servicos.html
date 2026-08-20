@@ -23,6 +23,7 @@
                         <select class="custom-input" id="selectServico" name="servicoId">
                             <!-- Serviços do Banco -->
                             <option th:each="s : ${servicos}" th:if="${s.ativo}" th:value="${s.id}"
+                                th:selected="${servicoId != null and servicoId == s.id}"
                                 th:text="${s.nome} + ' - R$ ' + ${#numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')}">
                             </option>
                         </select>

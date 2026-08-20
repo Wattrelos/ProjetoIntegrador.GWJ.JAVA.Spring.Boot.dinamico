@@ -415,6 +415,9 @@ public class GenericRepository<T extends IEntity> implements IRepository<T> {
 
     private String buildWhereClause(IEntity entity) {
         List<String> conditions = new ArrayList<>();
+        if (entity.getId() != null && entity.getId() > 0) {
+            conditions.add("`id` = " + entity.getId());
+        }
         Class<?> clazz = entity.getClass();
         Method[] methods = clazz.getDeclaredMethods();
 

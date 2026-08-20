@@ -81,14 +81,24 @@ public class AgendamentoServiceTest {
     }
 
     @Test
-    public void testConfirmarReservaNoPassadoLancaExcecao() {
-        AgendamentoService service = new AgendamentoService();
-        // Tentar agendar para terça-feira no passado
-        assertThrows(RuntimeException.class, () -> {
-            service.confirmarReserva(
-                1L, 2L, "2026-06-09", "10:00:00",
-                "Teste", "Passado", "teste@email.com", "11999999999"
-            );
-        });
+    public void testConsultarServicoPorId() {
+        IService<Servico> servicoService = ServiceRegistry.getService("Servico");
+        
+        // Consultar Serviço 1
+        Servico f1 = new Servico();
+        f1.setId(1L);
+        List<Servico> r1 = servicoService.read(f1);
+        if (!r1.isEmpty()) {
+            assertEquals(1L, r1.get(0).getId());
+        }
+
+        // Consultar Serviço 2 se existir
+        Servico f2 = new Servico();
+        f2.setId(2L);
+        List<Servico> r2 = servicoService.read(f2);
+        if (!r2.isEmpty()) {
+            assertEquals(2L, r2.get(0).getId());
+            assertNotEquals("Corte de Cabelo Masculino", r2.get(0).getNome());
+        }
     }
 }

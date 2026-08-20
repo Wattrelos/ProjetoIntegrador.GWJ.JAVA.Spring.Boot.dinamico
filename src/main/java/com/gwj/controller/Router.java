@@ -32,7 +32,7 @@ public class Router {
     }
 
     @GetMapping("/servicos")
-    public String servico(Model model) {
+    public String servico(@RequestParam(value = "servicoId", required = false) Long servicoId, Model model) {
         IEntity servicoBase = SimpleObjectFactory.create("Servico");
         IService<IEntity> servicoService = ServiceRegistry.getService("Servico");
         List<IEntity> servicos = servicoService.read(servicoBase);
@@ -42,6 +42,10 @@ public class Router {
         IService<IEntity> profService = ServiceRegistry.getService("Profissional");
         List<IEntity> profissionais = profService.read(profissionalBase);
         model.addAttribute("profissionais", profissionais);
+
+        if (servicoId != null && servicoId > 0) {
+            model.addAttribute("servicoId", servicoId);
+        }
 
         return "site/booking/servicos";
     }

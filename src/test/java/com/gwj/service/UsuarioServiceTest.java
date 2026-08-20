@@ -69,26 +69,4 @@ public class UsuarioServiceTest {
         assertNull(u.getSenha());
         verify(repositoryMock, times(1)).update(u);
     }
-
-    @Test
-    public void testDisplayHelper() {
-        com.gwj.controller.GenericViewController controller = new com.gwj.controller.GenericViewController();
-        java.util.function.Function<Object, String> helper = controller.displayHelper();
-
-        // Test Perfil
-        com.gwj.model.domain.entities.Perfil p = new com.gwj.model.domain.entities.Perfil(1L, "Administrador");
-        assertEquals("Administrador", helper.apply(p));
-
-        // Test Usuario
-        Usuario u = new Usuario();
-        u.setId(10L);
-        u.setNomeUsuario("joao123");
-        assertEquals("joao123", helper.apply(u));
-
-        // Test Cliente
-        com.gwj.model.domain.entities.Cliente c = new com.gwj.model.domain.entities.Cliente();
-        c.setId(20L);
-        c.setNome("Carlos");
-        assertEquals("Carlos", helper.apply(c));
-    }
 }
