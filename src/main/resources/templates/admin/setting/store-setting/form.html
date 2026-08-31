@@ -12,45 +12,156 @@
         <!-- Header / Breadcrumb -->
         <div class="gwj-d-flex gwj-justify-between gwj-align-center gwj-mb-4">
             <div>
-                <h1 style="font-size: 1.8rem; margin: 0;">Configurações do Sistema</h1>
-                <p style="color: var(--gwj-text-muted); margin: 0;">Parâmetros gerais, dados da barbearia e funcionamento</p>
+                <h1 style="font-size: 1.8rem; margin: 0; font-weight: 700;">Configurações da Loja</h1>
+                <p style="color: var(--gwj-text-muted); margin: 0;">Personalize os dados da barbearia, contatos, horários e textos exibidos no site</p>
             </div>
             <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary gwj-btn-sm">
                 <i class="bi bi-arrow-left"></i> Voltar ao Painel
             </a>
         </div>
 
-        <!-- Settings List Card -->
-        <div class="gwj-card" style="max-width: 900px;">
-            <div class="gwj-card-header">
-                <h5 class="gwj-card-title">Parâmetros Ativos</h5>
-            </div>
-            <div class="gwj-card-body gwj-p-0">
-                <div class="gwj-table-responsive">
-                    <table class="gwj-table">
-                        <thead>
-                            <tr>
-                                <th>Chave / Parâmetro</th>
-                                <th>Valor Atual</th>
-                                <th>Descrição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="gwj-table-row" th:each="cfg : ${settings}">
-                                <td style="font-weight: 600; color: var(--gwj-primary-color);" th:text="${cfg.chave}">nome_empresa</td>
-                                <td style="font-weight: 500; color: var(--gwj-text-dark);" th:text="${cfg.valor}">Tgo's Barbearia</td>
-                                <td style="color: var(--gwj-text-muted);" th:text="${cfg.descricao}">Nome exibido no cabeçalho</td>
-                            </tr>
-                            <tr th:if="${settings == null or #lists.isEmpty(settings)}">
-                                <td colspan="3" class="gwj-text-center gwj-p-4" style="color: var(--gwj-text-muted);">
-                                    Nenhuma configuração cadastrada.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <!-- Alertas de Feedback -->
+        <div th:if="${sucesso}" class="alert alert-success gwj-mb-4" style="background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; border-radius: 8px; padding: 1rem 1.25rem;">
+            <i class="bi bi-check-circle-fill gwj-mr-2"></i> <span th:text="${sucesso}">Configurações salvas com sucesso!</span>
         </div>
+
+        <div th:if="${erro}" class="alert alert-danger gwj-mb-4" style="background-color: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; border-radius: 8px; padding: 1rem 1.25rem;">
+            <i class="bi bi-exclamation-triangle-fill gwj-mr-2"></i> <span th:text="${erro}">Erro ao salvar configurações.</span>
+        </div>
+
+        <form th:action="@{/MRYnZpAsC9sp/configuracoes/salvar}" method="POST">
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.5rem;">
+                
+                <!-- 1. Identificação & Marca -->
+                <div class="gwj-card">
+                    <div class="gwj-card-header">
+                        <h5 class="gwj-card-title"><i class="bi bi-shop gwj-mr-2"></i> Identificação & Marca</h5>
+                    </div>
+                    <div class="gwj-card-body">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="nome">Nome da Barbearia / Empresa *</label>
+                            <input type="text" id="nome" name="nome" class="gwj-input" 
+                                   th:value="${settings['nome']}" required placeholder="Ex: Tgo's Barbearia">
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="descricao">Slogan / Descrição Curta</label>
+                            <textarea id="descricao" name="descricao" class="gwj-input" rows="3" 
+                                      th:text="${settings['descricao']}" placeholder="Breve resumo da barbearia exibido no rodapé e cabeçalho..."></textarea>
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="logo_url">URL da Logomarca</label>
+                            <input type="text" id="logo_url" name="logo_url" class="gwj-input" 
+                                   th:value="${settings['logo_url']}" placeholder="Ex: /img/logo.png ou link https://...">
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="logo_alt">Texto Alternativo do Logo (Acessibilidade)</label>
+                            <input type="text" id="logo_alt" name="logo_alt" class="gwj-input" 
+                                   th:value="${settings['logo_alt']}" placeholder="Ex: Tgo's Barbearia Logo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Contato & Localização -->
+                <div class="gwj-card">
+                    <div class="gwj-card-header">
+                        <h5 class="gwj-card-title"><i class="bi bi-geo-alt-fill gwj-mr-2"></i> Contato & Localização</h5>
+                    </div>
+                    <div class="gwj-card-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="gwj-form-group">
+                                <label class="gwj-label" for="telefone">Telefone / WhatsApp</label>
+                                <input type="text" id="telefone" name="telefone" class="gwj-input" 
+                                       th:value="${settings['telefone']}" placeholder="Ex: (11) 99999-9999">
+                            </div>
+
+                            <div class="gwj-form-group">
+                                <label class="gwj-label" for="email">E-mail de Atendimento</label>
+                                <input type="email" id="email" name="email" class="gwj-input" 
+                                       th:value="${settings['email']}" placeholder="Ex: contato@barbearia.com">
+                            </div>
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="endereco_curto">Endereço Resumido (Header / Topo)</label>
+                            <input type="text" id="endereco_curto" name="endereco_curto" class="gwj-input" 
+                                   th:value="${settings['endereco_curto']}" placeholder="Ex: Rua Principal, 123 - Centro">
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="endereco_completo">Endereço Completo (Rodapé e Contato)</label>
+                            <textarea id="endereco_completo" name="endereco_completo" class="gwj-input" rows="3" 
+                                      th:text="${settings['endereco_completo']}" placeholder="Rua Principal, 123, Centro&#10;Cidade, Estado - CEP 12345-678"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Horários de Atendimento -->
+                <div class="gwj-card">
+                    <div class="gwj-card-header">
+                        <h5 class="gwj-card-title"><i class="bi bi-clock-history gwj-mr-2"></i> Horários de Funcionamento</h5>
+                    </div>
+                    <div class="gwj-card-body">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="horarios">Texto de Horários de Atendimento</label>
+                            <textarea id="horarios" name="horarios" class="gwj-input" rows="4" 
+                                      th:text="${settings['horarios']}" placeholder="Segunda a Sábado&#10;Das 09:00 às 20:00"></textarea>
+                            <small style="color: var(--gwj-text-muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">
+                                Você pode quebrar linhas para organizar dias da semana e horários.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Institucional ("Sobre Nós") -->
+                <div class="gwj-card">
+                    <div class="gwj-card-header">
+                        <h5 class="gwj-card-title"><i class="bi bi-info-circle-fill gwj-mr-2"></i> Seção "Sobre Nós" (Home)</h5>
+                    </div>
+                    <div class="gwj-card-body">
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="sobre_titulo">Título da Seção</label>
+                            <input type="text" id="sobre_titulo" name="sobre_titulo" class="gwj-input" 
+                                   th:value="${settings['sobre_titulo']}" placeholder="Ex: Tradição e Estilo">
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="sobre_imagem">URL da Imagem Ilustrativa / Foto</label>
+                            <input type="text" id="sobre_imagem" name="sobre_imagem" class="gwj-input" 
+                                   th:value="${settings['sobre_imagem']}" placeholder="https://images.unsplash.com/...">
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="sobre_texto1">Primeiro Parágrafo Institucional</label>
+                            <textarea id="sobre_texto1" name="sobre_texto1" class="gwj-input" rows="3" 
+                                      th:text="${settings['sobre_texto1']}" placeholder="História e fundação da barbearia..."></textarea>
+                        </div>
+
+                        <div class="gwj-form-group">
+                            <label class="gwj-label" for="sobre_texto2">Segundo Parágrafo Institucional</label>
+                            <textarea id="sobre_texto2" name="sobre_texto2" class="gwj-input" rows="3" 
+                                      th:text="${settings['sobre_texto2']}" placeholder="Diferenciais e atendimento ao cliente..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Botões Fixos / Flutuantes de Ação -->
+            <div class="gwj-d-flex gwj-justify-end gwj-gap-2 gwj-mt-4" style="position: sticky; bottom: 1.5rem; background: rgba(15, 16, 21, 0.85); backdrop-filter: blur(8px); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                <a th:href="@{/MRYnZpAsC9sp/}" class="gwj-btn gwj-btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="gwj-btn gwj-btn-primary" style="font-weight: 600; padding: 0.6rem 1.75rem;">
+                    <i class="bi bi-check-lg gwj-mr-2"></i> Salvar Todas as Configurações
+                </button>
+            </div>
+
+        </form>
+
     </main>
 
 </body>

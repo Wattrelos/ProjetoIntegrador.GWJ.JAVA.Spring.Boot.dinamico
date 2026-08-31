@@ -12,6 +12,7 @@ public class ServiceRegistry {
         // Registrar explicitamente serviços especializados
         registry.put("Usuario", new UsuarioService());
         registry.put("Agendamento", new AgendamentoService());
+        registry.put("Setting", new SettingService());
     }
 
     @SuppressWarnings("unchecked")
