@@ -7,8 +7,32 @@
 - Templante ou Decorator (Para construír páginas web).
 Esta é a outra forma de CRUD mais dinâmica e enxuta.
 
+---
+
+## 🛠️ Diagnóstico Rápido de Ambiente (Recomendado para Alunos)
+
+Antes de iniciar a aplicação, execute o verificador de ambiente para garantir que o **Java 21**, as portas e a conexão com o banco de dados estão corretos:
+
+- **Linux / macOS / WSL:**
+  ```bash
+  ./check.sh
+  ```
+- **Windows (Prompt / Duplo Clique):**
+  Dê dois cliques no arquivo `check.bat` ou execute no CMD:
+  ```cmd
+  check.bat
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  .\check.ps1
+  ```
+
+O verificador emitirá um relatório completo (✅ SUCESSO / ⚠️ AVISO / ❌ FALHA) e indicará a solução exata para qualquer pendência encontrada.
+
+---
+
 1. Primeiro, instale o banco de dados de testes:
-gwj2.SQL
+gwj5.sql ou gwj_criacao_usuario.sql
 
 2. Crie um usuário. A boa prática é criar um usuário específico para o banco de dados, ao invés de usar root:
 ```
@@ -22,7 +46,7 @@ FLUSH PRIVILEGES;
 ```
 
 Agora, basta executar o arquivo src/main/java/com/gwj/AppConfig.java (botão rum).
-Atenção: A porta padrão do projeto é 8080. S der erro na inicialização, basta trovar por uma porta livre.
+Atenção: A porta padrão do projeto é 8089. S der erro na inicialização, basta trovar por uma porta livre.
 
 Alterar a porta no projeto/
 Abra o arquivo src/main/resources/application.properties e adicione esta linha com a porta 8089 ou outra porta que não esteja em uso:
@@ -30,40 +54,40 @@ Abra o arquivo src/main/resources/application.properties e adicione esta linha c
 propertiesserver.port=8089
 ```
 Observação: Se você alterar a porta, os comandos a seguir devem ser alterados pela porta nova, por exemplo, ao invés de 8080, digita 8089.
-```
+
 
 Se não houver mensagens de erro, basta testar no navegador:\
 Thymeleaf:
 ```
-http://localhost:8080/
+http://localhost:8089/
 ```
 
 3. Depois de implementar o banco de dados e inicializar o teu servidor, tu podes utilizar os seguintes comandos no navegador:\
 Ver a lista de clientes;
 ```
-http://localhost:8080/read-json?entity=Cliente
+http://localhost:8089/read-json?entity=Cliente
 ```
 Ver um cliente específico pelo número ID:
 ```
-http://localhost:8080/read-json?entity=Cliente&id=29
+http://localhost:8089/read-json?entity=Cliente&id=29
 ```
 Ver endereços:
 ```
-http://localhost:8080/read-json?entity=Endereco
+http://localhost:8089/read-json?entity=Endereco
 ```
 
 Agora, para simular as requisições POST, recomendo o uso de um aplicativo, por exemplo, o Postman.
 Isso é necessário para enviar dados via POST, para simular os comandos create, update e delete:
 ```
-http://localhost:8080/create-json?entity=Cliente
+http://localhost:8089/create-json?entity=Cliente
 ```
 acrescentar parâmetros no corpo da requisição (devem ser iguais aos nomes de atributos das classes domínio).
 ```
-http://localhost:8080/update-json?entity=Cliente
+http://localhost:8089/update-json?entity=Cliente
 ```
 acrescentar parâmetros no corpo da requisição (devem ser iguais aos nomes de atributos das classes domínio).
 ```
-http://localhost:8080/delete-json?entity=Cliente
+http://localhost:8089/delete-json?entity=Cliente
 ```
 (acrescentar parâmetros no corpo da requisição com o key=id e Value= [número id do registro].
 
